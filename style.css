@@ -74,7 +74,7 @@ body {
     margin-top: 10px;
 }
 
-/* Мишка */
+/* Мишка с телом */
 .bear-container {
     display: flex;
     flex-direction: column;
@@ -83,8 +83,8 @@ body {
 }
 
 .bear {
-    width: 280px;
-    height: 280px;
+    width: 300px;
+    height: 350px;
     position: relative;
     cursor: pointer;
     transition: transform 0.1s;
@@ -100,30 +100,70 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    width: 320px;
+    height: 370px;
+    background: radial-gradient(circle, rgba(255, 165, 0, 0.3) 0%, transparent 70%);
     border-radius: 50%;
     animation: glow 2s ease-in-out infinite;
+    z-index: 0;
 }
 
 .bear-body {
     position: relative;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #8B4513 0%, #A0522D 50%, #CD853F 100%);
-    border-radius: 50%;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), inset 0 -10px 30px rgba(0, 0, 0, 0.2);
 }
 
+/* Тело мишки */
+.bear-torso {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    height: 200px;
+    background: linear-gradient(135deg, #FFA500 0%, #FF8C00 50%, #FF7F00 100%);
+    border-radius: 50% 50% 45% 45%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 -10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.bear-torso::before {
+    content: '';
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 120px;
+    background: linear-gradient(135deg, #FFB347, #FFCC99);
+    border-radius: 50%;
+    opacity: 0.6;
+}
+
+/* Голова */
+.bear-head {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 160px;
+    background: linear-gradient(135deg, #FFA500 0%, #FF8C00 50%, #FF7F00 100%);
+    border-radius: 50%;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+/* Уши */
 .bear-ear {
     position: absolute;
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, #8B4513, #A0522D);
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #FFA500, #FF8C00);
     border-radius: 50%;
-    top: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    top: 50px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    z-index: 5;
 }
 
 .bear-ear::after {
@@ -132,38 +172,37 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, #DEB887, #F4A460);
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, #FFB347, #FFCC99);
     border-radius: 50%;
 }
 
 .bear-ear.left {
-    left: 30px;
+    left: 40px;
 }
 
 .bear-ear.right {
-    right: 30px;
+    right: 40px;
 }
 
+/* Лицо */
 .bear-face {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 180px;
-    height: 150px;
-    background: linear-gradient(135deg, #DEB887, #F4A460);
-    border-radius: 50%;
+    width: 140px;
+    height: 120px;
 }
 
 .bear-eye {
     position: absolute;
-    width: 30px;
+    width: 25px;
     height: 30px;
     background: #000;
     border-radius: 50%;
-    top: 40px;
+    top: 35px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
@@ -171,41 +210,103 @@ body {
     content: '';
     position: absolute;
     top: 5px;
-    left: 8px;
-    width: 10px;
-    height: 10px;
+    left: 6px;
+    width: 8px;
+    height: 8px;
     background: white;
     border-radius: 50%;
 }
 
 .bear-eye.left {
-    left: 35px;
+    left: 30px;
 }
 
 .bear-eye.right {
-    right: 35px;
+    right: 30px;
 }
 
 .bear-nose {
     position: absolute;
-    top: 75px;
+    top: 65px;
     left: 50%;
     transform: translateX(-50%);
-    width: 35px;
-    height: 25px;
+    width: 30px;
+    height: 22px;
     background: #000;
     border-radius: 50%;
 }
 
 .bear-mouth {
     position: absolute;
-    bottom: 30px;
+    bottom: 25px;
     left: 50%;
     transform: translateX(-50%);
-    width: 60px;
-    height: 30px;
-    border-bottom: 4px solid #000;
+    width: 50px;
+    height: 25px;
+    border-bottom: 3px solid #000;
     border-radius: 0 0 50% 50%;
+}
+
+/* Лапы */
+.bear-paw {
+    position: absolute;
+    bottom: 20px;
+    width: 70px;
+    height: 60px;
+    background: linear-gradient(135deg, #FFA500, #FF8C00);
+    border-radius: 50%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.bear-paw::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 35px;
+    background: linear-gradient(135deg, #FFB347, #FFCC99);
+    border-radius: 50%;
+}
+
+.bear-paw::after {
+    content: '🐾';
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+    opacity: 0.6;
+}
+
+.bear-paw.left {
+    left: 30px;
+}
+
+.bear-paw.right {
+    right: 30px;
+}
+
+/* Руки */
+.bear-arm {
+    position: absolute;
+    top: 180px;
+    width: 60px;
+    height: 90px;
+    background: linear-gradient(135deg, #FFA500, #FF8C00);
+    border-radius: 50%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.bear-arm.left {
+    left: 20px;
+    transform: rotate(20deg);
+}
+
+.bear-arm.right {
+    right: 20px;
+    transform: rotate(-20deg);
 }
 
 .tap-hint {
@@ -548,8 +649,8 @@ body {
 /* Адаптивность */
 @media (max-width: 400px) {
     .bear {
-        width: 240px;
-        height: 240px;
+        width: 260px;
+        height: 300px;
     }
     
     .balance-value {
