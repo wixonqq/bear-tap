@@ -18,60 +18,76 @@ let playerData = {
     lastSave: Date.now()
 };
 
-// Загрузка данных из бота
+let apiAvailable = false;
+const API_URL = 'http://localhost:8080'; // Замени на ngrok ссылку если есть
+
+// Массив для хранения активных уведомлений
+let activeNotifications = [];
+
+// Загрузка данных
 async function loadData() {
     const userId = tg.initDataUnsafe?.user?.id;
     
     if (!userId) {
         showNotification('⚠️ Ошибка: не получен ID пользователя', 'error');
+        loadLocalData();
         return;
     }
     
     try {
-        // Загружаем данные с API
-        const response = await fetch(`http://localhost:8080/api/user_data?user_id=${userId}`);
-        const data = await response.json();
+        // Пытаемся загрузить с API
+        const response = await fetch(`${API_URL}/api/user_data?user_id=${userId}`, {
+            method: 'GET',
+            mode: 'cors'
+        });
         
-        if (data.error) {
-            showNotification(`⚠️ ${data.error}`, 'error');
+        if (response.ok) {
+            const data = await response.json();
+            
+            if (data.error) {
+                loadLocalData();
+                return;
+            }
+            
+            // API работает! Загружаем реальные данные
+            apiAvailable = true;
+            playerData = {
+                xp: data.xp || 0,
+                totalClicks: 0,
+                energy: 1000,
+                maxEnergy: 1000,
+                clickPower: 1,
+                level: Math.floor((data.xp || 0) / 100) + 1,
+                wins: data.wins || 0,
+                referrals: data.referrals || 0,
+                achievements: data.achievements || [],
+                username: data.username,
+                firstName: data.first_name,
+                lastSave: Date.now()
+            };
+            
+            const timePassed = (Date.now() - playerData.lastSave) / 1000;
+            playerData.energy = Math.min(
+                playerData.maxEnergy,
+                playerData.energy + Math.floor(timePassed / 2)
+            );
+            
+            showNotification('✅ Данные загружены из сервера', 'success');
+        } else {
+            // API недоступен
             loadLocalData();
-            return;
         }
         
-        // Сохраняем реальные данные из базы
-        playerData = {
-            xp: data.xp || 0,
-            totalClicks: 0,
-            energy: 1000,
-            maxEnergy: 1000,
-            clickPower: 1,
-            level: Math.floor((data.xp || 0) / 100) + 1,
-            wins: data.wins || 0,
-            referrals: data.referrals || 0,
-            achievements: data.achievements || [],
-            username: data.username,
-            firstName: data.first_name,
-            lastSave: Date.now()
-        };
-        
-        // Восстановление энергии
-        const timePassed = (Date.now() - playerData.lastSave) / 1000;
-        playerData.energy = Math.min(
-            playerData.maxEnergy,
-            playerData.energy + Math.floor(timePassed / 2)
-        );
-        
-        updateUI();
-        updateProfile();
-        
     } catch (error) {
-        console.error('Ошибка загрузки данных:', error);
-        showNotification('⚠️ Ошибка подключения к серверу', 'error');
+        console.log('API недоступен, используем локальные данные');
         loadLocalData();
     }
+    
+    updateUI();
+    updateProfile();
 }
 
-// Загрузка локальных данных (запасной вариант)
+// Загрузка локальных данных
 function loadLocalData() {
     const saved = localStorage.getItem('bearTapData');
     if (saved) {
@@ -89,8 +105,7 @@ function loadLocalData() {
         playerData.firstName = user.first_name;
     }
     
-    updateUI();
-    updateProfile();
+    showNotification('🐻 Тапай по мишке и зарабатывай XP!', 'success');
 }
 
 // Сохранение данных в localStorage
@@ -101,14 +116,16 @@ function saveData() {
 
 // Сохранение прогресса на сервер
 async function saveProgress() {
-    const userId = tg.initDataUnsafe?.user?.id;
+    if (!apiAvailable) return;
     
+    const userId = tg.initDataUnsafe?.user?.id;
     if (!userId) return;
     
     try {
-        await fetch('http://localhost:8080/api/save_progress', {
+        await fetch(`${API_URL}/api/save_progress`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            mode: 'cors',
             body: JSON.stringify({
                 user_id: userId,
                 xp: playerData.xp,
@@ -116,7 +133,7 @@ async function saveProgress() {
             })
         });
     } catch (error) {
-        console.error('Ошибка сохранения:', error);
+        console.log('Не удалось сохранить на сервер');
     }
 }
 
@@ -131,7 +148,7 @@ function updateUI() {
     document.getElementById('energy-fill').style.width = energyPercent + '%';
 }
 
-// Обновление профиля с реальными данными
+// Обновление профиля
 function updateProfile() {
     document.getElementById('profile-name').textContent = playerData.firstName || playerData.username || 'Игрок';
     document.getElementById('profile-level').textContent = playerData.level;
@@ -142,7 +159,7 @@ function updateProfile() {
     
     // Достижения
     const achievements = [
-        { id: 'first_tap', icon: '🌱', name: 'Первый тап', desc: 'Сделай первый клик', condition: () => playerData.totalClicks >= 1 },
+        { id: 'first_tap', icon: '', name: 'Первый тап', desc: 'Сделай первый клик', condition: () => playerData.totalClicks >= 1 },
         { id: 'hundred', icon: '💯', name: 'Сотня', desc: '100 кликов', condition: () => playerData.totalClicks >= 100 },
         { id: 'thousand', icon: '🔥', name: 'Тысячник', desc: '1000 кликов', condition: () => playerData.totalClicks >= 1000 },
         { id: 'winner', icon: '🏆', name: 'Победитель', desc: 'Выиграй розыгрыш', condition: () => playerData.wins >= 1 },
@@ -167,39 +184,44 @@ function updateProfile() {
         achievementsList.appendChild(div);
     });
     
-    // Топы
     updateTopLists();
-    
-    // Реферальная ссылка
     setupReferralLink();
 }
 
-// Обновление топов с реальными данными
+// Обновление топов
 async function updateTopLists() {
-    const userId = tg.initDataUnsafe?.user?.id;
+    if (!apiAvailable) {
+        // Показываем только текущего пользователя
+        const userId = tg.initDataUnsafe?.user?.id;
+        renderTopList('top-xp-list', [
+            { name: playerData.firstName || 'Ты', xp: playerData.xp }
+        ], 'XP');
+        renderTopList('top-wins-list', [
+            { name: playerData.firstName || 'Ты', value: playerData.wins }
+        ], 'побед');
+        return;
+    }
     
+    const userId = tg.initDataUnsafe?.user?.id;
     if (!userId) return;
     
     try {
-        const response = await fetch(`http://localhost:8080/api/user_data?user_id=${userId}`);
+        const response = await fetch(`${API_URL}/api/user_data?user_id=${userId}`, {
+            method: 'GET',
+            mode: 'cors'
+        });
         const data = await response.json();
         
         if (data.top_xp && data.top_xp.length > 0) {
             renderTopList('top-xp-list', data.top_xp, 'XP');
-        } else {
-            document.getElementById('top-xp-list').innerHTML = 
-                '<div class="top-item"><div class="top-name">Пока пусто</div></div>';
         }
         
         if (data.top_wins && data.top_wins.length > 0) {
             renderTopList('top-wins-list', data.top_wins, 'побед');
-        } else {
-            document.getElementById('top-wins-list').innerHTML = 
-                '<div class="top-item"><div class="top-name">Пока пусто</div></div>';
         }
         
     } catch (error) {
-        console.error('Ошибка загрузки топов:', error);
+        console.log('Не удалось загрузить топы');
     }
 }
 
@@ -223,7 +245,7 @@ function renderTopList(elementId, data, suffix) {
 // Реферальная ссылка
 function setupReferralLink() {
     const userId = tg.initDataUnsafe?.user?.id;
-    const botUsername = 'sporttcm_bot'; // Замени на свой username бота
+    const botUsername = 'sporttcm_bot';
     
     const referralLink = `https://t.me/${botUsername}?start=${userId}`;
     
@@ -296,29 +318,56 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     });
 });
 
-// Уведомления
+// Уведомления с эффектом водопада
 function showNotification(text, type = 'info') {
     const notif = document.createElement('div');
+    notif.className = 'waterfall-notification';
     notif.style.cssText = `
         position: fixed;
         top: 20px;
         left: 50%;
         transform: translateX(-50%);
-        background: ${type === 'success' ? 'rgba(46, 213, 115, 0.9)' : type === 'error' ? 'rgba(255, 71, 87, 0.9)' : 'rgba(0, 0, 0, 0.9)'};
+        background: ${type === 'success' ? 'rgba(46, 213, 115, 0.95)' : type === 'error' ? 'rgba(255, 71, 87, 0.95)' : 'rgba(0, 0, 0, 0.9)'};
         color: white;
         padding: 15px 25px;
-        border-radius: 10px;
+        border-radius: 12px;
         font-weight: bold;
         z-index: 10000;
-        animation: slideDown 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        opacity: 0;
+        transition: all 0.3s ease;
+        max-width: 80%;
+        text-align: center;
     `;
     notif.textContent = text;
     document.body.appendChild(notif);
     
+    activeNotifications.push(notif);
+    updateNotificationPositions();
+    
     setTimeout(() => {
-        notif.style.animation = 'slideUp 0.3s ease';
-        setTimeout(() => notif.remove(), 300);
-    }, 2000);
+        notif.style.opacity = '1';
+    }, 10);
+    
+    setTimeout(() => {
+        notif.style.opacity = '0';
+        notif.style.transform = 'translateX(-50%) translateY(-20px)';
+        setTimeout(() => {
+            notif.remove();
+            activeNotifications = activeNotifications.filter(n => n !== notif);
+            updateNotificationPositions();
+        }, 300);
+    }, 3000);
+}
+
+// Обновление позиций уведомлений
+function updateNotificationPositions() {
+    const gap = 10;
+    activeNotifications.forEach((notif, index) => {
+        const offset = index * (70 + gap);
+        notif.style.top = `${20 + offset}px`;
+    });
 }
 
 // Регенерация энергии
@@ -335,4 +384,3 @@ setInterval(saveProgress, 10000);
 
 // Инициализация
 loadData();
-showNotification('🐻 Тапай по мишке и зарабатывай XP!', 'success');
