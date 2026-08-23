@@ -13,11 +13,68 @@ let playerData = {
     wins: 0,
     referrals: 0,
     achievements: [],
+    username: '',
+    firstName: '',
     lastSave: Date.now()
 };
 
-// Загрузка данных
-function loadData() {
+// Загрузка данных из бота
+async function loadData() {
+    const userId = tg.initDataUnsafe?.user?.id;
+    
+    if (!userId) {
+        showNotification('⚠️ Ошибка: не получен ID пользователя', 'error');
+        return;
+    }
+    
+    try {
+        // Загружаем данные с API
+        const response = await fetch(`http://localhost:8080/api/user_data?user_id=${userId}`);
+        const data = await response.json();
+        
+        if (data.error) {
+            showNotification(`⚠️ ${data.error}`, 'error');
+            // Используем локальные данные как запасной вариант
+            loadLocalData();
+            return;
+        }
+        
+        // Сохраняем данные
+        playerData = {
+            xp: data.xp || 0,
+            totalClicks: 0,
+            energy: 1000,
+            maxEnergy: 1000,
+            clickPower: 1,
+            level: Math.floor((data.xp || 0) / 100) + 1,
+            wins: data.wins || 0,
+            referrals: data.referrals || 0,
+            achievements: data.achievements || [],
+            username: data.username,
+            firstName: data.first_name,
+            lastSave: Date.now()
+        };
+        
+        // Восстановление энергии
+        const timePassed = (Date.now() - playerData.lastSave) / 1000;
+        playerData.energy = Math.min(
+            playerData.maxEnergy,
+            playerData.energy + Math.floor(timePassed / 2)
+        );
+        
+        // Обновляем UI
+        updateUI();
+        updateProfile();
+        
+    } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+        showNotification('⚠️ Ошибка загрузки данных', 'error');
+        loadLocalData();
+    }
+}
+
+// Загрузка локальных данных (запасной вариант)
+function loadLocalData() {
     const saved = localStorage.getItem('bearTapData');
     if (saved) {
         playerData = JSON.parse(saved);
@@ -44,6 +101,27 @@ function saveData() {
     localStorage.setItem('bearTapData', JSON.stringify(playerData));
 }
 
+// Сохранение прогресса на сервер
+async function saveProgress() {
+    const userId = tg.initDataUnsafe?.user?.id;
+    
+    if (!userId) return;
+    
+    try {
+        await fetch('http://localhost:8080/api/save_progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: userId,
+                xp: playerData.xp,
+                clicks: playerData.totalClicks
+            })
+        });
+    } catch (error) {
+        console.error('Ошибка сохранения:', error);
+    }
+}
+
 // Обновление UI главного экрана
 function updateUI() {
     document.getElementById('xp-balance').textContent = playerData.xp.toLocaleString();
@@ -55,9 +133,9 @@ function updateUI() {
     document.getElementById('energy-fill').style.width = energyPercent + '%';
 }
 
-// Обновление профиля
+// Обновление профиля с реальными данными
 function updateProfile() {
-    document.getElementById('profile-name').textContent = playerData.firstName || 'Игрок';
+    document.getElementById('profile-name').textContent = playerData.firstName || playerData.username || 'Игрок';
     document.getElementById('profile-level').textContent = playerData.level;
     document.getElementById('stat-wins').textContent = playerData.wins;
     document.getElementById('stat-xp').textContent = playerData.xp.toLocaleString();
@@ -77,10 +155,7 @@ function updateProfile() {
     achievementsList.innerHTML = '';
     
     achievements.forEach(ach => {
-        const unlocked = ach.condition();
-        if (unlocked && !playerData.achievements.includes(ach.id)) {
-            playerData.achievements.push(ach.id);
-        }
+        const unlocked = ach.condition() || playerData.achievements.includes(ach.id);
         
         const div = document.createElement('div');
         div.className = `achievement ${unlocked ? 'unlocked' : 'locked'}`;
@@ -94,13 +169,17 @@ function updateProfile() {
         achievementsList.appendChild(div);
     });
     
-    // Топы (заглушки - потом подключи к API)
+    // Топы
     updateTopLists();
+    
+    // Реферальная ссылка
+    setupReferralLink();
 }
 
 // Обновление топов
 function updateTopLists() {
-    // Здесь потом подключи реальные данные с сервера
+    // Здесь данные придут с API
+    // Пока заглушки
     const topXP = [
         { name: 'Andrey', value: 15420 },
         { name: 'Masha', value: 12300 },
@@ -134,10 +213,27 @@ function renderTopList(elementId, data, suffix) {
     });
 }
 
+// Реферальная ссылка
+function setupReferralLink() {
+    const userId = tg.initDataUnsafe?.user?.id;
+    const botUsername = 'sporttcm_bot'; // Замени на свой username бота
+    
+    const referralLink = `https://t.me/${botUsername}?start=${userId}`;
+    
+    document.getElementById('referral-btn').onclick = function() {
+        navigator.clipboard.writeText(referralLink).then(() => {
+            showNotification('✅ Ссылка скопирована!', 'success');
+            tg.HapticFeedback.notificationOccurred('success');
+        }).catch(() => {
+            showNotification('❌ Ошибка копирования', 'error');
+        });
+    };
+}
+
 // Клик по мишке
 document.getElementById('bear').addEventListener('click', function(e) {
     if (playerData.energy < playerData.clickPower) {
-        showNotification('️ Недостаточно энергии!', 'error');
+        showNotification('⚠️ Недостаточно энергии!', 'error');
         return;
     }
     
@@ -193,18 +289,6 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     });
 });
 
-// Реферальная ссылка
-document.getElementById('referral-btn').addEventListener('click', function() {
-    const link = `https://t.me/${tg.initDataUnsafe?.user?.username || 'your_bot'}?start=${tg.initDataUnsafe?.user?.id}`;
-    
-    navigator.clipboard.writeText(link).then(() => {
-        showNotification('✅ Ссылка скопирована!', 'success');
-        tg.HapticFeedback.notificationOccurred('success');
-    }).catch(() => {
-        showNotification('❌ Ошибка копирования', 'error');
-    });
-});
-
 // Уведомления
 function showNotification(text, type = 'info') {
     const notif = document.createElement('div');
@@ -239,8 +323,8 @@ setInterval(() => {
     }
 }, 2000);
 
-// Авто-сохранение
-setInterval(saveData, 5000);
+// Авто-сохранение каждые 10 секунд
+setInterval(saveProgress, 10000);
 
 // Инициализация
 loadData();
