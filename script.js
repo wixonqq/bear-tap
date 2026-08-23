@@ -34,12 +34,11 @@ async function loadData() {
         
         if (data.error) {
             showNotification(`⚠️ ${data.error}`, 'error');
-            // Используем локальные данные как запасной вариант
             loadLocalData();
             return;
         }
         
-        // Сохраняем данные
+        // Сохраняем реальные данные из базы
         playerData = {
             xp: data.xp || 0,
             totalClicks: 0,
@@ -62,13 +61,12 @@ async function loadData() {
             playerData.energy + Math.floor(timePassed / 2)
         );
         
-        // Обновляем UI
         updateUI();
         updateProfile();
         
     } catch (error) {
         console.error('Ошибка загрузки данных:', error);
-        showNotification('⚠️ Ошибка загрузки данных', 'error');
+        showNotification('⚠️ Ошибка подключения к серверу', 'error');
         loadLocalData();
     }
 }
@@ -95,7 +93,7 @@ function loadLocalData() {
     updateProfile();
 }
 
-// Сохранение данных
+// Сохранение данных в localStorage
 function saveData() {
     playerData.lastSave = Date.now();
     localStorage.setItem('bearTapData', JSON.stringify(playerData));
@@ -176,24 +174,33 @@ function updateProfile() {
     setupReferralLink();
 }
 
-// Обновление топов
-function updateTopLists() {
-    // Здесь данные придут с API
-    // Пока заглушки
-    const topXP = [
-        { name: 'Andrey', value: 15420 },
-        { name: 'Masha', value: 12300 },
-        { name: 'Ivan', value: 9800 }
-    ];
+// Обновление топов с реальными данными
+async function updateTopLists() {
+    const userId = tg.initDataUnsafe?.user?.id;
     
-    const topWins = [
-        { name: 'Masha', value: 5 },
-        { name: 'Andrey', value: 3 },
-        { name: 'Ivan', value: 2 }
-    ];
+    if (!userId) return;
     
-    renderTopList('top-xp-list', topXP, 'XP');
-    renderTopList('top-wins-list', topWins, 'побед');
+    try {
+        const response = await fetch(`http://localhost:8080/api/user_data?user_id=${userId}`);
+        const data = await response.json();
+        
+        if (data.top_xp && data.top_xp.length > 0) {
+            renderTopList('top-xp-list', data.top_xp, 'XP');
+        } else {
+            document.getElementById('top-xp-list').innerHTML = 
+                '<div class="top-item"><div class="top-name">Пока пусто</div></div>';
+        }
+        
+        if (data.top_wins && data.top_wins.length > 0) {
+            renderTopList('top-wins-list', data.top_wins, 'побед');
+        } else {
+            document.getElementById('top-wins-list').innerHTML = 
+                '<div class="top-item"><div class="top-name">Пока пусто</div></div>';
+        }
+        
+    } catch (error) {
+        console.error('Ошибка загрузки топов:', error);
+    }
 }
 
 function renderTopList(elementId, data, suffix) {
@@ -207,7 +214,7 @@ function renderTopList(elementId, data, suffix) {
         div.innerHTML = `
             <div class="top-rank ${rankClass}">${index + 1}</div>
             <div class="top-name">${item.name}</div>
-            <div class="top-value">${item.value} ${suffix}</div>
+            <div class="top-value">${item.value || item.xp} ${suffix}</div>
         `;
         list.appendChild(div);
     });
