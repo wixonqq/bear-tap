@@ -4,6 +4,19 @@ tg.ready();
 
 const API_URL = 'https://botandreybot-andrey5453.amvera.io';
 
+const debugDiv = document.createElement('div');
+debugDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.9);color:#0f0;padding:10px;font-size:12px;z-index:99999;max-height:200px;overflow-y:auto;font-family:monospace;';
+document.body.appendChild(debugDiv);
+
+function debug(msg) {
+    const time = new Date().toLocaleTimeString();
+    debugDiv.innerHTML += `[${time}] ${msg}<br>`;
+    debugDiv.scrollTop = debugDiv.scrollHeight;
+    console.log(msg);
+}
+debug('🚀 Mini App запущен');
+debug('API_URL: ' + API_URL);
+
 console.log('=== MINI APP ЗАПУЩЕН ===');
 console.log('API_URL:', API_URL);
 
