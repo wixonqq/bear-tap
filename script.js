@@ -52,32 +52,29 @@ async function loadData() {
         const response = await fetch(`${API_URL}/api/user_data?user_id=${userId}`);
         if (!response.ok) throw new Error('HTTP ' + response.status);
         const data = await response.json();
-        if (data.error) { loadLocalData(); return; }
-        
+        if (data.error) {
+            loadLocalData();
+            return;
+        }
         apiWorking = true;
         playerData = {
             xp: data.xp || 0,
             totalClicks: data.total_clicks || 0,
             energy: data.energy !== undefined ? data.energy : 1000,
-            maxEnergy: data.max_energy || 1000,
-            clickPower: data.click_power || 1,
-            energyRegen: data.energy_regen || 1,
+            maxEnergy: 1000,
+            clickPower: 1,
             level: Math.floor((data.xp || 0) / 100) + 1,
             wins: data.wins || 0,
             referrals: data.referrals || 0,
             achievements: data.achievements || [],
             username: data.username || '',
             firstName: data.first_name || '',
-            lastSave: Date.now(),
-            coins: data.coins || 0,
-            skin: data.skin || 'default',
-            lastSpin: data.last_spin || 0
+            lastSave: Date.now()
         };
         lastSavedXp = playerData.xp;
         updateUI();
         updateProfile();
         renderShop();
-        checkWheelTimer();
     } catch (error) {
         showToast('Не удалось загрузить данные', 'error');
         loadLocalData();
@@ -108,7 +105,7 @@ function saveData() {
 async function saveProgress() {
     if (!apiWorking) return;
     const userId = getUserId();
-    if (!userId || playerData.xp <= lastSavedXp) return;
+    if (!userId) return;
     try {
         await fetch(`${API_URL}/api/save_progress`, {
             method: 'POST',
