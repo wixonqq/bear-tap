@@ -2,8 +2,10 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 tg.ready();
 
-//const API_URL = 'https://botandreybot-andrey5453.amvera.io';
-const API_URL = 'http://localhost:8080';
+const API_URL = 'https://botandreybot-andrey5453.amvera.io';
+
+console.log('=== MINI APP ЗАПУЩЕН ===');
+console.log('API_URL:', API_URL);
 
 let playerData = {
     xp: 0,
@@ -27,28 +29,47 @@ let toasts = [];
 async function loadData() {
     const userId = tg.initDataUnsafe?.user?.id;
     
+    console.log('👤 User ID:', userId);
+    console.log('📡 Запрос к:', `${API_URL}/api/user_data?user_id=${userId}`);
+    
     if (!userId) {
+        console.error('❌ Не получен user_id');
         showToast('Ошибка: не получен ID', 'error');
         loadLocalData();
         return;
     }
     
     try {
+        console.log('🔄 Выполняю fetch...');
+        
         const response = await fetch(`${API_URL}/api/user_data?user_id=${userId}`, {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            mode: 'cors',
+            cache: 'no-store'
         });
         
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        console.log('📥 Статус ответа:', response.status);
+        console.log(' Заголовки:', response.headers);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
         
         const data = await response.json();
+        console.log('✅ Данные получены:', data);
         
         if (data.error) {
+            console.error('❌ API вернул ошибку:', data.error);
             loadLocalData();
             return;
         }
         
         apiWorking = true;
+        console.log('✅ API работает!');
         
         playerData = {
             xp: data.xp || 0,
@@ -66,6 +87,7 @@ async function loadData() {
         };
         
         lastSavedXp = playerData.xp;
+        console.log('💾 Данные сохранены в playerData:', playerData);
         
         const timePassed = (Date.now() - playerData.lastSave) / 1000;
         playerData.energy = Math.min(
@@ -73,16 +95,22 @@ async function loadData() {
             playerData.energy + Math.floor(timePassed / 2)
         );
         
+        console.log('🔄 Обновляю UI...');
         updateUI();
         updateProfile();
         showToast('Данные загружены!', 'success');
         
     } catch (error) {
+        console.error('❌ Ошибка подключения:', error);
+        console.error('❌ Сообщение:', error.message);
+        console.error('❌ Стек:', error.stack);
+        showToast('Не удалось загрузить данные', 'error');
         loadLocalData();
     }
 }
 
 function loadLocalData() {
+    console.log('📱 Загружаю локальные данные');
     const saved = localStorage.getItem('bearTapData');
     if (saved) {
         playerData = JSON.parse(saved);
@@ -109,16 +137,25 @@ function saveData() {
 }
 
 async function saveProgress() {
-    if (!apiWorking) return;
+    if (!apiWorking) {
+        console.log('️ API не работает, пропускаю сохранение');
+        return;
+    }
     
     const userId = tg.initDataUnsafe?.user?.id;
     if (!userId) return;
     if (playerData.xp <= lastSavedXp) return;
     
     try {
-        await fetch(`${API_URL}/api/save_progress`, {
+        console.log(' Сохраняю прогресс:', playerData.xp);
+        
+        const response = await fetch(`${API_URL}/api/save_progress`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            mode: 'cors',
             body: JSON.stringify({
                 user_id: userId,
                 xp: playerData.xp,
@@ -126,14 +163,20 @@ async function saveProgress() {
             })
         });
         
-        lastSavedXp = playerData.xp;
+        console.log('💾 Статус сохранения:', response.status);
+        
+        if (response.ok) {
+            lastSavedXp = playerData.xp;
+            console.log('✅ Прогресс сохранён');
+        }
         
     } catch (error) {
-        console.log('Не удалось сохранить');
+        console.error('❌ Ошибка сохранения:', error);
     }
 }
 
 function updateUI() {
+    console.log('🎨 Обновляю UI');
     const xpBalance = document.getElementById('xp-balance');
     const xpPerTap = document.getElementById('xp-per-tap');
     const energyCurrent = document.getElementById('energy-current');
@@ -152,6 +195,7 @@ function updateUI() {
 }
 
 function updateProfile() {
+    console.log('👤 Обновляю профиль');
     const profileName = document.getElementById('profile-name');
     const profileLevel = document.getElementById('profile-level');
     const statWins = document.getElementById('stat-wins');
@@ -171,6 +215,7 @@ function updateProfile() {
 }
 
 async function updateTopLists() {
+    console.log('🏆 Обновляю топы');
     const userId = tg.initDataUnsafe?.user?.id;
     if (!userId) return;
     
@@ -183,6 +228,7 @@ async function updateTopLists() {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
         const data = await response.json();
+        console.log(' Топы:', data);
         
         const topXpList = document.getElementById('top-xp-list');
         if (topXpList) {
@@ -203,6 +249,7 @@ async function updateTopLists() {
         }
         
     } catch (error) {
+        console.error('❌ Ошибка загрузки топов:', error);
         const topXpList = document.getElementById('top-xp-list');
         const topWinsList = document.getElementById('top-wins-list');
         if (topXpList) topXpList.innerHTML = '<div class="empty-state">Ошибка загрузки</div>';
@@ -233,6 +280,7 @@ function setupReferralLink() {
     if (!userId) return;
     
     const referralLink = `https://t.me/${botUsername}?start=${userId}`;
+    console.log('🔗 Реферальная ссылка:', referralLink);
     
     const referralBtn = document.getElementById('referral-btn');
     if (referralBtn) {
@@ -248,6 +296,8 @@ function setupReferralLink() {
 }
 
 document.getElementById('bear').addEventListener('click', function(e) {
+    console.log('👆 Клик по мишке');
+    
     if (playerData.energy < playerData.clickPower) {
         showToast('Недостаточно энергии!', 'error');
         tg.HapticFeedback.notificationOccurred('error');
@@ -346,5 +396,6 @@ setInterval(() => {
 
 setInterval(saveProgress, 10000);
 
+console.log('🚀 Запускаю loadData()');
 loadData();
 showToast('Тапай и зарабатывай XP!', 'success');
