@@ -42,18 +42,18 @@ let toasts = [];
 async function loadData() {
     const userId = tg.initDataUnsafe?.user?.id;
     
-    console.log('👤 User ID:', userId);
-    console.log('📡 Запрос к:', `${API_URL}/api/user_data?user_id=${userId}`);
+    debug(' User ID: ' + userId);
+    debug('📡 Запрос: ' + API_URL + '/api/user_data?user_id=' + userId);
     
     if (!userId) {
-        console.error('❌ Не получен user_id');
+        debug('❌ ОШИБКА: Не получен user_id');
         showToast('Ошибка: не получен ID', 'error');
         loadLocalData();
         return;
     }
     
     try {
-        console.log('🔄 Выполняю fetch...');
+        debug('🔄 Выполняю fetch запрос...');
         
         const response = await fetch(`${API_URL}/api/user_data?user_id=${userId}`, {
             method: 'GET',
@@ -65,24 +65,25 @@ async function loadData() {
             cache: 'no-store'
         });
         
-        console.log('📥 Статус ответа:', response.status);
-        console.log(' Заголовки:', response.headers);
+        debug('📥 Статус: ' + response.status);
         
         if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+            throw new Error('HTTP ' + response.status);
         }
         
         const data = await response.json();
-        console.log('✅ Данные получены:', data);
+        debug('✅ Данные получены: ' + JSON.stringify(data));
         
         if (data.error) {
-            console.error('❌ API вернул ошибку:', data.error);
+            debug('❌ API вернул ошибку: ' + data.error);
             loadLocalData();
             return;
         }
         
         apiWorking = true;
-        console.log('✅ API работает!');
+        debug('✅ API работает!');
+        debug('💾 XP: ' + data.xp);
+        debug('💾 Рефералы: ' + data.referrals);
         
         playerData = {
             xp: data.xp || 0,
@@ -100,7 +101,6 @@ async function loadData() {
         };
         
         lastSavedXp = playerData.xp;
-        console.log('💾 Данные сохранены в playerData:', playerData);
         
         const timePassed = (Date.now() - playerData.lastSave) / 1000;
         playerData.energy = Math.min(
@@ -108,15 +108,14 @@ async function loadData() {
             playerData.energy + Math.floor(timePassed / 2)
         );
         
-        console.log('🔄 Обновляю UI...');
+        debug('🔄 Обновляю UI...');
         updateUI();
         updateProfile();
         showToast('Данные загружены!', 'success');
         
     } catch (error) {
-        console.error('❌ Ошибка подключения:', error);
-        console.error('❌ Сообщение:', error.message);
-        console.error('❌ Стек:', error.stack);
+        debug('❌ ОШИБКА: ' + error.message);
+        debug('❌ Стек: ' + error.stack);
         showToast('Не удалось загрузить данные', 'error');
         loadLocalData();
     }
