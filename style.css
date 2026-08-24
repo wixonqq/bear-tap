@@ -1,0 +1,659 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+    color: white;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding-bottom: 80px;
+}
+
+.app {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Экраны */
+.screen {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Баланс */
+.balance-container {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.balance-label {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 10px;
+}
+
+.balance-value {
+    font-size: 48px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.xp-icon {
+    font-size: 40px;
+    animation: pulse 2s infinite;
+}
+
+.xp-per-tap {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-top: 10px;
+}
+
+/* Мишка с телом */
+.bear-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 40px 0;
+}
+
+.bear {
+    width: 300px;
+    height: 350px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.1s;
+    animation: float 3s ease-in-out infinite;
+}
+
+.bear:active {
+    transform: scale(0.95);
+}
+
+.bear-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 320px;
+    height: 370px;
+    background: radial-gradient(circle, rgba(255, 165, 0, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: glow 2s ease-in-out infinite;
+    z-index: 0;
+}
+
+.bear-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* Тело мишки */
+.bear-torso {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    height: 200px;
+    background: linear-gradient(135deg, #FFA500 0%, #FF8C00 50%, #FF7F00 100%);
+    border-radius: 50% 50% 45% 45%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 -10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.bear-torso::before {
+    content: '';
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 120px;
+    background: linear-gradient(135deg, #FFB347, #FFCC99);
+    border-radius: 50%;
+    opacity: 0.6;
+}
+
+/* Голова */
+.bear-head {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 160px;
+    background: linear-gradient(135deg, #FFA500 0%, #FF8C00 50%, #FF7F00 100%);
+    border-radius: 50%;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+/* Уши */
+.bear-ear {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #FFA500, #FF8C00);
+    border-radius: 50%;
+    top: 50px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    z-index: 5;
+}
+
+.bear-ear::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, #FFB347, #FFCC99);
+    border-radius: 50%;
+}
+
+.bear-ear.left {
+    left: 40px;
+}
+
+.bear-ear.right {
+    right: 40px;
+}
+
+/* Лицо */
+.bear-face {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 140px;
+    height: 120px;
+}
+
+.bear-eye {
+    position: absolute;
+    width: 25px;
+    height: 30px;
+    background: #000;
+    border-radius: 50%;
+    top: 35px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.bear-eye::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 6px;
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+}
+
+.bear-eye.left {
+    left: 30px;
+}
+
+.bear-eye.right {
+    right: 30px;
+}
+
+.bear-nose {
+    position: absolute;
+    top: 65px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 22px;
+    background: #000;
+    border-radius: 50%;
+}
+
+.bear-mouth {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 25px;
+    border-bottom: 3px solid #000;
+    border-radius: 0 0 50% 50%;
+}
+
+/* Лапы */
+.bear-paw {
+    position: absolute;
+    bottom: 20px;
+    width: 70px;
+    height: 60px;
+    background: linear-gradient(135deg, #FFA500, #FF8C00);
+    border-radius: 50%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.bear-paw::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 35px;
+    background: linear-gradient(135deg, #FFB347, #FFCC99);
+    border-radius: 50%;
+}
+
+.bear-paw::after {
+    content: '🐾';
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+    opacity: 0.6;
+}
+
+.bear-paw.left {
+    left: 30px;
+}
+
+.bear-paw.right {
+    right: 30px;
+}
+
+/* Руки */
+.bear-arm {
+    position: absolute;
+    top: 180px;
+    width: 60px;
+    height: 90px;
+    background: linear-gradient(135deg, #FFA500, #FF8C00);
+    border-radius: 50%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.bear-arm.left {
+    left: 20px;
+    transform: rotate(20deg);
+}
+
+.bear-arm.right {
+    right: 20px;
+    transform: rotate(-20deg);
+}
+
+.tap-hint {
+    margin-top: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Энергия */
+.energy-container {
+    margin-top: 30px;
+}
+
+.energy-bar {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.energy-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FFD700, #FFA500, #FF6347);
+    transition: width 0.3s;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.energy-text {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* Профиль */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.profile-avatar {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #667eea, #f093fb);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.profile-level {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s;
+}
+
+.stat-card:active {
+    transform: scale(0.95);
+}
+
+.stat-icon {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* Секции */
+.section {
+    margin-bottom: 30px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Достижения */
+.achievements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.achievement {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s;
+}
+
+.achievement.unlocked {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: rgba(255, 215, 0, 0.5);
+}
+
+.achievement.locked {
+    opacity: 0.5;
+}
+
+.achievement-icon {
+    font-size: 35px;
+}
+
+.achievement-info {
+    flex: 1;
+}
+
+.achievement-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.achievement-desc {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* Топы */
+.top-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.top-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.top-rank {
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, #667eea, #f093fb);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.top-rank.gold {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+}
+
+.top-rank.silver {
+    background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+}
+
+.top-rank.bronze {
+    background: linear-gradient(135deg, #CD7F32, #A0522D);
+}
+
+.top-name {
+    flex: 1;
+    font-size: 14px;
+}
+
+.top-value {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Рефералы */
+.referral-card {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.referral-text {
+    font-size: 16px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.referral-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea, #f093fb);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.3s;
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.referral-btn:active {
+    transform: scale(0.95);
+}
+
+/* Навигация */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 100;
+}
+
+.nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 10px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.nav-btn.active {
+    color: white;
+}
+
+.nav-icon {
+    font-size: 24px;
+}
+
+.nav-label {
+    font-size: 12px;
+}
+
+/* Анимации */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+    0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Эффект клика */
+.click-effect {
+    position: absolute;
+    pointer-events: none;
+    font-size: 24px;
+    font-weight: bold;
+    color: #FFD700;
+    text-shadow: 0 2px 10px rgba(255, 215, 0, 0.8);
+    animation: floatUp 1s ease-out forwards;
+    z-index: 1000;
+}
+
+@keyframes floatUp {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100px) scale(1.5);
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 400px) {
+    .bear {
+        width: 260px;
+        height: 300px;
+    }
+    
+    .balance-value {
+        font-size: 36px;
+    }
+}
