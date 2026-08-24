@@ -62,7 +62,7 @@ async function loadData() {
         playerData = {
             xp: data.xp || 0,
             totalClicks: data.total_clicks || 0,
-            energy: data.energy || 1000,
+            energy: data.energy !== undefined ? data.energy : 1000,
             maxEnergy: 1000,
             clickPower: 1,
             level: Math.floor((data.xp || 0) / 100) + 1,
@@ -107,9 +107,8 @@ async function saveProgress() {
     if (!apiWorking) return;
     const userId = getUserId();
     if (!userId) return;
-    if (playerData.xp <= lastSavedXp && playerData.totalClicks === 0) return;
     try {
-        const response = await fetch(`${API_URL}/api/save_progress`, {
+        await fetch(`${API_URL}/api/save_progress`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -119,9 +118,7 @@ async function saveProgress() {
                 energy: Math.floor(playerData.energy)
             })
         });
-        if (response.ok) {
-            lastSavedXp = playerData.xp;
-        }
+        lastSavedXp = playerData.xp;
     } catch (error) {}
 }
 
