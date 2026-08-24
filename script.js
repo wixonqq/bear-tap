@@ -1,23 +1,8 @@
-// Инициализация Telegram WebApp
 const tg = window.Telegram.WebApp;
-
-// Отладочная панель
-const debugDiv = document.createElement('div');
-debugDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.95);color:#0f0;padding:10px;font-size:11px;z-index:99999;max-height:250px;overflow-y:auto;font-family:monospace;border-bottom:2px solid #0f0;';
-document.body.appendChild(debugDiv);
-
-function debug(msg) {
-    const time = new Date().toLocaleTimeString();
-    debugDiv.innerHTML += `[${time}] ${msg}<br>`;
-    debugDiv.scrollTop = debugDiv.scrollHeight;
-    console.log(msg);
-}
-
-debug('🚀 Mini App запущен');
-debug('Telegram.WebApp: ' + (tg ? 'OK' : 'NULL'));
+tg.expand();
+tg.ready();
 
 const API_URL = 'https://botandreybot-andrey5453.amvera.io';
-debug('API_URL: ' + API_URL);
 
 let playerData = {
     xp: 0,
@@ -38,90 +23,51 @@ let lastSavedXp = 0;
 let apiWorking = false;
 let toasts = [];
 
-// Получение user_id
 function getUserId() {
-    let userId = null;
+    if (tg.initDataUnsafe?.user?.id) return tg.initDataUnsafe.user.id;
     
-    // Способ 1: Через initDataUnsafe
-    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        userId = tg.initDataUnsafe.user.id;
-        debug('✅ User ID из initDataUnsafe: ' + userId);
-        return userId;
-    }
-    
-    // Способ 2: Парсим initData вручную
-    if (tg && tg.initData) {
+    if (tg.initData) {
         try {
-            debug('📦 initData длина: ' + tg.initData.length);
             const params = new URLSearchParams(tg.initData);
             const userStr = params.get('user');
-            debug('📦 user параметр: ' + (userStr ? 'найден' : 'не найден'));
-            
             if (userStr) {
                 const userData = JSON.parse(decodeURIComponent(userStr));
-                userId = userData.id;
-                debug('✅ User ID из initData: ' + userId);
-                return userId;
+                return userData.id;
             }
-        } catch (e) {
-            debug('⚠️ Ошибка парсинга initData: ' + e.message);
-        }
+        } catch (e) {}
     }
     
-    // Способ 3: Из параметров URL (?user_id=7650149888)
     try {
         const urlParams = new URLSearchParams(window.location.search);
         const urlUserId = urlParams.get('user_id') || urlParams.get('tgWebAppStartParam');
-        if (urlUserId) {
-            userId = parseInt(urlUserId);
-            debug('✅ User ID из URL параметров: ' + userId);
-            return userId;
-        }
-    } catch (e) {
-        debug('⚠️ Ошибка URL параметров: ' + e.message);
-    }
+        if (urlUserId) return parseInt(urlUserId);
+    } catch (e) {}
     
-    debug('❌ User ID не получен');
     return null;
 }
 
 async function loadData() {
     const userId = getUserId();
     
-    debug('👤 Итоговый User ID: ' + userId);
-    
     if (!userId) {
-        debug('❌ ОШИБКА: Не получен user_id');
         showToast('Ошибка: не получен ID', 'error');
         loadLocalData();
         return;
     }
     
-    debug('📡 Запрос: ' + API_URL + '/api/user_data?user_id=' + userId);
-    
     try {
-        debug('🔄 Выполняю fetch запрос...');
-        
-        // Убрали лишние заголовки, вызывающие сбой CORS при GET
         const response = await fetch(`${API_URL}/api/user_data?user_id=${userId}`);
         
-        debug('📥 Статус: ' + response.status);
-        
-        if (!response.ok) {
-            throw new Error('HTTP ' + response.status);
-        }
+        if (!response.ok) throw new Error('HTTP ' + response.status);
         
         const data = await response.json();
-        debug('✅ Данные получены: ' + JSON.stringify(data));
         
         if (data.error) {
-            debug('⚠️ API вернул ошибку: ' + data.error);
             loadLocalData();
             return;
         }
         
         apiWorking = true;
-        debug('✅ API работает!');
         
         playerData = {
             xp: data.xp || 0,
@@ -140,31 +86,23 @@ async function loadData() {
         
         lastSavedXp = playerData.xp;
         
-        debug('💾 XP: ' + playerData.xp);
-        debug('💾 Уровень: ' + playerData.level);
-        debug('💾 Рефералы: ' + playerData.referrals);
-        
         const timePassed = (Date.now() - playerData.lastSave) / 1000;
         playerData.energy = Math.min(
             playerData.maxEnergy,
             playerData.energy + Math.floor(timePassed / 2)
         );
         
-        debug('🔄 Обновляю UI...');
         updateUI();
         updateProfile();
         showToast('Данные загружены!', 'success');
         
     } catch (error) {
-        debug('❌ ОШИБКА: ' + error.message);
-        debug('❌ Стек: ' + error.stack);
         showToast('Не удалось загрузить данные', 'error');
         loadLocalData();
     }
 }
 
 function loadLocalData() {
-    debug('📱 Загружаю локальные данные');
     const saved = localStorage.getItem('bearTapData');
     if (saved) {
         playerData = JSON.parse(saved);
@@ -175,7 +113,7 @@ function loadLocalData() {
         );
     }
     
-    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    if (tg.initDataUnsafe?.user) {
         const user = tg.initDataUnsafe.user;
         playerData.username = user.username || user.first_name || 'Игрок';
         playerData.firstName = user.first_name || 'Игрок';
@@ -191,23 +129,16 @@ function saveData() {
 }
 
 async function saveProgress() {
-    if (!apiWorking) {
-        debug('⚠️ API не работает, пропускаю сохранение');
-        return;
-    }
+    if (!apiWorking) return;
     
     const userId = getUserId();
     if (!userId) return;
     if (playerData.xp <= lastSavedXp) return;
     
     try {
-        debug('💾 Сохраняю прогресс: ' + playerData.xp);
-        
         const response = await fetch(`${API_URL}/api/save_progress`, {
             method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 user_id: userId,
                 xp: playerData.xp,
@@ -215,20 +146,13 @@ async function saveProgress() {
             })
         });
         
-        debug('💾 Статус сохранения: ' + response.status);
-        
         if (response.ok) {
             lastSavedXp = playerData.xp;
-            debug('✅ Прогресс сохранён');
         }
-        
-    } catch (error) {
-        debug('❌ Ошибка сохранения: ' + error.message);
-    }
+    } catch (error) {}
 }
 
 function updateUI() {
-    debug('🎨 Обновляю UI');
     const xpBalance = document.getElementById('xp-balance');
     const xpPerTap = document.getElementById('xp-per-tap');
     const energyCurrent = document.getElementById('energy-current');
@@ -247,7 +171,6 @@ function updateUI() {
 }
 
 function updateProfile() {
-    debug('👤 Обновляю профиль');
     const profileName = document.getElementById('profile-name');
     const profileLevel = document.getElementById('profile-level');
     const statWins = document.getElementById('stat-wins');
@@ -267,17 +190,14 @@ function updateProfile() {
 }
 
 async function updateTopLists() {
-    debug('🏆 Обновляю топы');
     const userId = getUserId();
     if (!userId) return;
     
     try {
         const response = await fetch(`${API_URL}/api/user_data?user_id=${userId}`);
-        
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
         const data = await response.json();
-        debug('🏆 Топы: ' + JSON.stringify(data));
         
         const topXpList = document.getElementById('top-xp-list');
         if (topXpList) {
@@ -296,9 +216,7 @@ async function updateTopLists() {
                 topWinsList.innerHTML = '<div class="empty-state">Пока пусто</div>';
             }
         }
-        
     } catch (error) {
-        debug('❌ Ошибка загрузки топов: ' + error.message);
         const topXpList = document.getElementById('top-xp-list');
         const topWinsList = document.getElementById('top-wins-list');
         if (topXpList) topXpList.innerHTML = '<div class="empty-state">Ошибка загрузки</div>';
@@ -308,7 +226,6 @@ async function updateTopLists() {
 
 function renderTopList(container, data, suffix) {
     container.innerHTML = '';
-    
     data.forEach((item, index) => {
         const rankClass = index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '';
         const div = document.createElement('div');
@@ -325,11 +242,9 @@ function renderTopList(container, data, suffix) {
 function setupReferralLink() {
     const userId = getUserId();
     const botUsername = 'sporttcm_bot';
-    
     if (!userId) return;
     
     const referralLink = `https://t.me/${botUsername}?start=${userId}`;
-    debug('🔗 Реферальная ссылка: ' + referralLink);
     
     const referralBtn = document.getElementById('referral-btn');
     if (referralBtn) {
@@ -344,36 +259,31 @@ function setupReferralLink() {
     }
 }
 
-const bearElement = document.getElementById('bear');
-if (bearElement) {
-    bearElement.addEventListener('click', function(e) {
-        debug('👆 Клик по мишке');
-        
-        if (playerData.energy < playerData.clickPower) {
-            showToast('Недостаточно энергии!', 'error');
-            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-            return;
-        }
-        
-        playerData.xp += playerData.clickPower;
-        playerData.totalClicks++;
-        playerData.energy -= playerData.clickPower;
-        
-        const newLevel = Math.floor(playerData.totalClicks / 1000) + 1;
-        if (newLevel > playerData.level) {
-            playerData.level = newLevel;
-            showToast(`Новый уровень: ${playerData.level}!`, 'success');
-            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        } else {
-            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-        }
-        
-        showClickEffect(e);
-        updateUI();
-        updateProfile();
-        saveData();
-    });
-}
+document.getElementById('bear').addEventListener('click', function(e) {
+    if (playerData.energy < playerData.clickPower) {
+        showToast('Недостаточно энергии!', 'error');
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+        return;
+    }
+    
+    playerData.xp += playerData.clickPower;
+    playerData.totalClicks++;
+    playerData.energy -= playerData.clickPower;
+    
+    const newLevel = Math.floor(playerData.totalClicks / 1000) + 1;
+    if (newLevel > playerData.level) {
+        playerData.level = newLevel;
+        showToast(`Новый уровень: ${playerData.level}!`, 'success');
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    } else {
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+    }
+    
+    showClickEffect(e);
+    updateUI();
+    updateProfile();
+    saveData();
+});
 
 function showClickEffect(e) {
     const effect = document.createElement('div');
@@ -387,9 +297,7 @@ function showClickEffect(e) {
     effect.style.left = x + 'px';
     effect.style.top = y + 'px';
     
-    const bearEl = document.getElementById('bear');
-    if (bearEl) bearEl.appendChild(effect);
-    
+    document.getElementById('bear').appendChild(effect);
     setTimeout(() => effect.remove(), 1000);
 }
 
@@ -405,10 +313,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
         if (targetScreen) targetScreen.classList.add('active');
         
         if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
-        
-        if (screen === 'profile') {
-            updateProfile();
-        }
+        if (screen === 'profile') updateProfile();
     });
 });
 
@@ -450,32 +355,5 @@ setInterval(() => {
 
 setInterval(saveProgress, 10000);
 
-// Инициализация
-debug('=== ЗАПУСК MINI APP ===');
-
-try {
-    if (tg) {
-        tg.expand();
-        tg.ready();
-        debug('✅ Telegram expanded and ready');
-        debug('initData: ' + (tg.initData ? 'OK (' + tg.initData.length + ' симв.)' : 'NULL'));
-        debug('initDataUnsafe: ' + (tg.initDataUnsafe ? 'OK' : 'NULL'));
-        
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            debug('👤 User: ' + JSON.stringify(tg.initDataUnsafe.user));
-        }
-    }
-} catch (error) {
-    debug('⚠️ Ошибка инициализации Telegram: ' + error.message);
-}
-
-setTimeout(() => {
-    debug('🚀 Вызываю loadData()');
-    try {
-        loadData();
-    } catch (error) {
-        debug('❌ loadData() упала: ' + error.message);
-    }
-}, 500);
-
+loadData();
 showToast('Тапай и зарабатывай XP!', 'success');
