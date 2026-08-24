@@ -3,7 +3,6 @@ tg.expand();
 tg.ready();
 
 const API_URL = 'https://botandreybot-andrey5453.amvera.io';
-const ADMIN_ID = 7650149888;
 
 let playerData = {
     xp: 0,
@@ -17,9 +16,7 @@ let playerData = {
     achievements: [],
     username: '',
     firstName: '',
-    lastSave: Date.now(),
-    lastSpin: 0,
-    isAdmin: false
+    lastSave: Date.now()
 };
 
 let lastSavedXp = 0;
@@ -54,7 +51,7 @@ async function loadData() {
         playerData = {
             xp: data.xp || 0,
             totalClicks: data.total_clicks || 0,
-            energy: data.energy !== undefined && data.energy !== null ? data.energy : 1000,
+            energy: data.energy !== undefined ? data.energy : 1000,
             maxEnergy: 1000,
             clickPower: 1,
             level: Math.floor((data.xp || 0) / 100) + 1,
@@ -63,19 +60,12 @@ async function loadData() {
             achievements: data.achievements || [],
             username: data.username || '',
             firstName: data.first_name || '',
-            lastSave: Date.now(),
-            lastSpin: data.last_spin || 0,
-            isAdmin: userId === ADMIN_ID
+            lastSave: Date.now()
         };
         lastSavedXp = playerData.xp;
         updateUI();
         updateProfile();
-        checkWheelTimer();
-        
-        const adminBtn = document.getElementById('admin-btn');
-        if (adminBtn && playerData.isAdmin) {
-            adminBtn.style.display = 'block';
-        }
+        renderShop();
     } catch (error) {
         showToast('Не удалось загрузить данные', 'error');
         loadLocalData();
@@ -87,21 +77,15 @@ function loadLocalData() {
     if (saved) {
         playerData = JSON.parse(saved);
         const timePassed = (Date.now() - playerData.lastSave) / 1000;
-        playerData.energy = Math.min(playerData.maxEnergy || 1000, (playerData.energy || 1000) + Math.floor(timePassed / 2));
+        playerData.energy = Math.min(playerData.maxEnergy, playerData.energy + Math.floor(timePassed / 2));
     }
     if (tg.initDataUnsafe?.user) {
         playerData.username = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name || 'Игрок';
         playerData.firstName = tg.initDataUnsafe.user.first_name || 'Игрок';
-        playerData.isAdmin = tg.initDataUnsafe.user.id === ADMIN_ID;
     }
     updateUI();
     updateProfile();
-    checkWheelTimer();
-    
-    const adminBtn = document.getElementById('admin-btn');
-    if (adminBtn && playerData.isAdmin) {
-        adminBtn.style.display = 'block';
-    }
+    renderShop();
 }
 
 function saveData() {
@@ -112,7 +96,7 @@ function saveData() {
 async function saveProgress() {
     if (!apiWorking) return;
     const userId = getUserId();
-    if (!userId) return;
+    if (!userId || playerData.xp <= lastSavedXp) return;
     try {
         await fetch(`${API_URL}/api/save_progress`, {
             method: 'POST',
@@ -188,7 +172,7 @@ async function updateTopLists() {
         const topXpList = document.getElementById('top-xp-list');
         const topWinsList = document.getElementById('top-wins-list');
         if (topXpList) topXpList.innerHTML = '<div class="empty-state">❌ Ошибка загрузки</div>';
-        if (topWinsList) topWinsList.innerHTML = '<div class="empty-state">❌ Ошибка загрузки</div>';
+        if (topWinsList) topWinsList.innerHTML = '<div class="empty-state"> Ошибка загрузки</div>';
     }
 }
 
@@ -221,14 +205,76 @@ function setupReferralLink() {
     }
 }
 
+function renderShop() {
+    const shopList = document.getElementById('shop-list');
+    const shopBalance = document.getElementById('shop-balance');
+    if (!shopList) return;
+    if (shopBalance) shopBalance.textContent = playerData.xp.toLocaleString();
+    shopList.innerHTML = '';
+    const shopItems = [
+        {id: 'click_power_2', name: '⚡ Сила клика x2', price: 250000, desc: 'Тапай в 2 раза эффективнее'},
+        {id: 'click_power_5', name: '⚡ Сила клика x5', price: 1000000, desc: 'Тапай в 5 раз эффективнее'},
+        {id: 'max_energy_2000', name: '🔋 Энергия 2000', price: 500000, desc: 'Больше энергии для тапов'},
+        {id: 'energy_regen_2', name: '⚡ Реген x2', price: 750000, desc: 'Энергия восстанавливается быстрее'}
+    ];
+    shopItems.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'shop-item';
+        const canAfford = playerData.xp >= item.price;
+        div.innerHTML = `
+            <div class="shop-item-info">
+                <div class="shop-item-name">${item.name}</div>
+                <div class="shop-item-desc">${item.desc}</div>
+                <div class="shop-item-price"> ${item.price.toLocaleString()} XP</div>
+            </div>
+            <button class="shop-buy-btn ${canAfford ? '' : 'disabled'}" ${canAfford ? '' : 'disabled'}>
+                ${canAfford ? '✅ Купить' : '❌ Недостаточно'}
+            </button>
+        `;
+        if (canAfford) {
+            div.querySelector('.shop-buy-btn').onclick = () => buyItem(item.id);
+        }
+        shopList.appendChild(div);
+    });
+}
+
+async function buyItem(itemId) {
+    const userId = getUserId();
+    if (!userId) return;
+    const item = [
+        {id: 'click_power_2', price: 250000, name: '⚡ Сила клика x2'},
+        {id: 'click_power_5', price: 1000000, name: '⚡ Сила клика x5'},
+        {id: 'max_energy_2000', price: 500000, name: '🔋 Энергия 2000'},
+        {id: 'energy_regen_2', price: 750000, name: '⚡ Реген x2'}
+    ].find(i => i.id === itemId);
+    if (!item || playerData.xp < item.price) {
+        showToast('❌ Недостаточно XP!', 'error');
+        return;
+    }
+    try {
+        const response = await fetch(`${API_URL}/api/buy_item`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, item: itemId })
+        });
+        const data = await response.json();
+        if (data.status === 'success') {
+            showToast(`✅ ${item.name} куплен!`, 'success');
+            await loadData();
+        } else {
+            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
+        }
+    } catch (error) {
+        showToast('❌ Ошибка покупки', 'error');
+    }
+}
+
 async function spinWheel() {
     if (wheelSpinning) return;
     const userId = getUserId();
     if (!userId) return;
-    
     const now = Date.now() / 1000;
     const timeSinceLastSpin = now - playerData.lastSpin;
-    
     if (timeSinceLastSpin < 3600) {
         const remaining = Math.ceil(3600 - timeSinceLastSpin);
         const minutes = Math.floor(remaining / 60);
@@ -236,34 +282,12 @@ async function spinWheel() {
         showToast(`⏳ Подождите ${minutes}м ${seconds}с`, 'error');
         return;
     }
-    
     wheelSpinning = true;
     const wheel = document.getElementById('wheel');
     const spinBtn = document.getElementById('spin-btn');
     spinBtn.disabled = true;
-    
-    // Определяем выигрыш заранее
-    const prizes = [100, 500, 1000, 5000, 10000, 50000, 100000, 0];
-    const chances = [30, 25, 20, 10, 5, 2, 1, 7];
-    const totalChance = chances.reduce((a, b) => a + b, 0);
-    const rand = Math.floor(Math.random() * totalChance) + 1;
-    let cumulative = 0;
-    let wonIndex = 0;
-    for (let i = 0; i < chances.length; i++) {
-        cumulative += chances[i];
-        if (rand <= cumulative) { wonIndex = i; break; }
-    }
-    
-    // Каждый сектор = 45 градусов. Стрелка сверху (0°).
-    // Чтобы сектор wonIndex оказался под стрелкой, нужно повернуть колесо на:
-    // rotation = 360 - (wonIndex * 45) - 22.5 (центр сектора)
-    const segmentAngle = 360 / 8;
-    const targetAngle = 360 - (wonIndex * segmentAngle) - (segmentAngle / 2);
-    const fullRotations = 5 * 360; // 5 полных оборотов
-    const finalRotation = fullRotations + targetAngle;
-    
-    wheel.style.transform = `rotate(${finalRotation}deg)`;
-    
+    const rotations = 1440 + Math.floor(Math.random() * 360);
+    wheel.style.transform = `rotate(${rotations}deg)`;
     setTimeout(async () => {
         try {
             const response = await fetch(`${API_URL}/api/spin_wheel`, {
@@ -272,31 +296,19 @@ async function spinWheel() {
                 body: JSON.stringify({ user_id: userId })
             });
             const data = await response.json();
-            
-            if (data.prize !== undefined) {
-                playerData.lastSpin = data.last_spin;
-                playerData.xp += data.prize;
-                if (data.prize > 0) {
-                    showToast(`🎉 Вы выиграли ${data.prize} XP!`, 'success');
-                } else {
-                    showToast('😔 Ничего не выиграли. Попробуйте через час!', 'error');
-                }
-                updateUI();
-                updateProfile();
-                checkWheelTimer();
+            if (data.prize) {
+                showToast(`🎉 Вы выиграли: ${data.prize}!`, 'success');
+                await loadData();
             } else {
                 showToast('❌ ' + (data.error || 'Ошибка'), 'error');
             }
         } catch (error) {
             showToast(' Ошибка', 'error');
         }
-        
         wheelSpinning = false;
         spinBtn.disabled = false;
-        
-        // Сбрасываем трансформацию без анимации
         wheel.style.transition = 'none';
-        wheel.style.transform = `rotate(${targetAngle}deg)`;
+        wheel.style.transform = `rotate(${rotations % 360}deg)`;
         setTimeout(() => {
             wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
         }, 50);
@@ -306,132 +318,16 @@ async function spinWheel() {
 function checkWheelTimer() {
     const timerEl = document.getElementById('wheel-timer');
     if (!timerEl) return;
-    
     const now = Date.now() / 1000;
     const timeSinceLastSpin = now - playerData.lastSpin;
-    
     if (timeSinceLastSpin < 3600) {
         const remaining = Math.ceil(3600 - timeSinceLastSpin);
         const minutes = Math.floor(remaining / 60);
         const seconds = remaining % 60;
-        timerEl.textContent = ` Следующее вращение через: ${minutes}м ${seconds}с`;
+        timerEl.textContent = `⏳ Следующее вращение через: ${minutes}м ${seconds}с`;
         timerEl.style.display = 'block';
     } else {
         timerEl.style.display = 'none';
-    }
-}
-
-// Админ панель
-function showAdminPanel() {
-    if (!playerData.isAdmin) {
-        showToast('❌ Нет доступа!', 'error');
-        return;
-    }
-    switchScreen('admin');
-    loadAdminStats();
-}
-
-function backToProfile() {
-    switchScreen('profile');
-}
-
-async function loadAdminStats() {
-    const userId = getUserId();
-    if (!userId) return;
-    try {
-        const response = await fetch(`${API_URL}/api/admin_stats`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ admin_id: userId })
-        });
-        const data = await response.json();
-        if (data.total_users !== undefined) {
-            document.getElementById('admin-total-users').textContent = data.total_users;
-            document.getElementById('admin-active-users').textContent = data.active_users;
-            document.getElementById('admin-banned-users').textContent = data.banned_users;
-            document.getElementById('admin-total-xp').textContent = data.total_xp.toLocaleString();
-        }
-    } catch (error) {
-        showToast('❌ Ошибка загрузки статистики', 'error');
-    }
-}
-
-async function adminGiveXP() {
-    const userId = getUserId();
-    const targetId = document.getElementById('admin-user-id').value;
-    if (!userId || !targetId) {
-        showToast('❌ Введите User ID', 'error');
-        return;
-    }
-    const amount = prompt('💰 Введите количество XP для выдачи:');
-    if (!amount || isNaN(amount) || amount <= 0) {
-        showToast('❌ Неверное количество', 'error');
-        return;
-    }
-    try {
-        const response = await fetch(`${API_URL}/api/admin_action`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ admin_id: userId, action: 'add_xp', target_id: parseInt(targetId), amount: parseInt(amount) })
-        });
-        const data = await response.json();
-        if (data.status === 'xp_added') {
-            showToast(`✅ Выдано ${amount} XP пользователю ${targetId}`, 'success');
-        } else {
-            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
-        }
-    } catch (error) {
-        showToast('❌ Ошибка', 'error');
-    }
-}
-
-async function adminBanUser() {
-    const userId = getUserId();
-    const targetId = document.getElementById('admin-user-id').value;
-    if (!userId || !targetId) {
-        showToast('❌ Введите User ID', 'error');
-        return;
-    }
-    if (!confirm(`🚫 Забанить пользователя ${targetId}?`)) return;
-    try {
-        const response = await fetch(`${API_URL}/api/admin_action`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ admin_id: userId, action: 'ban', target_id: parseInt(targetId) })
-        });
-        const data = await response.json();
-        if (data.status === 'banned') {
-            showToast(`✅ Пользователь ${targetId} забанен`, 'success');
-        } else {
-            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
-        }
-    } catch (error) {
-        showToast('❌ Ошибка', 'error');
-    }
-}
-
-async function adminUnbanUser() {
-    const userId = getUserId();
-    const targetId = document.getElementById('admin-user-id').value;
-    if (!userId || !targetId) {
-        showToast('❌ Введите User ID', 'error');
-        return;
-    }
-    if (!confirm(`✅ Разбанить пользователя ${targetId}?`)) return;
-    try {
-        const response = await fetch(`${API_URL}/api/admin_action`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ admin_id: userId, action: 'unban', target_id: parseInt(targetId) })
-        });
-        const data = await response.json();
-        if (data.status === 'unbanned') {
-            showToast(`✅ Пользователь ${targetId} разбанен`, 'success');
-        } else {
-            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
-        }
-    } catch (error) {
-        showToast('❌ Ошибка', 'error');
     }
 }
 
@@ -481,6 +377,7 @@ function switchScreen(screen) {
     if (targetScreen) targetScreen.classList.add('active');
     if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
     if (screen === 'profile') updateProfile();
+    if (screen === 'shop') renderShop();
     if (screen === 'wheel') checkWheelTimer();
 }
 
