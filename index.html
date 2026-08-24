@@ -18,7 +18,7 @@
         <!-- Главная -->
         <div class="screen active" id="screen-main">
             <div class="glass-card balance-card">
-                <div class="balance-label"> Твой баланс XP</div>
+                <div class="balance-label">⚡ Твой баланс XP</div>
                 <div class="balance-value">
                     <span id="xp-balance">0</span>
                 </div>
@@ -74,7 +74,7 @@
         <!-- Колесо Фортуны -->
         <div class="screen" id="screen-wheel">
             <div class="glass-card">
-                <h2 class="section-title"> Колесо Фортуны</h2>
+                <h2 class="section-title">🎡 Колесо Фортуны</h2>
                 <div class="wheel-timer" id="wheel-timer"></div>
                 <div class="wheel-container">
                     <div class="wheel-pointer">▼</div>
@@ -100,7 +100,7 @@
                 <h2 class="section-title">🎮 Мини-игры</h2>
                 <div class="games-grid">
                     <div class="game-card" onclick="showToast('📈 Краш - скоро!', 'info')">
-                        <div class="game-icon"></div>
+                        <div class="game-icon">📈</div>
                         <div class="game-name">Краш</div>
                         <div class="game-desc">Успей забрать до краша!</div>
                     </div>
@@ -125,7 +125,6 @@
                 <div class="profile-info">
                     <div class="profile-header">
                         <h2 class="profile-name" id="profile-name">Игрок</h2>
-                        <button class="admin-btn" id="admin-btn" onclick="showAdminPanel()" style="display:none;">⚙️</button>
                     </div>
                     <div class="profile-level">⭐ Уровень <span id="profile-level">1</span></div>
                 </div>
@@ -175,50 +174,6 @@
             </div>
         </div>
 
-        <!-- Админ Панель -->
-        <div class="screen" id="screen-admin">
-            <div class="glass-card">
-                <h2 class="section-title"> Админ Панель</h2>
-                
-                <div class="admin-section">
-                    <h3 class="admin-title">👤 Управление пользователем</h3>
-                    <div class="admin-input-group">
-                        <input type="number" id="admin-user-id" placeholder="🆔 User ID">
-                    </div>
-                    <div class="admin-buttons">
-                        <button class="admin-action-btn" onclick="adminGiveXP()">💰 Выдать XP</button>
-                        <button class="admin-action-btn danger" onclick="adminBanUser()">🚫 Забанить</button>
-                        <button class="admin-action-btn success" onclick="adminUnbanUser()">✅ Разбанить</button>
-                    </div>
-                </div>
-
-                <div class="admin-section">
-                    <h3 class="admin-title">📊 Статистика бота</h3>
-                    <div class="admin-stats">
-                        <div class="admin-stat-item">
-                            <span class="stat-label">👥 Всего пользователей:</span>
-                            <span class="stat-value" id="admin-total-users">0</span>
-                        </div>
-                        <div class="admin-stat-item">
-                            <span class="stat-label">✅ Активных:</span>
-                            <span class="stat-value" id="admin-active-users">0</span>
-                        </div>
-                        <div class="admin-stat-item">
-                            <span class="stat-label">🚫 Забанено:</span>
-                            <span class="stat-value" id="admin-banned-users">0</span>
-                        </div>
-                        <div class="admin-stat-item">
-                            <span class="stat-label">⭐ Всего XP:</span>
-                            <span class="stat-value" id="admin-total-xp">0</span>
-                        </div>
-                    </div>
-                    <button class="admin-action-btn" onclick="loadAdminStats()">🔄 Обновить статистику</button>
-                </div>
-
-                <button class="back-btn" onclick="backToProfile()">🔙 Назад в профиль</button>
-            </div>
-        </div>
-
         <!-- Навигация -->
         <nav class="bottom-nav">
             <button class="nav-btn active" data-screen="main">
@@ -244,6 +199,6 @@
         </nav>
     </div>
 
-    <script src="code.js?v=25"></script>
+    <script src="code.js?v=30"></script>
 </body>
 </html>
