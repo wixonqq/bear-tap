@@ -408,6 +408,36 @@ setInterval(() => {
 
 setInterval(saveProgress, 10000);
 
-console.log('🚀 Запускаю loadData()');
-loadData();
+// ===== ИНИЦИАЛИЗАЦИЯ =====
+console.log('=== ЗАПУСК MINI APP ===');
+debug('=== ЗАПУСК MINI APP ===');
+
+try {
+    debug('Telegram WebApp: ' + (tg ? 'OK' : 'NULL'));
+    debug('initDataUnsafe: ' + (tg.initDataUnsafe ? 'OK' : 'NULL'));
+    
+    if (tg.initDataUnsafe) {
+        debug('User: ' + JSON.stringify(tg.initDataUnsafe.user));
+    }
+    
+    tg.expand();
+    tg.ready();
+    debug('Telegram expanded and ready');
+    
+} catch (error) {
+    debug(' Ошибка инициализации Telegram: ' + error.message);
+    console.error(error);
+}
+
+// Ждём немного перед загрузкой данных
+setTimeout(() => {
+    debug('🚀 Вызываю loadData()');
+    try {
+        loadData();
+    } catch (error) {
+        debug('❌ loadData() упала: ' + error.message);
+        console.error(error);
+    }
+}, 500);
+
 showToast('Тапай и зарабатывай XP!', 'success');
