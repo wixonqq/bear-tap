@@ -38,19 +38,19 @@ let lastSavedXp = 0;
 let apiWorking = false;
 let toasts = [];
 
-// Получение user_id
+// Получение user_id с расширенным поиском
 function getUserId() {
     let userId = null;
     
     // Способ 1: Через initDataUnsafe
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
         userId = tg.initDataUnsafe.user.id;
         debug('✅ User ID из initDataUnsafe: ' + userId);
         return userId;
     }
     
     // Способ 2: Парсим initData вручную
-    if (tg.initData) {
+    if (tg && tg.initData) {
         try {
             debug('📦 initData длина: ' + tg.initData.length);
             const params = new URLSearchParams(tg.initData);
@@ -61,12 +61,24 @@ function getUserId() {
                 const userData = JSON.parse(decodeURIComponent(userStr));
                 userId = userData.id;
                 debug('✅ User ID из initData: ' + userId);
-                debug('👤 User данные: ' + JSON.stringify(userData));
                 return userId;
             }
         } catch (e) {
-            debug('️ Ошибка парсинга initData: ' + e.message);
+            debug('⚠️ Ошибка парсинга initData: ' + e.message);
         }
+    }
+    
+    // Способ 3: Запасной вариант - забор из параметров URL (?user_id=7650149888)
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlUserId = urlParams.get('user_id') || urlParams.get('tgWebAppStartParam');
+        if (urlUserId) {
+            userId = parseInt(urlUserId);
+            debug('✅ User ID из URL параметров: ' + userId);
+            return userId;
+        }
+    } catch (e) {
+        debug('⚠️ Ошибка URL параметров: ' + e.message);
     }
     
     debug('❌ User ID не получен');
@@ -85,7 +97,7 @@ async function loadData() {
         return;
     }
     
-    debug(' Запрос: ' + API_URL + '/api/user_data?user_id=' + userId);
+    debug('📡 Запрос: ' + API_URL + '/api/user_data?user_id=' + userId);
     
     try {
         debug('🔄 Выполняю fetch запрос...');
@@ -108,7 +120,7 @@ async function loadData() {
         debug('✅ Данные получены: ' + JSON.stringify(data));
         
         if (data.error) {
-            debug(' API вернул ошибку: ' + data.error);
+            debug('⚠️ API вернул ошибку: ' + data.error);
             loadLocalData();
             return;
         }
@@ -168,7 +180,7 @@ function loadLocalData() {
         );
     }
     
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
         const user = tg.initDataUnsafe.user;
         playerData.username = user.username || user.first_name || 'Игрок';
         playerData.firstName = user.first_name || 'Игрок';
@@ -341,33 +353,36 @@ function setupReferralLink() {
     }
 }
 
-document.getElementById('bear').addEventListener('click', function(e) {
-    debug('👆 Клик по мишке');
-    
-    if (playerData.energy < playerData.clickPower) {
-        showToast('Недостаточно энергии!', 'error');
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-        return;
-    }
-    
-    playerData.xp += playerData.clickPower;
-    playerData.totalClicks++;
-    playerData.energy -= playerData.clickPower;
-    
-    const newLevel = Math.floor(playerData.totalClicks / 1000) + 1;
-    if (newLevel > playerData.level) {
-        playerData.level = newLevel;
-        showToast(`Новый уровень: ${playerData.level}!`, 'success');
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    } else {
-        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-    }
-    
-    showClickEffect(e);
-    updateUI();
-    updateProfile();
-    saveData();
-});
+const bearElement = document.getElementById('bear');
+if (bearElement) {
+    bearElement.addEventListener('click', function(e) {
+        debug('👆 Клик по мишке');
+        
+        if (playerData.energy < playerData.clickPower) {
+            showToast('Недостаточно энергии!', 'error');
+            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+            return;
+        }
+        
+        playerData.xp += playerData.clickPower;
+        playerData.totalClicks++;
+        playerData.energy -= playerData.clickPower;
+        
+        const newLevel = Math.floor(playerData.totalClicks / 1000) + 1;
+        if (newLevel > playerData.level) {
+            playerData.level = newLevel;
+            showToast(`Новый уровень: ${playerData.level}!`, 'success');
+            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        } else {
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+        }
+        
+        showClickEffect(e);
+        updateUI();
+        updateProfile();
+        saveData();
+    });
+}
 
 function showClickEffect(e) {
     const effect = document.createElement('div');
@@ -381,7 +396,8 @@ function showClickEffect(e) {
     effect.style.left = x + 'px';
     effect.style.top = y + 'px';
     
-    document.getElementById('bear').appendChild(effect);
+    const bearEl = document.getElementById('bear');
+    if (bearEl) bearEl.appendChild(effect);
     
     setTimeout(() => effect.remove(), 1000);
 }
@@ -394,7 +410,8 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         
         this.classList.add('active');
-        document.getElementById(`screen-${screen}`).classList.add('active');
+        const targetScreen = document.getElementById(`screen-${screen}`);
+        if (targetScreen) targetScreen.classList.add('active');
         
         if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
         
