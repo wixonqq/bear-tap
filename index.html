@@ -15,10 +15,10 @@
     </div>
 
     <div class="app">
-        <!-- Главный экран (Тапалка) -->
+        <!-- Главная -->
         <div class="screen active" id="screen-main">
             <div class="glass-card balance-card">
-                <div class="balance-label">Твой баланс XP</div>
+                <div class="balance-label"> Твой баланс XP</div>
                 <div class="balance-value">
                     <span id="xp-balance">0</span>
                 </div>
@@ -65,7 +65,7 @@
         <!-- Магазин -->
         <div class="screen" id="screen-shop">
             <div class="glass-card">
-                <h2 class="section-title">🛒 Магазин улучшений</h2>
+                <h2 class="section-title"> Магазин улучшений</h2>
                 <div class="shop-coins">💰 Твой баланс: <span id="shop-balance">0</span> XP</div>
                 <div class="shop-list" id="shop-list"></div>
             </div>
@@ -84,17 +84,17 @@
                         <div class="wheel-segment" style="--i:1"><span>500</span></div>
                         <div class="wheel-segment" style="--i:2"><span>1000</span></div>
                         <div class="wheel-segment" style="--i:3"><span>5000</span></div>
-                        <div class="wheel-segment" style="--i:4"><span>10k</span></div>
-                        <div class="wheel-segment" style="--i:5"><span>50k</span></div>
-                        <div class="wheel-segment" style="--i:6"><span>100k</span></div>
+                        <div class="wheel-segment" style="--i:4"><span>10000</span></div>
+                        <div class="wheel-segment" style="--i:5"><span>50000</span></div>
+                        <div class="wheel-segment" style="--i:6"><span>100000</span></div>
                         <div class="wheel-segment" style="--i:7"><span>0</span></div>
                     </div>
                 </div>
-                <button class="wheel-btn" id="spin-btn" onclick="spinWheel()">🔥 Крутить бесплатно</button>
+                <button class="wheel-btn" id="spin-btn" onclick="spinWheel()"> Крутить бесплатно</button>
             </div>
         </div>
 
-        <!-- Мини-Игры -->
+        <!-- Игры -->
         <div class="screen" id="screen-games">
             <div class="glass-card">
                 <h2 class="section-title">🎮 Мини-игры</h2>
@@ -102,20 +102,20 @@
                     <div class="game-card">
                         <div class="game-icon">📈</div>
                         <div class="game-name">Краш</div>
-                        <div class="game-desc">Успей забрать!</div>
-                        <button class="game-btn" onclick="playGame('crash')">Играть</button>
+                        <div class="game-desc">Успей забрать до краша!</div>
+                        <button class="game-btn" onclick="showToast('Скоро!', 'info')">Играть</button>
                     </div>
                     <div class="game-card">
                         <div class="game-icon">💣</div>
                         <div class="game-name">Мины</div>
-                        <div class="game-desc">Найди клетки</div>
-                        <button class="game-btn" onclick="playGame('mines')">Играть</button>
+                        <div class="game-desc">Найди безопасные клетки</div>
+                        <button class="game-btn" onclick="showToast('Скоро!', 'info')">Играть</button>
                     </div>
                     <div class="game-card">
                         <div class="game-icon">🎰</div>
-                        <div class="game-name">Слоты</div>
-                        <div class="game-desc">Испытай удачу</div>
-                        <button class="game-btn" onclick="playGame('slots')">Играть</button>
+                        <div class="game-name">Рулетка</div>
+                        <div class="game-desc">Красное или чёрное?</div>
+                        <button class="game-btn" onclick="showToast('Скоро!', 'info')">Играть</button>
                     </div>
                 </div>
             </div>
@@ -124,7 +124,7 @@
         <!-- Профиль -->
         <div class="screen" id="screen-profile">
             <div class="glass-card profile-card">
-                <div class="profile-avatar">🐻</div>
+                <div class="profile-avatar"></div>
                 <div class="profile-info">
                     <h2 class="profile-name" id="profile-name">Игрок</h2>
                     <div class="profile-level">⭐ Уровень <span id="profile-level">1</span></div>
@@ -171,7 +171,7 @@
         <!-- Навигация -->
         <nav class="bottom-nav">
             <button class="nav-btn active" data-screen="main">
-                <span class="nav-emoji">🐻</span>
+                <span class="nav-emoji"></span>
                 <span class="nav-text">Главная</span>
             </button>
             <button class="nav-btn" data-screen="shop">
