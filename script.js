@@ -2,6 +2,8 @@
 const tg = window.Telegram.WebApp;
 tg.expand();
 
+const API_URL = 'https://amvera-andrey5453-run-botandreybot';
+
 // Данные игрока
 let playerData = {
     xp: 0,
