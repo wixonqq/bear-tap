@@ -21,13 +21,13 @@ let playerData = {
 
 let lastSavedXp = 0;
 let apiWorking = false;
-let activeNotifications = [];
+let toasts = [];
 
 async function loadData() {
     const userId = tg.initDataUnsafe?.user?.id;
     
     if (!userId) {
-        showNotification('Error: User ID not found', 'error');
+        showToast('Ошибка: не получен ID', 'error');
         loadLocalData();
         return;
     }
@@ -38,7 +38,7 @@ async function loadData() {
             headers: { 'Content-Type': 'application/json' },
         });
         
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
         const data = await response.json();
         
@@ -74,7 +74,7 @@ async function loadData() {
         
         updateUI();
         updateProfile();
-        showNotification('Data loaded successfully!', 'success');
+        showToast('Данные загружены!', 'success');
         
     } catch (error) {
         loadLocalData();
@@ -94,8 +94,8 @@ function loadLocalData() {
     
     if (tg.initDataUnsafe?.user) {
         const user = tg.initDataUnsafe.user;
-        playerData.username = user.username || user.first_name || 'Player';
-        playerData.firstName = user.first_name || 'Player';
+        playerData.username = user.username || user.first_name || 'Игрок';
+        playerData.firstName = user.first_name || 'Игрок';
     }
     
     updateUI();
@@ -128,7 +128,7 @@ async function saveProgress() {
         lastSavedXp = playerData.xp;
         
     } catch (error) {
-        console.log('Failed to save progress');
+        console.log('Не удалось сохранить');
     }
 }
 
@@ -158,7 +158,7 @@ function updateProfile() {
     const statRefs = document.getElementById('stat-refs');
     const statClicks = document.getElementById('stat-clicks');
     
-    if (profileName) profileName.textContent = playerData.firstName || playerData.username || 'Player';
+    if (profileName) profileName.textContent = playerData.firstName || playerData.username || 'Игрок';
     if (profileLevel) profileLevel.textContent = playerData.level;
     if (statWins) statWins.textContent = playerData.wins;
     if (statXp) statXp.textContent = playerData.xp.toLocaleString();
@@ -179,7 +179,7 @@ async function updateTopLists() {
             headers: { 'Content-Type': 'application/json' },
         });
         
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
         const data = await response.json();
         
@@ -188,24 +188,24 @@ async function updateTopLists() {
             if (data.top_xp && data.top_xp.length > 0) {
                 renderTopList(topXpList, data.top_xp, 'XP');
             } else {
-                topXpList.innerHTML = '<div class="loading">No data yet</div>';
+                topXpList.innerHTML = '<div class="empty-state">Пока пусто</div>';
             }
         }
         
         const topWinsList = document.getElementById('top-wins-list');
         if (topWinsList) {
             if (data.top_wins && data.top_wins.length > 0) {
-                renderTopList(topWinsList, data.top_wins, 'wins');
+                renderTopList(topWinsList, data.top_wins, 'побед');
             } else {
-                topWinsList.innerHTML = '<div class="loading">No data yet</div>';
+                topWinsList.innerHTML = '<div class="empty-state">Пока пусто</div>';
             }
         }
         
     } catch (error) {
         const topXpList = document.getElementById('top-xp-list');
         const topWinsList = document.getElementById('top-wins-list');
-        if (topXpList) topXpList.innerHTML = '<div class="loading">Error loading</div>';
-        if (topWinsList) topWinsList.innerHTML = '<div class="loading">Error loading</div>';
+        if (topXpList) topXpList.innerHTML = '<div class="empty-state">Ошибка загрузки</div>';
+        if (topWinsList) topWinsList.innerHTML = '<div class="empty-state">Ошибка загрузки</div>';
     }
 }
 
@@ -237,10 +237,10 @@ function setupReferralLink() {
     if (referralBtn) {
         referralBtn.onclick = function() {
             navigator.clipboard.writeText(referralLink).then(() => {
-                showNotification('Link copied!', 'success');
+                showToast('Ссылка скопирована!', 'success');
                 tg.HapticFeedback.notificationOccurred('success');
             }).catch(() => {
-                showNotification('Copy failed', 'error');
+                showToast('Ошибка копирования', 'error');
             });
         };
     }
@@ -248,7 +248,7 @@ function setupReferralLink() {
 
 document.getElementById('bear').addEventListener('click', function(e) {
     if (playerData.energy < playerData.clickPower) {
-        showNotification('Not enough energy!', 'error');
+        showToast('Недостаточно энергии!', 'error');
         tg.HapticFeedback.notificationOccurred('error');
         return;
     }
@@ -260,7 +260,7 @@ document.getElementById('bear').addEventListener('click', function(e) {
     const newLevel = Math.floor(playerData.totalClicks / 1000) + 1;
     if (newLevel > playerData.level) {
         playerData.level = newLevel;
-        showNotification(`Level ${playerData.level}!`, 'success');
+        showToast(`Новый уровень: ${playerData.level}!`, 'success');
         tg.HapticFeedback.notificationOccurred('success');
     } else {
         tg.HapticFeedback.impactOccurred('medium');
@@ -289,11 +289,11 @@ function showClickEffect(e) {
     setTimeout(() => effect.remove(), 1000);
 }
 
-document.querySelectorAll('.nav-item').forEach(btn => {
+document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const screen = this.dataset.screen;
         
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         
         this.classList.add('active');
@@ -307,31 +307,31 @@ document.querySelectorAll('.nav-item').forEach(btn => {
     });
 });
 
-function showNotification(text, type = 'info') {
-    const notif = document.createElement('div');
-    notif.className = 'notification' + (type === 'error' ? ' error' : '');
-    notif.textContent = text;
-    document.body.appendChild(notif);
+function showToast(text, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = 'toast' + (type === 'error' ? ' error' : '');
+    toast.textContent = text;
+    document.body.appendChild(toast);
     
-    activeNotifications.push(notif);
-    updateNotificationPositions();
+    toasts.push(toast);
+    updateToastPositions();
     
     setTimeout(() => {
-        notif.style.opacity = '0';
-        notif.style.transform = 'translateX(-50%) translateY(-20px)';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(-20px)';
         setTimeout(() => {
-            notif.remove();
-            activeNotifications = activeNotifications.filter(n => n !== notif);
-            updateNotificationPositions();
+            toast.remove();
+            toasts = toasts.filter(t => t !== toast);
+            updateToastPositions();
         }, 300);
-    }, 3000);
+    }, 2500);
 }
 
-function updateNotificationPositions() {
+function updateToastPositions() {
     const gap = 10;
-    activeNotifications.forEach((notif, index) => {
-        const offset = index * (70 + gap);
-        notif.style.top = `${20 + offset}px`;
+    toasts.forEach((toast, index) => {
+        const offset = index * (60 + gap);
+        toast.style.top = `${20 + offset}px`;
     });
 }
 
@@ -346,4 +346,4 @@ setInterval(() => {
 setInterval(saveProgress, 10000);
 
 loadData();
-showNotification('Tap to earn XP!', 'success');
+showToast('Тапай и зарабатывай XP!', 'success');
