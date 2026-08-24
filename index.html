@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Тапалка</title>
+    <title>Bear Tap Game</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -12,12 +12,10 @@
         <div class="stars"></div>
         <div class="stars2"></div>
         <div class="stars3"></div>
-        <div class="shooting-star"></div>
-        <div class="shooting-star delay-1"></div>
-        <div class="shooting-star delay-2"></div>
     </div>
 
     <div class="app">
+        <!-- Главная -->
         <div class="screen active" id="screen-main">
             <div class="glass-card balance-card">
                 <div class="balance-label">Твой баланс XP</div>
@@ -31,7 +29,6 @@
             <div class="bear-section">
                 <div class="bear-wrapper">
                     <div class="glow-ring"></div>
-                    <div class="glow-ring ring-2"></div>
                     <button class="bear-btn" id="bear">
                         <div class="bear">
                             <div class="ear left-ear"></div>
@@ -48,12 +45,12 @@
                         </div>
                     </button>
                 </div>
-                <div class="tap-hint"> ТАПАЙ ПО МИШКЕ!</div>
+                <div class="tap-hint">👆 ТАПАЙ ПО МИШКЕ!</div>
             </div>
 
             <div class="glass-card energy-card">
                 <div class="energy-header">
-                    <span class="energy-icon"></span>
+                    <span class="energy-icon">⚡</span>
                     <span class="energy-label">Энергия</span>
                 </div>
                 <div class="energy-bar">
@@ -65,6 +62,92 @@
             </div>
         </div>
 
+        <!-- Магазин -->
+        <div class="screen" id="screen-shop">
+            <div class="glass-card">
+                <h2 class="section-title">🛒 Магазин улучшений</h2>
+                <div class="shop-coins">💰 Твой баланс: <span id="shop-balance">0</span> XP</div>
+                <div class="shop-list" id="shop-list"></div>
+            </div>
+        </div>
+
+        <!-- Колесо Фортуны -->
+        <div class="screen" id="screen-wheel">
+            <div class="glass-card">
+                <h2 class="section-title">🎡 Колесо Фортуны</h2>
+                <div class="wheel-container">
+                    <div class="wheel" id="wheel">
+                        <div class="wheel-pointer">▼</div>
+                        <div class="wheel-segment" style="--i:0"><span>100</span></div>
+                        <div class="wheel-segment" style="--i:1"><span>500</span></div>
+                        <div class="wheel-segment" style="--i:2"><span>1000</span></div>
+                        <div class="wheel-segment" style="--i:3"><span>5000</span></div>
+                        <div class="wheel-segment" style="--i:4"><span>10000</span></div>
+                        <div class="wheel-segment" style="--i:5"><span>50000</span></div>
+                        <div class="wheel-segment" style="--i:6"><span>100000</span></div>
+                        <div class="wheel-segment" style="--i:7"><span>0</span></div>
+                    </div>
+                </div>
+                <button class="wheel-btn" id="spin-btn" onclick="spinWheel()"> Крутить бесплатно</button>
+                <div class="wheel-timer" id="wheel-timer"></div>
+            </div>
+        </div>
+
+        <!-- Игры -->
+        <div class="screen" id="screen-games">
+            <div class="glass-card">
+                <h2 class="section-title">🎮 Мини-игры</h2>
+                
+                <!-- Краш -->
+                <div class="game-section">
+                    <h3 class="game-title">📈 Краш</h3>
+                    <div class="game-input">
+                        <input type="number" id="crash-bet" placeholder="Ставка XP" min="100">
+                    </div>
+                    <div class="crash-display" id="crash-display">
+                        <div class="crash-multiplier">1.00x</div>
+                    </div>
+                    <div class="game-buttons">
+                        <button class="game-btn start" onclick="startCrash()">Начать</button>
+                        <button class="game-btn cashout" onclick="cashoutCrash()" disabled>Забрать</button>
+                    </div>
+                </div>
+
+                <!-- Мины -->
+                <div class="game-section">
+                    <h3 class="game-title">💣 Мины</h3>
+                    <div class="game-input">
+                        <input type="number" id="mines-bet" placeholder="Ставка XP" min="100">
+                        <select id="mines-count">
+                            <option value="3">3 мины</option>
+                            <option value="5" selected>5 мин</option>
+                            <option value="10">10 мин</option>
+                        </select>
+                    </div>
+                    <div class="mines-grid" id="mines-grid"></div>
+                    <div class="game-buttons">
+                        <button class="game-btn start" onclick="startMines()">Начать</button>
+                        <button class="game-btn cashout" onclick="cashoutMines()" disabled>Забрать</button>
+                    </div>
+                </div>
+
+                <!-- Рулетка -->
+                <div class="game-section">
+                    <h3 class="game-title">🎰 Рулетка</h3>
+                    <div class="game-input">
+                        <input type="number" id="roulette-bet" placeholder="Ставка XP" min="100">
+                    </div>
+                    <div class="roulette-buttons">
+                        <button class="roulette-btn red" onclick="spinRoulette('red')">Красное (x2)</button>
+                        <button class="roulette-btn black" onclick="spinRoulette('black')">Чёрное (x2)</button>
+                        <button class="roulette-btn green" onclick="spinRoulette('green')">Зелёное (x14)</button>
+                    </div>
+                    <div class="roulette-result" id="roulette-result"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Профиль -->
         <div class="screen" id="screen-profile">
             <div class="glass-card profile-card">
                 <div class="profile-avatar">👤</div>
@@ -76,7 +159,7 @@
 
             <div class="stats-grid">
                 <div class="stat-box">
-                    <div class="stat-emoji"></div>
+                    <div class="stat-emoji">🏆</div>
                     <div class="stat-num" id="stat-wins">0</div>
                     <div class="stat-name">Побед</div>
                 </div>
@@ -91,37 +174,43 @@
                     <div class="stat-name">Рефералов</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-emoji">👆</div>
+                    <div class="stat-emoji"></div>
                     <div class="stat-num" id="stat-clicks">0</div>
                     <div class="stat-name">Кликов</div>
                 </div>
             </div>
 
             <div class="glass-card">
-                <h3 class="section-title">🏅 Топ по XP</h3>
+                <h3 class="section-title"> Топ по XP</h3>
                 <div class="top-list" id="top-xp-list">
                     <div class="empty-state">Загрузка...</div>
                 </div>
             </div>
 
-            <div class="glass-card">
-                <h3 class="section-title">🎯 Топ победителей</h3>
-                <div class="top-list" id="top-wins-list">
-                    <div class="empty-state">Загрузка...</div>
-                </div>
-            </div>
-
             <div class="glass-card referral-section">
-                <h3 class="section-title">🔗 Пригласи друга</h3>
+                <h3 class="section-title"> Пригласи друга</h3>
                 <p class="referral-desc">Получи <b>+50 XP</b> за каждого друга!</p>
                 <button class="copy-button" id="referral-btn">📋 Скопировать ссылку</button>
             </div>
         </div>
 
+        <!-- Навигация -->
         <nav class="bottom-nav">
             <button class="nav-btn active" data-screen="main">
-                <span class="nav-emoji">🐻</span>
+                <span class="nav-emoji"></span>
                 <span class="nav-text">Главная</span>
+            </button>
+            <button class="nav-btn" data-screen="shop">
+                <span class="nav-emoji">🛒</span>
+                <span class="nav-text">Магазин</span>
+            </button>
+            <button class="nav-btn" data-screen="wheel">
+                <span class="nav-emoji">🎡</span>
+                <span class="nav-text">Колесо</span>
+            </button>
+            <button class="nav-btn" data-screen="games">
+                <span class="nav-emoji">🎮</span>
+                <span class="nav-text">Игры</span>
             </button>
             <button class="nav-btn" data-screen="profile">
                 <span class="nav-emoji">👤</span>
@@ -130,6 +219,6 @@
         </nav>
     </div>
 
-    <script src="script.js?v=5"></script>
+    <script src="script.js"></script>
 </body>
 </html>
