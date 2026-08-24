@@ -3,8 +3,8 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 tg.ready();
 
-// API URL - адрес твоего бота на Amvera
-const API_URL = 'https://amvera-andrey5453-run-botandreybot';
+
+const API_URL = 'https://botandreybot-andrey5453.amvera.io';
 
 // Данные игрока
 let playerData = {
