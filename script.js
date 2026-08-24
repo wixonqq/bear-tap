@@ -38,7 +38,7 @@ let lastSavedXp = 0;
 let apiWorking = false;
 let toasts = [];
 
-// Получение user_id с расширенным поиском
+// Получение user_id
 function getUserId() {
     let userId = null;
     
@@ -68,7 +68,7 @@ function getUserId() {
         }
     }
     
-    // Способ 3: Запасной вариант - забор из параметров URL (?user_id=7650149888)
+    // Способ 3: Из параметров URL (?user_id=7650149888)
     try {
         const urlParams = new URLSearchParams(window.location.search);
         const urlUserId = urlParams.get('user_id') || urlParams.get('tgWebAppStartParam');
@@ -102,13 +102,8 @@ async function loadData() {
     try {
         debug('🔄 Выполняю fetch запрос...');
         
-        const response = await fetch(`${API_URL}/api/user_data?user_id=${userId}`, {
-            method: 'GET',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        });
+        // Убрали лишние заголовки, вызывающие сбой CORS при GET
+        const response = await fetch(`${API_URL}/api/user_data?user_id=${userId}`);
         
         debug('📥 Статус: ' + response.status);
         
@@ -211,8 +206,7 @@ async function saveProgress() {
         const response = await fetch(`${API_URL}/api/save_progress`, {
             method: 'POST',
             headers: { 
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 user_id: userId,
@@ -278,10 +272,7 @@ async function updateTopLists() {
     if (!userId) return;
     
     try {
-        const response = await fetch(`${API_URL}/api/user_data?user_id=${userId}`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-        });
+        const response = await fetch(`${API_URL}/api/user_data?user_id=${userId}`);
         
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
