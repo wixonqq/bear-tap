@@ -71,7 +71,7 @@ async function loadData() {
         
         playerData = {
             xp: data.xp || 0,
-            totalClicks: 0,
+            totalClicks: data.total_clicks || 0,
             energy: 1000,
             maxEnergy: 1000,
             clickPower: 1,
