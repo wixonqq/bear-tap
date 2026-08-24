@@ -16,7 +16,8 @@ let playerData = {
     achievements: [],
     username: '',
     firstName: '',
-    lastSave: Date.now()
+    lastSave: Date.now(),
+    lastSpin: 0
 };
 
 let lastSavedXp = 0;
@@ -52,20 +53,22 @@ async function loadData() {
             xp: data.xp || 0,
             totalClicks: data.total_clicks || 0,
             energy: data.energy !== undefined ? data.energy : 1000,
-            maxEnergy: 1000,
-            clickPower: 1,
+            maxEnergy: data.max_energy || 1000,
+            clickPower: data.click_power || 1,
             level: Math.floor((data.xp || 0) / 100) + 1,
             wins: data.wins || 0,
             referrals: data.referrals || 0,
             achievements: data.achievements || [],
             username: data.username || '',
             firstName: data.first_name || '',
-            lastSave: Date.now()
+            lastSave: Date.now(),
+            lastSpin: data.last_spin || 0
         };
         lastSavedXp = playerData.xp;
         updateUI();
         updateProfile();
         renderShop();
+        checkWheelTimer();
     } catch (error) {
         showToast('Не удалось загрузить данные', 'error');
         loadLocalData();
@@ -160,19 +163,9 @@ async function updateTopLists() {
                 topXpList.innerHTML = '<div class="empty-state">🔄 Пока пусто</div>';
             }
         }
-        const topWinsList = document.getElementById('top-wins-list');
-        if (topWinsList) {
-            if (data.top_wins && data.top_wins.length > 0) {
-                renderTopList(topWinsList, data.top_wins, 'побед');
-            } else {
-                topWinsList.innerHTML = '<div class="empty-state">🔄 Пока пусто</div>';
-            }
-        }
     } catch (error) {
         const topXpList = document.getElementById('top-xp-list');
-        const topWinsList = document.getElementById('top-wins-list');
         if (topXpList) topXpList.innerHTML = '<div class="empty-state">❌ Ошибка загрузки</div>';
-        if (topWinsList) topWinsList.innerHTML = '<div class="empty-state"> Ошибка загрузки</div>';
     }
 }
 
@@ -213,8 +206,8 @@ function renderShop() {
     shopList.innerHTML = '';
     const shopItems = [
         {id: 'click_power_2', name: '⚡ Сила клика x2', price: 250000, desc: 'Тапай в 2 раза эффективнее'},
-        {id: 'click_power_5', name: '⚡ Сила клика x5', price: 1000000, desc: 'Тапай в 5 раз эффективнее'},
-        {id: 'max_energy_2000', name: '🔋 Энергия 2000', price: 500000, desc: 'Больше энергии для тапов'},
+        {id: 'click_power_5', name: '⚡⚡ Сила клика x5', price: 1000000, desc: 'Тапай в 5 раз эффективнее'},
+        {id: 'max_energy_2000', name: ' Энергия 2000', price: 500000, desc: 'Больше энергии для тапов'},
         {id: 'energy_regen_2', name: '⚡ Реген x2', price: 750000, desc: 'Энергия восстанавливается быстрее'}
     ];
     shopItems.forEach(item => {
@@ -225,7 +218,7 @@ function renderShop() {
             <div class="shop-item-info">
                 <div class="shop-item-name">${item.name}</div>
                 <div class="shop-item-desc">${item.desc}</div>
-                <div class="shop-item-price"> ${item.price.toLocaleString()} XP</div>
+                <div class="shop-item-price">💰 ${item.price.toLocaleString()} XP</div>
             </div>
             <button class="shop-buy-btn ${canAfford ? '' : 'disabled'}" ${canAfford ? '' : 'disabled'}>
                 ${canAfford ? '✅ Купить' : '❌ Недостаточно'}
@@ -279,7 +272,7 @@ async function spinWheel() {
         const remaining = Math.ceil(3600 - timeSinceLastSpin);
         const minutes = Math.floor(remaining / 60);
         const seconds = remaining % 60;
-        showToast(`⏳ Подождите ${minutes}м ${seconds}с`, 'error');
+        showToast(` Подождите ${minutes}м ${seconds}с`, 'error');
         return;
     }
     wheelSpinning = true;
@@ -303,7 +296,7 @@ async function spinWheel() {
                 showToast('❌ ' + (data.error || 'Ошибка'), 'error');
             }
         } catch (error) {
-            showToast(' Ошибка', 'error');
+            showToast('❌ Ошибка', 'error');
         }
         wheelSpinning = false;
         spinBtn.disabled = false;
@@ -324,7 +317,7 @@ function checkWheelTimer() {
         const remaining = Math.ceil(3600 - timeSinceLastSpin);
         const minutes = Math.floor(remaining / 60);
         const seconds = remaining % 60;
-        timerEl.textContent = `⏳ Следующее вращение через: ${minutes}м ${seconds}с`;
+        timerEl.textContent = ` Следующее вращение через: ${minutes}м ${seconds}с`;
         timerEl.style.display = 'block';
     } else {
         timerEl.style.display = 'none';
@@ -343,7 +336,7 @@ document.getElementById('bear').addEventListener('click', function(e) {
     const newLevel = Math.floor(playerData.totalClicks / 1000) + 1;
     if (newLevel > playerData.level) {
         playerData.level = newLevel;
-        showToast(`🎉 Новый уровень: ${playerData.level}!`, 'success');
+        showToast(` Новый уровень: ${playerData.level}!`, 'success');
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     } else {
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
@@ -425,4 +418,4 @@ setInterval(saveProgress, 10000);
 setInterval(checkWheelTimer, 1000);
 
 loadData();
-showToast('🐻 Тапай и зарабатывай XP!', 'success');
+showToast(' Тапай и зарабатывай XP!', 'success');
