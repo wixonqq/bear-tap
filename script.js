@@ -2,6 +2,7 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 tg.ready();
 
+// Укажите свой актуальный URL бэкенда
 const API_URL = 'https://botandreybot-andrey5453.amvera.io';
 
 let playerData = {
@@ -10,12 +11,13 @@ let playerData = {
     energy: 1000,
     maxEnergy: 1000,
     clickPower: 1,
+    energyRegen: 1,
     level: 1,
     wins: 0,
     referrals: 0,
     achievements: [],
     username: '',
-    firstName: '',
+    firstName: 'Игрок',
     lastSave: Date.now(),
     lastSpin: 0
 };
@@ -38,7 +40,7 @@ function getUserId() {
 async function loadData() {
     const userId = getUserId();
     if (!userId) {
-        showToast('Ошибка: не получен ID', 'error');
+        showToast('Работает локальный режим', 'info');
         loadLocalData();
         return;
     }
@@ -55,12 +57,13 @@ async function loadData() {
             energy: data.energy !== undefined ? data.energy : 1000,
             maxEnergy: data.max_energy || 1000,
             clickPower: data.click_power || 1,
+            energyRegen: data.energy_regen || 1,
             level: Math.floor((data.xp || 0) / 100) + 1,
             wins: data.wins || 0,
             referrals: data.referrals || 0,
             achievements: data.achievements || [],
             username: data.username || '',
-            firstName: data.first_name || '',
+            firstName: data.first_name || 'Игрок',
             lastSave: Date.now(),
             lastSpin: data.last_spin || 0
         };
@@ -70,7 +73,7 @@ async function loadData() {
         renderShop();
         checkWheelTimer();
     } catch (error) {
-        showToast('Не удалось загрузить данные', 'error');
+        showToast('Ошибка связи с сервером', 'error');
         loadLocalData();
     }
 }
@@ -78,12 +81,15 @@ async function loadData() {
 function loadLocalData() {
     const saved = localStorage.getItem('bearTapData');
     if (saved) {
-        playerData = JSON.parse(saved);
-        const timePassed = (Date.now() - playerData.lastSave) / 1000;
-        playerData.energy = Math.min(playerData.maxEnergy, playerData.energy + Math.floor(timePassed / 2));
+        try {
+            const parsed = JSON.parse(saved);
+            playerData = { ...playerData, ...parsed };
+            const timePassed = (Date.now() - playerData.lastSave) / 1000;
+            playerData.energy = Math.min(playerData.maxEnergy, playerData.energy + Math.floor(timePassed / 2) * (playerData.energyRegen || 1));
+        } catch (e) {}
     }
     if (tg.initDataUnsafe?.user) {
-        playerData.username = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name || 'Игрок';
+        playerData.username = tg.initDataUnsafe.user.username || '';
         playerData.firstName = tg.initDataUnsafe.user.first_name || 'Игрок';
     }
     updateUI();
@@ -99,7 +105,7 @@ function saveData() {
 async function saveProgress() {
     if (!apiWorking) return;
     const userId = getUserId();
-    if (!userId || playerData.xp <= lastSavedXp) return;
+    if (!userId || playerData.xp < lastSavedXp) return;
     try {
         await fetch(`${API_URL}/api/save_progress`, {
             method: 'POST',
@@ -127,7 +133,7 @@ function updateUI() {
     if (energyMax) energyMax.textContent = playerData.maxEnergy;
     if (energyFill) {
         const energyPercent = (playerData.energy / playerData.maxEnergy) * 100;
-        energyFill.style.width = energyPercent + '%';
+        energyFill.style.width = Math.max(0, Math.min(100, energyPercent)) + '%';
     }
 }
 
@@ -139,7 +145,7 @@ function updateProfile() {
     const statRefs = document.getElementById('stat-refs');
     const statClicks = document.getElementById('stat-clicks');
     if (profileName) profileName.textContent = playerData.firstName || playerData.username || 'Игрок';
-    if (profileLevel) profileLevel.textContent = playerData.level;
+    if (profileLevel) profileLevel.textContent = Math.floor(playerData.xp / 100) + 1;
     if (statWins) statWins.textContent = playerData.wins;
     if (statXp) statXp.textContent = playerData.xp.toLocaleString();
     if (statRefs) statRefs.textContent = playerData.referrals;
@@ -150,7 +156,11 @@ function updateProfile() {
 
 async function updateTopLists() {
     const userId = getUserId();
-    if (!userId) return;
+    if (!userId || !apiWorking) {
+        const topXpList = document.getElementById('top-xp-list');
+        if (topXpList) topXpList.innerHTML = `<div class="top-item"><div class="top-rank gold">1</div><div class="top-name">${playerData.firstName}</div><div class="top-value">${playerData.xp.toLocaleString()} XP</div></div>`;
+        return;
+    }
     try {
         const response = await fetch(`${API_URL}/api/user_data?user_id=${userId}`);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -165,7 +175,7 @@ async function updateTopLists() {
         }
     } catch (error) {
         const topXpList = document.getElementById('top-xp-list');
-        if (topXpList) topXpList.innerHTML = '<div class="empty-state">❌ Ошибка загрузки</div>';
+        if (topXpList) topXpList.innerHTML = '<div class="empty-state">❌ Ошибка загрузки топа</div>';
     }
 }
 
@@ -175,7 +185,7 @@ function renderTopList(container, data, suffix) {
         const rankClass = index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '';
         const div = document.createElement('div');
         div.className = 'top-item';
-        div.innerHTML = `<div class="top-rank ${rankClass}">${index + 1}</div><div class="top-name">${item.name}</div><div class="top-value">${item.value || item.xp} ${suffix}</div>`;
+        div.innerHTML = `<div class="top-rank ${rankClass}">${index + 1}</div><div class="top-name">${item.name}</div><div class="top-value">${(item.value || item.xp).toLocaleString()} ${suffix}</div>`;
         container.appendChild(div);
     });
 }
@@ -188,12 +198,16 @@ function setupReferralLink() {
     const referralBtn = document.getElementById('referral-btn');
     if (referralBtn) {
         referralBtn.onclick = function() {
-            navigator.clipboard.writeText(referralLink).then(() => {
-                showToast('✅ Ссылка скопирована!', 'success');
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            }).catch(() => {
-                showToast('❌ Ошибка копирования', 'error');
-            });
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(referralLink).then(() => {
+                    showToast('✅ Ссылка скопирована!', 'success');
+                    if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                }).catch(() => {
+                    showToast('🔗 ' + referralLink, 'info');
+                });
+            } else {
+                showToast('🔗 ' + referralLink, 'info');
+            }
         };
     }
 }
@@ -204,12 +218,14 @@ function renderShop() {
     if (!shopList) return;
     if (shopBalance) shopBalance.textContent = playerData.xp.toLocaleString();
     shopList.innerHTML = '';
+    
     const shopItems = [
         {id: 'click_power_2', name: '⚡ Сила клика x2', price: 250000, desc: 'Тапай в 2 раза эффективнее'},
         {id: 'click_power_5', name: '⚡⚡ Сила клика x5', price: 1000000, desc: 'Тапай в 5 раз эффективнее'},
-        {id: 'max_energy_2000', name: ' Энергия 2000', price: 500000, desc: 'Больше энергии для тапов'},
+        {id: 'max_energy_2000', name: '🔋 Энергия 2000', price: 500000, desc: 'Больше энергии для тапов'},
         {id: 'energy_regen_2', name: '⚡ Реген x2', price: 750000, desc: 'Энергия восстанавливается быстрее'}
     ];
+
     shopItems.forEach(item => {
         const div = document.createElement('div');
         div.className = 'shop-item';
@@ -221,7 +237,7 @@ function renderShop() {
                 <div class="shop-item-price">💰 ${item.price.toLocaleString()} XP</div>
             </div>
             <button class="shop-buy-btn ${canAfford ? '' : 'disabled'}" ${canAfford ? '' : 'disabled'}>
-                ${canAfford ? '✅ Купить' : '❌ Недостаточно'}
+                ${canAfford ? '✅ Купить' : '❌ Мало XP'}
             </button>
         `;
         if (canAfford) {
@@ -233,141 +249,191 @@ function renderShop() {
 
 async function buyItem(itemId) {
     const userId = getUserId();
-    if (!userId) return;
-    const item = [
-        {id: 'click_power_2', price: 250000, name: '⚡ Сила клика x2'},
-        {id: 'click_power_5', price: 1000000, name: '⚡ Сила клика x5'},
-        {id: 'max_energy_2000', price: 500000, name: '🔋 Энергия 2000'},
-        {id: 'energy_regen_2', price: 750000, name: '⚡ Реген x2'}
-    ].find(i => i.id === itemId);
-    if (!item || playerData.xp < item.price) {
+    const itemConfig = {
+        'click_power_2': { price: 250000, name: '⚡ Сила клика x2', apply: () => playerData.clickPower = 2 },
+        'click_power_5': { price: 1000000, name: '⚡ Сила клика x5', apply: () => playerData.clickPower = 5 },
+        'max_energy_2000': { price: 500000, name: '🔋 Энергия 2000', apply: () => playerData.maxEnergy = 2000 },
+        'energy_regen_2': { price: 750000, name: '⚡ Реген x2', apply: () => playerData.energyRegen = 2 }
+    }[itemId];
+
+    if (!itemConfig || playerData.xp < itemConfig.price) {
         showToast('❌ Недостаточно XP!', 'error');
         return;
     }
-    try {
-        const response = await fetch(`${API_URL}/api/buy_item`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: userId, item: itemId })
-        });
-        const data = await response.json();
-        if (data.status === 'success') {
-            showToast(`✅ ${item.name} куплен!`, 'success');
-            await loadData();
-        } else {
-            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
+
+    if (apiWorking && userId) {
+        try {
+            const response = await fetch(`${API_URL}/api/buy_item`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, item: itemId })
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+                showToast(`✅ ${itemConfig.name} куплен!`, 'success');
+                await loadData();
+            } else {
+                showToast('❌ ' + (data.error || 'Ошибка'), 'error');
+            }
+        } catch (error) {
+            showToast('❌ Ошибка сети', 'error');
         }
-    } catch (error) {
-        showToast('❌ Ошибка покупки', 'error');
+    } else {
+        playerData.xp -= itemConfig.price;
+        itemConfig.apply();
+        saveData();
+        updateUI();
+        renderShop();
+        showToast(`✅ ${itemConfig.name} куплен!`, 'success');
     }
 }
 
 async function spinWheel() {
     if (wheelSpinning) return;
     const userId = getUserId();
-    if (!userId) return;
-    const now = Date.now() / 1000;
+    const now = Math.floor(Date.now() / 1000);
     const timeSinceLastSpin = now - playerData.lastSpin;
+    
     if (timeSinceLastSpin < 3600) {
         const remaining = Math.ceil(3600 - timeSinceLastSpin);
         const minutes = Math.floor(remaining / 60);
         const seconds = remaining % 60;
-        showToast(` Подождите ${minutes}м ${seconds}с`, 'error');
+        showToast(`⏳ Подождите ${minutes}м ${seconds}с`, 'error');
         return;
     }
+
     wheelSpinning = true;
     const wheel = document.getElementById('wheel');
     const spinBtn = document.getElementById('spin-btn');
-    spinBtn.disabled = true;
+    if (spinBtn) spinBtn.disabled = true;
+
     const rotations = 1440 + Math.floor(Math.random() * 360);
     wheel.style.transform = `rotate(${rotations}deg)`;
+
     setTimeout(async () => {
-        try {
-            const response = await fetch(`${API_URL}/api/spin_wheel`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: userId })
-            });
-            const data = await response.json();
-            if (data.prize) {
-                showToast(`🎉 Вы выиграли: ${data.prize}!`, 'success');
-                await loadData();
-            } else {
-                showToast('❌ ' + (data.error || 'Ошибка'), 'error');
+        let wonValue = 1000;
+        if (apiWorking && userId) {
+            try {
+                const response = await fetch(`${API_URL}/api/spin_wheel`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId })
+                });
+                const data = await response.json();
+                if (data.prize !== undefined) {
+                    wonValue = data.prize;
+                    showToast(`🎉 Вы выиграли: +${wonValue} XP!`, 'success');
+                    await loadData();
+                } else {
+                    showToast('❌ ' + (data.error || 'Ошибка'), 'error');
+                }
+            } catch (error) {
+                showToast('❌ Ошибка Колеса', 'error');
             }
-        } catch (error) {
-            showToast('❌ Ошибка', 'error');
+        } else {
+            const localPrizes = [100, 500, 1000, 5000, 10000, 50000, 100000, 0];
+            wonValue = localPrizes[Math.floor(Math.random() * localPrizes.length)];
+            playerData.xp += wonValue;
+            playerData.lastSpin = now;
+            saveData();
+            updateUI();
+            showToast(`🎉 Вы выиграли: +${wonValue} XP!`, 'success');
         }
+
         wheelSpinning = false;
-        spinBtn.disabled = false;
+        if (spinBtn) spinBtn.disabled = false;
         wheel.style.transition = 'none';
         wheel.style.transform = `rotate(${rotations % 360}deg)`;
         setTimeout(() => {
             wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
         }, 50);
+        checkWheelTimer();
     }, 4000);
 }
 
 function checkWheelTimer() {
     const timerEl = document.getElementById('wheel-timer');
     if (!timerEl) return;
-    const now = Date.now() / 1000;
+    const now = Math.floor(Date.now() / 1000);
     const timeSinceLastSpin = now - playerData.lastSpin;
     if (timeSinceLastSpin < 3600) {
         const remaining = Math.ceil(3600 - timeSinceLastSpin);
         const minutes = Math.floor(remaining / 60);
         const seconds = remaining % 60;
-        timerEl.textContent = ` Следующее вращение через: ${minutes}м ${seconds}с`;
+        timerEl.textContent = `⏳ Следующее вращение через: ${minutes}м ${seconds}с`;
         timerEl.style.display = 'block';
     } else {
-        timerEl.style.display = 'none';
+        timerEl.textContent = '🎉 Вращение доступно!';
+        timerEl.style.display = 'block';
     }
 }
 
-document.getElementById('bear').addEventListener('click', function(e) {
-    if (playerData.energy < playerData.clickPower) {
-        showToast('⚠️ Недостаточно энергии!', 'error');
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-        return;
+function playGame(gameType) {
+    if (gameType === 'crash') {
+        const win = Math.random() > 0.5;
+        const amount = win ? 500 : -200;
+        playerData.xp = Math.max(0, playerData.xp + amount);
+        showToast(win ? '📈 Краш: Забрал +500 XP!' : '💥 Краш: Взрыв! -200 XP', win ? 'success' : 'error');
+    } else if (gameType === 'mines') {
+        playerData.xp += 300;
+        showToast('💣 Мины: Успешно пройден шаг! +300 XP', 'success');
+    } else if (gameType === 'slots') {
+        playerData.xp += 1000;
+        showToast('🎰 Слоты: ДЖЕКПОТ! +1000 XP', 'success');
     }
-    playerData.xp += playerData.clickPower;
-    playerData.totalClicks++;
-    playerData.energy -= playerData.clickPower;
-    const newLevel = Math.floor(playerData.totalClicks / 1000) + 1;
-    if (newLevel > playerData.level) {
-        playerData.level = newLevel;
-        showToast(` Новый уровень: ${playerData.level}!`, 'success');
-        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-    } else {
-        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-    }
-    showClickEffect(e);
     updateUI();
-    updateProfile();
     saveData();
-});
+}
+
+const bearElement = document.getElementById('bear');
+if (bearElement) {
+    bearElement.addEventListener('click', function(e) {
+        if (playerData.energy < playerData.clickPower) {
+            showToast('⚠️ Недостаточно энергии!', 'error');
+            if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+            return;
+        }
+        playerData.xp += playerData.clickPower;
+        playerData.totalClicks++;
+        playerData.energy -= playerData.clickPower;
+        
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+        
+        showClickEffect(e);
+        updateUI();
+        saveData();
+    });
+}
 
 function showClickEffect(e) {
     const effect = document.createElement('div');
     effect.className = 'click-effect';
     effect.textContent = '+' + playerData.clickPower;
-    const rect = e.target.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    
+    const bearEl = document.getElementById('bear');
+    if (!bearEl) return;
+    
+    const rect = bearEl.getBoundingClientRect();
+    const x = (e.clientX || (rect.left + rect.width / 2)) - rect.left;
+    const y = (e.clientY || (rect.top + rect.height / 2)) - rect.top;
+    
     effect.style.left = x + 'px';
     effect.style.top = y + 'px';
-    const bearEl = document.getElementById('bear');
-    if (bearEl) bearEl.appendChild(effect);
+    
+    bearEl.appendChild(effect);
     setTimeout(() => effect.remove(), 1000);
 }
 
 function switchScreen(screen) {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    
     const navBtn = document.querySelector(`.nav-btn[data-screen="${screen}"]`);
     if (navBtn) navBtn.classList.add('active');
+    
     const targetScreen = document.getElementById(`screen-${screen}`);
     if (targetScreen) targetScreen.classList.add('active');
+    
     if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
     if (screen === 'profile') updateProfile();
     if (screen === 'shop') renderShop();
@@ -382,7 +448,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
 
 function showToast(text, type = 'info') {
     const toast = document.createElement('div');
-    toast.className = 'toast' + (type === 'error' ? ' error' : '');
+    toast.className = 'toast' + (type === 'error' ? ' error' : type === 'success' ? ' success' : '');
     toast.textContent = text;
     document.body.appendChild(toast);
     toasts.push(toast);
@@ -401,21 +467,23 @@ function showToast(text, type = 'info') {
 function updateToastPositions() {
     const gap = 10;
     toasts.forEach((toast, index) => {
-        const offset = index * (60 + gap);
+        const offset = index * (50 + gap);
         toast.style.top = `${20 + offset}px`;
     });
 }
 
+// Фоновый реген энергии
 setInterval(() => {
     if (playerData.energy < playerData.maxEnergy) {
-        playerData.energy = Math.min(playerData.maxEnergy, playerData.energy + 1);
+        playerData.energy = Math.min(playerData.maxEnergy, playerData.energy + (playerData.energyRegen || 1));
         updateUI();
         saveData();
     }
 }, 2000);
 
+// Автосейв на сервер каждые 10 секунд
 setInterval(saveProgress, 10000);
 setInterval(checkWheelTimer, 1000);
 
+// Инициализация при старте
 loadData();
-showToast(' Тапай и зарабатывай XP!', 'success');
