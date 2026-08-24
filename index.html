@@ -3,137 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bear Tap Game</title>
+    <title>Тапалка</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="gradient-bg"></div>
-    <div class="floating-shapes">
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
+    <div class="cosmos">
+        <div class="stars"></div>
+        <div class="stars2"></div>
+        <div class="stars3"></div>
+        <div class="shooting-star"></div>
+        <div class="shooting-star delay-1"></div>
+        <div class="shooting-star delay-2"></div>
     </div>
 
-    <div class="container">
+    <div class="app">
         <div class="screen active" id="screen-main">
-            <div class="card balance-card">
-                <div class="balance-label">XP BALANCE</div>
-                <div class="balance-amount">
-                    <span class="currency">⚡</span>
+            <div class="glass-card balance-card">
+                <div class="balance-label">Твой баланс XP</div>
+                <div class="balance-value">
+                    <span class="bolt-icon">⚡</span>
                     <span id="xp-balance">0</span>
                 </div>
-                <div class="per-tap">+<span id="xp-per-tap">1</span> per tap</div>
+                <div class="per-tap">+<span id="xp-per-tap">1</span> XP за тап</div>
             </div>
 
-            <div class="game-area">
-                <div class="bear-container">
-                    <div class="bear-ring"></div>
-                    <div class="bear-ring ring-2"></div>
-                    <button class="bear-button" id="bear">
-                        <div class="bear-character">
-                            <div class="bear-head">
-                                <div class="ear ear-left"></div>
-                                <div class="ear ear-right"></div>
-                                <div class="face">
-                                    <div class="eye eye-left"></div>
-                                    <div class="eye eye-right"></div>
-                                    <div class="snout"></div>
-                                    <div class="smile"></div>
-                                </div>
+            <div class="bear-section">
+                <div class="bear-wrapper">
+                    <div class="glow-ring"></div>
+                    <div class="glow-ring ring-2"></div>
+                    <button class="bear-btn" id="bear">
+                        <div class="bear">
+                            <div class="ear left-ear"></div>
+                            <div class="ear right-ear"></div>
+                            <div class="head">
+                                <div class="eye left-eye"></div>
+                                <div class="eye right-eye"></div>
+                                <div class="nose"></div>
+                                <div class="mouth"></div>
                             </div>
-                            <div class="bear-body"></div>
-                            <div class="paw paw-left"></div>
-                            <div class="paw paw-right"></div>
+                            <div class="body"></div>
+                            <div class="paw left-paw"></div>
+                            <div class="paw right-paw"></div>
                         </div>
                     </button>
                 </div>
-                <div class="tap-text">TAP TO EARN</div>
+                <div class="tap-hint"> ТАПАЙ ПО МИШКЕ!</div>
             </div>
 
-            <div class="card energy-card">
-                <div class="energy-info">
+            <div class="glass-card energy-card">
+                <div class="energy-header">
                     <span class="energy-icon"></span>
-                    <span class="energy-text">ENERGY</span>
+                    <span class="energy-label">Энергия</span>
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="energy-fill"></div>
+                <div class="energy-bar">
+                    <div class="energy-fill" id="energy-fill"></div>
                 </div>
-                <div class="energy-count">
-                    <span id="energy-current">1000</span>
-                    <span class="separator">/</span>
-                    <span id="energy-max">1000</span>
+                <div class="energy-text">
+                    <span id="energy-current">1000</span> / <span id="energy-max">1000</span>
                 </div>
             </div>
         </div>
 
         <div class="screen" id="screen-profile">
-            <div class="card profile-card">
-                <div class="profile-avatar">
-                    <div class="avatar-inner">👤</div>
-                </div>
-                <div class="profile-details">
-                    <h2 class="profile-name" id="profile-name">Player</h2>
-                    <div class="profile-level">Level <span id="profile-level">1</span></div>
+            <div class="glass-card profile-card">
+                <div class="profile-avatar">👤</div>
+                <div class="profile-info">
+                    <h2 class="profile-name" id="profile-name">Игрок</h2>
+                    <div class="profile-level">⭐ Уровень <span id="profile-level">1</span></div>
                 </div>
             </div>
 
-            <div class="stats-container">
-                <div class="stat-item">
-                    <div class="stat-icon">🏆</div>
-                    <div class="stat-number" id="stat-wins">0</div>
-                    <div class="stat-title">Wins</div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-emoji"></div>
+                    <div class="stat-num" id="stat-wins">0</div>
+                    <div class="stat-name">Побед</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-icon">⚡</div>
-                    <div class="stat-number" id="stat-xp">0</div>
-                    <div class="stat-title">Total XP</div>
+                <div class="stat-box">
+                    <div class="stat-emoji">⚡</div>
+                    <div class="stat-num" id="stat-xp">0</div>
+                    <div class="stat-name">Всего XP</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-icon">👥</div>
-                    <div class="stat-number" id="stat-refs">0</div>
-                    <div class="stat-title">Refs</div>
+                <div class="stat-box">
+                    <div class="stat-emoji">👥</div>
+                    <div class="stat-num" id="stat-refs">0</div>
+                    <div class="stat-name">Рефералов</div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-icon">👆</div>
-                    <div class="stat-number" id="stat-clicks">0</div>
-                    <div class="stat-title">Clicks</div>
+                <div class="stat-box">
+                    <div class="stat-emoji">👆</div>
+                    <div class="stat-num" id="stat-clicks">0</div>
+                    <div class="stat-name">Кликов</div>
                 </div>
             </div>
 
-            <div class="card section-card">
-                <h3 class="section-title">🏆 Top Players</h3>
+            <div class="glass-card">
+                <h3 class="section-title">🏅 Топ по XP</h3>
                 <div class="top-list" id="top-xp-list">
-                    <div class="loading">Loading...</div>
+                    <div class="empty-state">Загрузка...</div>
                 </div>
             </div>
 
-            <div class="card section-card">
-                <h3 class="section-title">🎯 Winners</h3>
+            <div class="glass-card">
+                <h3 class="section-title">🎯 Топ победителей</h3>
                 <div class="top-list" id="top-wins-list">
-                    <div class="loading">Loading...</div>
+                    <div class="empty-state">Загрузка...</div>
                 </div>
             </div>
 
-            <div class="card referral-card">
-                <h3 class="section-title">🔗 Invite Friends</h3>
-                <p class="referral-desc">Get <b>+50 XP</b> for each friend!</p>
-                <button class="copy-btn" id="referral-btn"> Copy Link</button>
+            <div class="glass-card referral-section">
+                <h3 class="section-title">🔗 Пригласи друга</h3>
+                <p class="referral-desc">Получи <b>+50 XP</b> за каждого друга!</p>
+                <button class="copy-button" id="referral-btn">📋 Скопировать ссылку</button>
             </div>
         </div>
 
         <nav class="bottom-nav">
-            <button class="nav-item active" data-screen="main">
-                <span class="nav-icon"></span>
-                <span class="nav-text">Home</span>
+            <button class="nav-btn active" data-screen="main">
+                <span class="nav-emoji">🐻</span>
+                <span class="nav-text">Главная</span>
             </button>
-            <button class="nav-item" data-screen="profile">
-                <span class="nav-icon"></span>
-                <span class="nav-text">Profile</span>
+            <button class="nav-btn" data-screen="profile">
+                <span class="nav-emoji">👤</span>
+                <span class="nav-text">Профиль</span>
             </button>
         </nav>
     </div>
 
-    <script src="script.js?v=4"></script>
+    <script src="script.js?v=5"></script>
 </body>
 </html>
