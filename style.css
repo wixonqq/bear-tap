@@ -335,7 +335,7 @@ body {
 }
 
 .paw::after {
-    content: '🐾';
+    content: '';
     position: absolute;
     top: 15px;
     left: 50%;
@@ -637,9 +637,8 @@ body {
     border-radius: 12px;
     padding: 16px;
     text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s;
 }
 
 .game-card:active {
@@ -661,6 +660,19 @@ body {
 .game-desc {
     font-size: 11px;
     color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 10px;
+}
+
+.game-btn {
+    width: 100%;
+    padding: 8px;
+    background: linear-gradient(135deg, #667eea, #f093fb);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 12px;
 }
 
 .profile-card {
@@ -686,13 +698,6 @@ body {
 
 .profile-info {
     flex: 1;
-}
-
-.profile-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
 }
 
 .profile-name {
