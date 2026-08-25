@@ -385,7 +385,7 @@ body {
 }
 
 .paw::after {
-    content: '';
+    content: '🐾';
     position: absolute;
     top: 15px;
     left: 50%;
@@ -584,7 +584,7 @@ body {
     height: 300px;
     border-radius: 50%;
     position: absolute;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(0, 0, 0, 0.2);
     border: 8px solid #1e3a8a;
     transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
     background: conic-gradient(
@@ -625,6 +625,7 @@ body {
     border-radius: 50%;
     border: 4px solid #fff;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    z-index: 20;
 }
 
 .wheel-pointer {
@@ -689,6 +690,28 @@ body {
     border-radius: 10px;
     border: 1px solid rgba(255, 215, 0, 0.3);
 }
+
+/* ===== СКИНЫ ДЛЯ МИШКИ ===== */
+.bear.skin-gold .head, .bear.skin-gold .body, .bear.skin-gold .ear {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%) !important;
+}
+
+.bear.skin-diamond .head, .bear.skin-diamond .body, .bear.skin-diamond .ear {
+    background: linear-gradient(135deg, #00CED1 0%, #00BFFF 50%, #1E90FF 100%) !important;
+}
+
+.bear.skin-rainbow .head, .bear.skin-rainbow .body, .bear.skin-rainbow .ear {
+    background: linear-gradient(135deg, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #8B00FF) !important;
+    background-size: 400% 400% !important;
+    animation: rainbow 3s linear infinite !important;
+}
+
+@keyframes rainbow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
 /* ===== ИГРЫ ===== */
 .games-grid {
     display: grid;
@@ -1481,7 +1504,11 @@ body {
         width: 280px;
         height: 280px;
     }
-    .wheel-svg {
+    .wheel {
+        width: 260px;
+        height: 260px;
+    }
+    .wheel-text {
         width: 260px;
         height: 260px;
     }
