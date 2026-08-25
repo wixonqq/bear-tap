@@ -9,14 +9,17 @@
 </head>
 <body>
     <div class="cosmos"><div class="stars"></div><div class="stars2"></div><div class="stars3"></div></div>
+    
     <div class="maintenance-overlay" id="maintenance-overlay" style="display:none;">
         <div class="maintenance-box">
-            <div class="maintenance-icon"></div>
+            <div class="maintenance-icon">🚧</div>
             <h2>Приложение временно закрыто</h2>
             <p>К сожалению, сейчас проводятся технические работы. Попробуйте позже!</p>
         </div>
     </div>
+
     <div class="app" id="main-app">
+        <!-- Главная -->
         <div class="screen active" id="screen-main">
             <div class="glass-card balance-card">
                 <div class="balance-label">⚡ Твой баланс XP</div>
@@ -42,39 +45,48 @@
                 <div class="energy-text"><span id="energy-current">1000</span> / <span id="energy-max">1000</span></div>
             </div>
         </div>
+
+        <!-- Магазин -->
         <div class="screen" id="screen-shop">
             <div class="glass-card">
-                <h2 class="section-title"> Магазин улучшений</h2>
+                <h2 class="section-title">🛒 Магазин улучшений</h2>
                 <div class="shop-coins">💰 Твой баланс: <span id="shop-balance">0</span> XP</div>
                 <div class="shop-list" id="shop-list"></div>
             </div>
         </div>
+
+        <!-- Колесо Фортуны -->
         <div class="screen" id="screen-wheel">
             <div class="glass-card">
                 <h2 class="section-title">🎡 Колесо Фортуны</h2>
                 <div class="wheel-timer" id="wheel-timer"></div>
                 <div class="wheel-container">
-                    <div class="wheel-pointer">▼</div>
+                    <div class="wheel-pointer"></div>
                     <div class="wheel" id="wheel">
-                        <div class="wheel-center">🎯</div>
                         <div class="wheel-segment" style="--i:0"><span>100</span></div>
                         <div class="wheel-segment" style="--i:1"><span>500</span></div>
                         <div class="wheel-segment" style="--i:2"><span>1000</span></div>
                         <div class="wheel-segment" style="--i:3"><span>5000</span></div>
                         <div class="wheel-segment" style="--i:4"><span>10000</span></div>
-                        <div class="wheel-segment" style="--i:5"><span>50000</span></div>
-                        <div class="wheel-segment" style="--i:6"><span>100000</span></div>
+                        <div class="wheel-segment" style="--i:5"><span>20000</span></div>
+                        <div class="wheel-segment" style="--i:6"><span>30000</span></div>
                         <div class="wheel-segment" style="--i:7"><span>0</span></div>
+                        <div class="wheel-segment" style="--i:8"><span>100</span></div>
+                        <div class="wheel-segment" style="--i:9"><span>500</span></div>
+                        <div class="wheel-segment" style="--i:10"><span>1000</span></div>
+                        <div class="wheel-segment" style="--i:11"><span>5000</span></div>
                     </div>
                 </div>
                 <button class="wheel-btn" id="spin-btn" onclick="spinWheel()">🎡 Крутить бесплатно</button>
             </div>
         </div>
+
+        <!-- Игры -->
         <div class="screen" id="screen-games">
             <div class="glass-card">
                 <h2 class="section-title">🎮 Мини-игры</h2>
                 <div class="games-grid">
-                    <div class="game-card" onclick="openGame('crash')"><div class="game-icon"></div><div class="game-name">Краш</div><div class="game-desc">Успей забрать до краша!</div></div>
+                    <div class="game-card" onclick="openGame('crash')"><div class="game-icon">🚀</div><div class="game-name">Краш</div><div class="game-desc">Успей забрать до краша!</div></div>
                     <div class="game-card" onclick="openGame('mines')"><div class="game-icon">💣</div><div class="game-name">Мины</div><div class="game-desc">Найди безопасные клетки</div></div>
                     <div class="game-card" onclick="openGame('roulette')"><div class="game-icon">🎰</div><div class="game-name">Рулетка</div><div class="game-desc">Красное или чёрное?</div></div>
                     <div class="game-card" onclick="openGame('double')"><div class="game-icon">🎲</div><div class="game-name">Double</div><div class="game-desc">Угадай цвет</div></div>
@@ -82,6 +94,8 @@
                 </div>
             </div>
         </div>
+
+        <!-- Профиль -->
         <div class="screen" id="screen-profile">
             <div class="glass-card profile-card">
                 <div class="profile-avatar">👤</div>
@@ -96,7 +110,7 @@
                 <div class="stat-box"><div class="stat-emoji">👥</div><div class="stat-num" id="stat-refs">0</div><div class="stat-name">Рефералов</div></div>
                 <div class="stat-box"><div class="stat-emoji">👆</div><div class="stat-num" id="stat-clicks">0</div><div class="stat-name">Кликов</div></div>
             </div>
-            <div class="glass-card"><h3 class="section-title">🏅 Топ по XP</h3><div class="top-list" id="top-xp-list"><div class="empty-state"> Загрузка...</div></div></div>
+            <div class="glass-card"><h3 class="section-title">🏅 Топ по XP</h3><div class="top-list" id="top-xp-list"><div class="empty-state">🔄 Загрузка...</div></div></div>
             <div class="glass-card"><h3 class="section-title">🎯 Топ победителей</h3><div class="top-list" id="top-wins-list"><div class="empty-state">🔄 Загрузка...</div></div></div>
             <div class="glass-card referral-section">
                 <h3 class="section-title">🔗 Пригласи друга</h3>
@@ -104,15 +118,17 @@
                 <button class="copy-button" id="referral-btn">📋 Скопировать ссылку</button>
             </div>
         </div>
+
+        <!-- Админ Панель -->
         <div class="screen" id="screen-admin">
             <div class="glass-card">
                 <h2 class="section-title">🔧 Админ Панель</h2>
                 <div class="admin-section">
                     <h3 class="admin-title">👤 Управление пользователем</h3>
-                    <div class="admin-input-group"><input type="number" id="admin-user-id" placeholder=" User ID"></div>
+                    <div class="admin-input-group"><input type="number" id="admin-user-id" placeholder="🆔 User ID"></div>
                     <div class="admin-buttons">
                         <button class="admin-action-btn" onclick="adminGiveXP()">💰 Выдать XP</button>
-                        <button class="admin-action-btn warning" onclick="adminRemoveXP()"> Забрать XP</button>
+                        <button class="admin-action-btn warning" onclick="adminRemoveXP()">➖ Забрать XP</button>
                         <button class="admin-action-btn danger" onclick="adminBanUser()">🚫 Забанить</button>
                         <button class="admin-action-btn success" onclick="adminUnbanUser()">✅ Разбанить</button>
                     </div>
@@ -138,19 +154,21 @@
                     <button class="admin-action-btn" onclick="loadAdminStats()">🔄 Обновить статистику</button>
                 </div>
                 <div class="admin-section">
-                    <h3 class="admin-title"> Топ пользователей</h3>
+                    <h3 class="admin-title">🏆 Топ пользователей</h3>
                     <div class="top-list" id="admin-top-users"><div class="empty-state">🔄 Загрузка...</div></div>
                 </div>
-                <button class="back-btn" onclick="backToProfile()"> Назад в профиль</button>
+                <button class="back-btn" onclick="backToProfile()">🔙 Назад в профиль</button>
             </div>
         </div>
+
+        <!-- Экраны игр (Краш, Мины, Рулетка, Double, Ninja) -->
         <div class="screen" id="screen-game-crash">
             <div class="glass-card">
                 <h2 class="section-title">📈 Краш</h2>
                 <div class="game-input"><input type="number" id="crash-bet" placeholder="💰 Ставка XP" min="100"></div>
                 <div class="crash-display" id="crash-display"><div class="crash-multiplier" id="crash-multiplier">1.00x</div></div>
                 <div class="game-buttons">
-                    <button class="game-btn start" id="crash-start" onclick="startCrash()"> Начать</button>
+                    <button class="game-btn start" id="crash-start" onclick="startCrash()">🚀 Начать</button>
                     <button class="game-btn cashout" id="crash-cashout" onclick="cashoutCrash()" disabled>💰 Забрать</button>
                 </div>
                 <button class="back-btn" onclick="switchScreen('games')">🔙 Назад к играм</button>
@@ -161,12 +179,12 @@
                 <h2 class="section-title">💣 Мины</h2>
                 <div class="game-input">
                     <input type="number" id="mines-bet" placeholder="💰 Ставка XP" min="100">
-                    <select id="mines-count"><option value="3"> 3 мины</option><option value="5" selected>💣 5 мин</option><option value="10">💣 10 мин</option></select>
+                    <select id="mines-count"><option value="3">💣 3 мины</option><option value="5" selected>💣 5 мин</option><option value="10">💣 10 мин</option></select>
                 </div>
                 <div class="mines-grid" id="mines-grid"></div>
                 <div class="game-info" id="mines-info">Множитель: <span id="mines-multiplier">1.00</span>x | Выигрыш: <span id="mines-win">0</span> XP</div>
                 <div class="game-buttons">
-                    <button class="game-btn start" id="mines-start" onclick="startMines()"> Начать</button>
+                    <button class="game-btn start" id="mines-start" onclick="startMines()">🎮 Начать</button>
                     <button class="game-btn cashout" id="mines-cashout" onclick="cashoutMines()" disabled>💰 Забрать</button>
                 </div>
                 <button class="back-btn" onclick="switchScreen('games')">🔙 Назад к играм</button>
@@ -180,7 +198,7 @@
                 <div class="roulette-buttons">
                     <button class="roulette-btn red" onclick="spinRoulette('red')">🔴 Красное (x2)</button>
                     <button class="roulette-btn black" onclick="spinRoulette('black')">⚫ Чёрное (x2)</button>
-                    <button class="roulette-btn green" onclick="spinRoulette('green')"> Зелёное (x14)</button>
+                    <button class="roulette-btn green" onclick="spinRoulette('green')">🟢 Зелёное (x14)</button>
                 </div>
                 <button class="back-btn" onclick="switchScreen('games')">🔙 Назад к играм</button>
             </div>
@@ -211,6 +229,8 @@
                 <button class="back-btn" onclick="switchScreen('games')">🔙 Назад к играм</button>
             </div>
         </div>
+
+        <!-- Навигация -->
         <nav class="bottom-nav">
             <button class="nav-btn active" data-screen="main"><span class="nav-emoji">🐻</span><span class="nav-text">Главная</span></button>
             <button class="nav-btn" data-screen="shop"><span class="nav-emoji">🛒</span><span class="nav-text">Магазин</span></button>
@@ -219,6 +239,6 @@
             <button class="nav-btn" data-screen="profile"><span class="nav-emoji">👤</span><span class="nav-text">Профиль</span></button>
         </nav>
     </div>
-    <script src="script.js?v=50"></script>
+    <script src="script.js?v=51"></script>
 </body>
 </html>
