@@ -54,66 +54,79 @@
                 <div class="shop-list" id="shop-list"></div>
             </div>
         </div>
-        <div class="screen" id="screen-wheel">
-        <div class="glass-card">
+        
+       <div class="screen" id="screen-wheel">
+    <div class="glass-card">
         <h2 class="section-title">🎡 Колесо Фортуны</h2>
         <div class="wheel-timer" id="wheel-timer"></div>
         <div class="wheel-container">
             <div class="wheel-pointer"></div>
             <svg class="wheel-svg" viewBox="0 0 300 300" id="wheel">
-                <!-- Сектора -->
+                <!-- Сектор 0: 100 (синий) -->
                 <g transform="rotate(0 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#3b82f6"/>
-                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">100</text>
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#3b82f6" stroke="#fff" stroke-width="1"/>
+                    <text x="200" y="60" fill="#fff" font-size="16" font-weight="900" transform="rotate(15 200 60)">100</text>
                 </g>
+                <!-- Сектор 1: 500 (белый) -->
                 <g transform="rotate(30 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff"/>
-                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">500</text>
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="1"/>
+                    <text x="200" y="60" fill="#1e3a8a" font-size="16" font-weight="900" transform="rotate(15 200 60)">500</text>
                 </g>
+                <!-- Сектор 2: 1000 (голубой) -->
                 <g transform="rotate(60 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#60a5fa"/>
-                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">1000</text>
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#60a5fa" stroke="#fff" stroke-width="1"/>
+                    <text x="200" y="60" fill="#fff" font-size="16" font-weight="900" transform="rotate(15 200 60)">1000</text>
                 </g>
+                <!-- Сектор 3: 5000 (белый) -->
                 <g transform="rotate(90 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff"/>
-                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">5000</text>
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="1"/>
+                    <text x="200" y="60" fill="#1e3a8a" font-size="16" font-weight="900" transform="rotate(15 200 60)">5000</text>
                 </g>
+                <!-- Сектор 4: 10000 (фиолетовый) -->
                 <g transform="rotate(120 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#9333ea"/>
-                    <text x="210" y="50" fill="#ffffff" font-size="14" font-weight="800" transform="rotate(15 210 50)">10000</text>
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#9333ea" stroke="#fff" stroke-width="1"/>
+                    <text x="200" y="60" fill="#fff" font-size="16" font-weight="900" transform="rotate(15 200 60)">10000</text>
                 </g>
+                <!-- Сектор 5: 20000 (белый) -->
                 <g transform="rotate(150 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff"/>
-                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">20000</text>
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="1"/>
+                    <text x="200" y="60" fill="#1e3a8a" font-size="16" font-weight="900" transform="rotate(15 200 60)">20000</text>
                 </g>
+                <!-- Сектор 6: 30000 (розовый) -->
                 <g transform="rotate(180 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ec4899"/>
-                    <text x="210" y="50" fill="#ffffff" font-size="14" font-weight="800" transform="rotate(15 210 50)">30000</text>
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ec4899" stroke="#fff" stroke-width="1"/>
+                    <text x="200" y="60" fill="#fff" font-size="16" font-weight="900" transform="rotate(15 200 60)">30000</text>
                 </g>
+                <!-- Сектор 7: 0 (белый) -->
                 <g transform="rotate(210 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff"/>
-                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">0</text>
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="1"/>
+                    <text x="200" y="60" fill="#1e3a8a" font-size="16" font-weight="900" transform="rotate(15 200 60)">0</text>
                 </g>
+                <!-- Сектор 8: 100 (фиолетовый) -->
                 <g transform="rotate(240 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#8b5cf6"/>
-                    <text x="210" y="50" fill="#ffffff" font-size="14" font-weight="800" transform="rotate(15 210 50)">100</text>
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#8b5cf6" stroke="#fff" stroke-width="1"/>
+                    <text x="200" y="60" fill="#fff" font-size="16" font-weight="900" transform="rotate(15 200 60)">100</text>
                 </g>
+                <!-- Сектор 9: 500 (белый) -->
                 <g transform="rotate(270 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff"/>
-                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">500</text>
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="1"/>
+                    <text x="200" y="60" fill="#1e3a8a" font-size="16" font-weight="900" transform="rotate(15 200 60)">500</text>
                 </g>
+                <!-- Сектор 10: 1000 (синий) -->
                 <g transform="rotate(300 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#3b82f6"/>
-                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">1000</text>
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#3b82f6" stroke="#fff" stroke-width="1"/>
+                    <text x="200" y="60" fill="#fff" font-size="16" font-weight="900" transform="rotate(15 200 60)">1000</text>
                 </g>
+                <!-- Сектор 11: 5000 (белый) -->
                 <g transform="rotate(330 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff"/>
-                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">5000</text>
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="1"/>
+                    <text x="200" y="60" fill="#1e3a8a" font-size="16" font-weight="900" transform="rotate(15 200 60)">5000</text>
                 </g>
+                <!-- Центр -->
                 <circle cx="150" cy="150" r="30" fill="#fbbf24" stroke="#fff" stroke-width="4"/>
             </svg>
         </div>
-        <button class="wheel-btn" id="spin-btn" onclick="spinWheel()"> Крутить бесплатно</button>
+        <button class="wheel-btn" id="spin-btn" onclick="spinWheel()">🎡 Крутить бесплатно</button>
     </div>
 </div>
         <div class="screen" id="screen-games">
