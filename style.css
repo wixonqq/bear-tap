@@ -152,24 +152,38 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     top: 50%;
     left: 50%;
     /* Это критически важно для центрирования */
-    transform-origin: center center; 
-    
-    /* Остальное */
-    font-size: 20px;
-    font-weight: 900;
-    color: #fff;
-    white-space: nowrap;
-    z-index: 10;
-    pointer-events: none;
-    
-    /* Центрируем блок текста */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 60px;
-    margin-left: -30px; /* Чтобы ширина не влияла на центровку */
-}
+    transform-origin: center center;
 
+    width: 58px; /* Ширина блока текста */
+    min-height: 24px;
+    padding: 2px 3px;
+    margin: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    color: #ffffff;
+    font-size: 15px; /* Уменьшен шрифт, чтобы лучше вписывался */
+    line-height: 1;
+    font-weight: 900;
+    text-align: center;
+    white-space: nowrap;
+
+    pointer-events: none;
+    user-select: none;
+    z-index: 10;
+
+    text-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.9),
+        0 0 8px rgba(255, 255, 255, 0.4);
+
+    filter: drop-shadow(
+        0 2px 4px rgba(0, 0, 0, 0.8)
+    );
+}
 
 /* Тёмный текст на белых секторах */
 .wheel-text:nth-child(3),
@@ -185,6 +199,7 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
         0 1px 3px rgba(255, 255, 255, 0.95),
         0 0 5px rgba(255, 255, 255, 0.7);
 }
+
 
 /* Центральная кнопка */
 .wheel-center {
