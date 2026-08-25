@@ -62,36 +62,23 @@
         <div class="wheel-timer" id="wheel-timer"></div>
         <div class="wheel-container">
             <div class="wheel-pointer"></div>
-            <div class="wheel" id="wheel">
-                <svg class="wheel-text-svg" viewBox="0 0 300 300">
-                    <!-- Сектор 0: 100 (синий) - угол 15° -->
-                    <text x="176" y="58" fill="#fff" font-size="16" font-weight="900" text-anchor="middle" transform="rotate(15 150 150)">100</text>
-                    <!-- Сектор 1: 500 (белый) - угол 45° -->
-                    <text x="221" y="79" fill="#1e3a8a" font-size="16" font-weight="900" text-anchor="middle" transform="rotate(45 150 150)">500</text>
-                    <!-- Сектор 2: 1000 (голубой) - угол 75° -->
-                    <text x="247" y="124" fill="#fff" font-size="16" font-weight="900" text-anchor="middle" transform="rotate(75 150 150)">1000</text>
-                    <!-- Сектор 3: 5000 (белый) - угол 105° -->
-                    <text x="247" y="176" fill="#1e3a8a" font-size="16" font-weight="900" text-anchor="middle" transform="rotate(105 150 150)">5000</text>
-                    <!-- Сектор 4: 10000 (фиолетовый) - угол 135° -->
-                    <text x="221" y="221" fill="#fff" font-size="16" font-weight="900" text-anchor="middle" transform="rotate(135 150 150)">10000</text>
-                    <!-- Сектор 5: 20000 (белый) - угол 165° -->
-                    <text x="176" y="247" fill="#1e3a8a" font-size="16" font-weight="900" text-anchor="middle" transform="rotate(165 150 150)">20000</text>
-                    <!-- Сектор 6: 30000 (розовый) - угол 195° -->
-                    <text x="124" y="247" fill="#fff" font-size="16" font-weight="900" text-anchor="middle" transform="rotate(195 150 150)">30000</text>
-                    <!-- Сектор 7: 0 (белый) - угол 225° -->
-                    <text x="79" y="221" fill="#1e3a8a" font-size="16" font-weight="900" text-anchor="middle" transform="rotate(225 150 150)">0</text>
-                    <!-- Сектор 8: 35000 (фиолетовый) - угол 255° -->
-                    <text x="53" y="176" fill="#fff" font-size="16" font-weight="900" text-anchor="middle" transform="rotate(255 150 150)">35000</text>
-                    <!-- Сектор 9: 40000 (белый) - угол 285° -->
-                    <text x="53" y="124" fill="#1e3a8a" font-size="16" font-weight="900" text-anchor="middle" transform="rotate(285 150 150)">40000</text>
-                    <!-- Сектор 10: 45000 (синий) - угол 315° -->
-                    <text x="79" y="79" fill="#fff" font-size="16" font-weight="900" text-anchor="middle" transform="rotate(315 150 150)">45000</text>
-                    <!-- Сектор 11: 50000 (белый) - угол 345° -->
-                    <text x="124" y="58" fill="#1e3a8a" font-size="16" font-weight="900" text-anchor="middle" transform="rotate(345 150 150)">50000</text>
-                </svg>
-            </div>
+            <div class="wheel" id="wheel"></div>
+            <svg class="wheel-text" viewBox="0 0 300 300">
+                <text x="150" y="45" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(15 150 150)">100</text>
+                <text x="210" y="75" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(45 150 150)">500</text>
+                <text x="245" y="125" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(75 150 150)">1000</text>
+                <text x="245" y="175" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(105 150 150)">5000</text>
+                <text x="210" y="225" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(135 150 150)">10000</text>
+                <text x="150" y="255" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(165 150 150)">20000</text>
+                <text x="90" y="255" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(195 150 150)">30000</text>
+                <text x="55" y="225" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(225 150 150)">0</text>
+                <text x="55" y="175" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(255 150 150)">35000</text>
+                <text x="90" y="125" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(285 150 150)">40000</text>
+                <text x="150" y="95" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(315 150 150)">45000</text>
+                <text x="210" y="125" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(345 150 150)">50000</text>
+            </svg>
         </div>
-        <button class="wheel-btn" id="spin-btn" onclick="spinWheel()">🎡 Крутить бесплатно</button>
+        <button class="wheel-btn" id="spin-btn" onclick="spinWheel()"> Крутить бесплатно</button>
     </div>
 </div>
 
