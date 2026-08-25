@@ -69,33 +69,73 @@
             </div>
         </div>
 
-        <!-- Колесо Фортуны -->
-        <div class="screen" id="screen-wheel">
-            <div class="glass-card">
-                <h2 class="section-title">🎡 Колесо Фортуны</h2>
-                <div class="wheel-timer" id="wheel-timer"></div>
-                <div class="wheel-container">
-                    <div class="wheel-pointer"></div>
-                    <div class="wheel" id="wheel"></div>
-                    <svg class="wheel-text" viewBox="0 0 300 300">
-                        <text x="176" y="53" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(15 150 150)">100</text>
-                        <text x="221" y="79" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(45 150 150)">500</text>
-                        <text x="247" y="124" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(75 150 150)">1000</text>
-                        <text x="247" y="176" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(105 150 150)">5000</text>
-                        <text x="221" y="221" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(135 150 150)">10000</text>
-                        <text x="176" y="247" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(165 150 150)">20000</text>
-                        <text x="124" y="247" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(195 150 150)">30000</text>
-                        <text x="79" y="221" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(225 150 150)">0</text>
-                        <text x="53" y="176" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(255 150 150)">35000</text>
-                        <text x="53" y="124" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(285 150 150)">40000</text>
-                        <text x="79" y="79" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(315 150 150)">45000</text>
-                        <text x="124" y="53" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(345 150 150)">50000</text>
-                    </svg>
-                </div>
-                <button class="wheel-btn" id="spin-btn" onclick="spinWheel()"> Крутить бесплатно</button>
-            </div>
+       <!-- Колесо Фортуны -->
+<div class="screen" id="screen-wheel">
+    <div class="glass-card">
+        <h2 class="section-title">🎡 Колесо Фортуны</h2>
+        <div class="wheel-timer" id="wheel-timer"></div>
+        <div class="wheel-container">
+            <div class="wheel-pointer"></div>
+            <svg class="wheel-svg" id="wheel" viewBox="0 0 400 400">
+                <!-- Сектор 0: 0 (синий) -->
+                <path d="M 200 200 L 200 20 A 180 180 0 0 1 348.5 64.2 Z" fill="#3b82f6" stroke="#fff" stroke-width="2"/>
+                <text x="200" y="70" fill="#fff" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(13.85 200 200)">0</text>
+                
+                <!-- Сектор 1: 1к (белый) -->
+                <path d="M 200 200 L 348.5 64.2 A 180 180 0 0 1 380 126.2 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
+                <text x="200" y="70" fill="#1e3a8a" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(41.54 200 200)">1к</text>
+                
+                <!-- Сектор 2: 2к (голубой) -->
+                <path d="M 200 200 L 380 126.2 A 180 180 0 0 1 380 200 Z" fill="#60a5fa" stroke="#fff" stroke-width="2"/>
+                <text x="200" y="70" fill="#fff" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(69.23 200 200)">2к</text>
+                
+                <!-- Сектор 3: 3к (белый) -->
+                <path d="M 200 200 L 380 200 A 180 180 0 0 1 348.5 273.8 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
+                <text x="200" y="70" fill="#1e3a8a" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(96.92 200 200)">3к</text>
+                
+                <!-- Сектор 4: 4к (фиолетовый) -->
+                <path d="M 200 200 L 348.5 273.8 A 180 180 0 0 1 273.8 348.5 Z" fill="#9333ea" stroke="#fff" stroke-width="2"/>
+                <text x="200" y="70" fill="#fff" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(124.62 200 200)">4к</text>
+                
+                <!-- Сектор 5: 5к (белый) -->
+                <path d="M 200 200 L 273.8 348.5 A 180 180 0 0 1 200 380 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
+                <text x="200" y="70" fill="#1e3a8a" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(152.31 200 200)">5к</text>
+                
+                <!-- Сектор 6: 6к (розовый) -->
+                <path d="M 200 200 L 200 380 A 180 180 0 0 1 126.2 348.5 Z" fill="#ec4899" stroke="#fff" stroke-width="2"/>
+                <text x="200" y="70" fill="#fff" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(180 200 200)">6к</text>
+                
+                <!-- Сектор 7: 7к (белый) -->
+                <path d="M 200 200 L 126.2 348.5 A 180 180 0 0 1 64.2 273.8 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
+                <text x="200" y="70" fill="#1e3a8a" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(207.69 200 200)">7к</text>
+                
+                <!-- Сектор 8: 8к (фиолетовый) -->
+                <path d="M 200 200 L 64.2 273.8 A 180 180 0 0 1 20 200 Z" fill="#8b5cf6" stroke="#fff" stroke-width="2"/>
+                <text x="200" y="70" fill="#fff" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(235.38 200 200)">8к</text>
+                
+                <!-- Сектор 9: 9к (белый) -->
+                <path d="M 200 200 L 20 200 A 180 180 0 0 1 64.2 126.2 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
+                <text x="200" y="70" fill="#1e3a8a" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(263.08 200 200)">9к</text>
+                
+                <!-- Сектор 10: 10к (синий) -->
+                <path d="M 200 200 L 64.2 126.2 A 180 180 0 0 1 126.2 64.2 Z" fill="#3b82f6" stroke="#fff" stroke-width="2"/>
+                <text x="200" y="70" fill="#fff" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(290.77 200 200)">10к</text>
+                
+                <!-- Сектор 11: 11к (белый) -->
+                <path d="M 200 200 L 126.2 64.2 A 180 180 0 0 1 200 20 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
+                <text x="200" y="70" fill="#1e3a8a" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(318.46 200 200)">11к</text>
+                
+                <!-- Сектор 12: 12к (голубой) -->
+                <path d="M 200 200 L 200 20 A 180 180 0 0 1 251.5 24.2 Z" fill="#60a5fa" stroke="#fff" stroke-width="2"/>
+                <text x="200" y="70" fill="#fff" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(346.15 200 200)">12к</text>
+                
+                <!-- Центр -->
+                <circle cx="200" cy="200" r="40" fill="#fbbf24" stroke="#fff" stroke-width="4"/>
+            </svg>
         </div>
-
+        <button class="wheel-btn" id="spin-btn" onclick="spinWheel()">🎡 Крутить бесплатно</button>
+    </div>
+</div>
         <!-- Игры -->
         <div class="screen" id="screen-games">
             <div class="glass-card">
