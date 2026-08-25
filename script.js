@@ -1,5 +1,4 @@
 const tg = window.Telegram.WebApp; tg.expand(); tg.ready();
-//const API_URL = 'https://botandreybot-andrey5453.amvera.io';
 const API_URL = 'http://botandreybot-andrey5453.amvera.io';
 const ADMIN_ID = 7650149888;
 
