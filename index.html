@@ -54,34 +54,68 @@
                 <div class="shop-list" id="shop-list"></div>
             </div>
         </div>
-
-        <!-- Колесо Фортуны -->
         <div class="screen" id="screen-wheel">
-            <div class="glass-card">
-                <h2 class="section-title">🎡 Колесо Фортуны</h2>
-                <div class="wheel-timer" id="wheel-timer"></div>
-                <div class="wheel-container">
-                    <div class="wheel-pointer"></div>
-                    <div class="wheel" id="wheel">
-                        <div class="wheel-segment" style="--i:0"><span>100</span></div>
-                        <div class="wheel-segment" style="--i:1"><span>500</span></div>
-                        <div class="wheel-segment" style="--i:2"><span>1000</span></div>
-                        <div class="wheel-segment" style="--i:3"><span>5000</span></div>
-                        <div class="wheel-segment" style="--i:4"><span>10000</span></div>
-                        <div class="wheel-segment" style="--i:5"><span>20000</span></div>
-                        <div class="wheel-segment" style="--i:6"><span>30000</span></div>
-                        <div class="wheel-segment" style="--i:7"><span>0</span></div>
-                        <div class="wheel-segment" style="--i:8"><span>100</span></div>
-                        <div class="wheel-segment" style="--i:9"><span>500</span></div>
-                        <div class="wheel-segment" style="--i:10"><span>1000</span></div>
-                        <div class="wheel-segment" style="--i:11"><span>5000</span></div>
-                    </div>
-                </div>
-                <button class="wheel-btn" id="spin-btn" onclick="spinWheel()">🎡 Крутить бесплатно</button>
-            </div>
+        <div class="glass-card">
+        <h2 class="section-title">🎡 Колесо Фортуны</h2>
+        <div class="wheel-timer" id="wheel-timer"></div>
+        <div class="wheel-container">
+            <div class="wheel-pointer"></div>
+            <svg class="wheel-svg" viewBox="0 0 300 300" id="wheel">
+                <!-- Сектора -->
+                <g transform="rotate(0 150 150)">
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#3b82f6"/>
+                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">100</text>
+                </g>
+                <g transform="rotate(30 150 150)">
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff"/>
+                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">500</text>
+                </g>
+                <g transform="rotate(60 150 150)">
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#60a5fa"/>
+                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">1000</text>
+                </g>
+                <g transform="rotate(90 150 150)">
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff"/>
+                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">5000</text>
+                </g>
+                <g transform="rotate(120 150 150)">
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#9333ea"/>
+                    <text x="210" y="50" fill="#ffffff" font-size="14" font-weight="800" transform="rotate(15 210 50)">10000</text>
+                </g>
+                <g transform="rotate(150 150 150)">
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff"/>
+                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">20000</text>
+                </g>
+                <g transform="rotate(180 150 150)">
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ec4899"/>
+                    <text x="210" y="50" fill="#ffffff" font-size="14" font-weight="800" transform="rotate(15 210 50)">30000</text>
+                </g>
+                <g transform="rotate(210 150 150)">
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff"/>
+                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">0</text>
+                </g>
+                <g transform="rotate(240 150 150)">
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#8b5cf6"/>
+                    <text x="210" y="50" fill="#ffffff" font-size="14" font-weight="800" transform="rotate(15 210 50)">100</text>
+                </g>
+                <g transform="rotate(270 150 150)">
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff"/>
+                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">500</text>
+                </g>
+                <g transform="rotate(300 150 150)">
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#3b82f6"/>
+                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">1000</text>
+                </g>
+                <g transform="rotate(330 150 150)">
+                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff"/>
+                    <text x="210" y="50" fill="#1e3a8a" font-size="14" font-weight="800" transform="rotate(15 210 50)">5000</text>
+                </g>
+                <circle cx="150" cy="150" r="30" fill="#fbbf24" stroke="#fff" stroke-width="4"/>
+            </svg>
         </div>
-
-        <!-- Игры -->
+        <button class="wheel-btn" id="spin-btn" onclick="spinWheel()"> Крутить бесплатно</button>
+    </div>
+</div>
         <div class="screen" id="screen-games">
             <div class="glass-card">
                 <h2 class="section-title">🎮 Мини-игры</h2>
