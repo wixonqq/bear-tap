@@ -308,10 +308,11 @@ async function spinWheel() {
     const spinBtn = document.getElementById('spin-btn'); 
     spinBtn.disabled = true;
     
-    const prizes = [100, 500, 1000, 5000, 10000, 20000, 30000, 0, 35000, 40000, 45000, 50000];
-    const chances = [30, 25, 20, 10, 5, 3, 1, 21, 2, 1, 1, 1];
+    // 13 секторов
+    const prizes = [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000];
+    const chances = [25, 20, 15, 10, 8, 6, 5, 4, 3, 2, 1, 0.5, 0.5];
     const totalChance = chances.reduce((a, b) => a + b, 0);
-    const rand = Math.floor(Math.random() * totalChance) + 1;
+    const rand = Math.random() * totalChance;
     let cumulative = 0;
     let wonIndex = 0;
     
@@ -320,7 +321,7 @@ async function spinWheel() {
         if (rand <= cumulative) { wonIndex = i; break; } 
     }
     
-    const segmentAngle = 360 / 12;
+    const segmentAngle = 360 / 13;
     const targetAngle = 360 - (wonIndex * segmentAngle) - (segmentAngle / 2);
     const fullRotations = 5 * 360;
     const finalRotation = fullRotations + targetAngle;
@@ -332,16 +333,16 @@ async function spinWheel() {
             const response = await fetch(`${API_URL}/api/spin_wheel`, { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({ user_id: userId }) 
+                body: JSON.stringify({ user_id: userId, prize: prizes[wonIndex] }) 
             }); 
             const data = await response.json(); 
             
             if (data.prize !== undefined) { 
                 playerData.lastSpin = data.last_spin; 
-                playerData.xp += data.prize; 
+                playerData.xp += prizes[wonIndex]; 
                 
-                if (data.prize > 0) {
-                    showToast(`🎉 Вы выиграли ${data.prize} XP!`, 'success'); 
+                if (prizes[wonIndex] > 0) {
+                    showToast(` Вы выиграли ${prizes[wonIndex]} XP!`, 'success'); 
                 } else {
                     showToast('😔 Ничего не выиграли. Попробуйте через час!', 'error'); 
                 }
