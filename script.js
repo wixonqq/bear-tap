@@ -1,30 +1,15 @@
 const tg = window.Telegram.WebApp;
 tg.expand();
 tg.ready();
-
 const API_URL = 'https://botandreybot-andrey5453.amvera.io';
 const ADMIN_ID = 7650149888;
 
 let playerData = {
-    xp: 0,
-    totalClicks: 0,
-    energy: 1000,
-    maxEnergy: 1000,
-    clickPower: 1,
-    level: 1,
-    wins: 0,
-    referrals: 0,
-    achievements: [],
-    username: '',
-    firstName: '',
-    lastSave: Date.now(),
-    lastSpin: 0,
-    isAdmin: false,
-    skin: 'default',
-    energyRegen: 1,
-    isBanned: false
+    xp: 0, totalClicks: 0, energy: 1000, maxEnergy: 1000, clickPower: 1,
+    level: 1, wins: 0, referrals: 0, achievements: [], username: '', firstName: '',
+    lastSave: Date.now(), lastSpin: 0, isAdmin: false, skin: 'default',
+    energyRegen: 1, isBanned: false
 };
-
 let lastSavedXp = 0;
 let apiWorking = false;
 let toasts = [];
@@ -35,6 +20,8 @@ let currentMultiplier = 1.0;
 let crashPoint = 0;
 let minesState = null;
 let ninjaState = null;
+let towerState = null;
+let bubblesState = null;
 let purchasedItems = [];
 let currentShopCategory = 'upgrades';
 
@@ -73,7 +60,7 @@ function recalculateBonuses() {
     playerData.clickPower = clickPower;
     playerData.maxEnergy = maxEnergy;
     playerData.energyRegen = energyRegen;
-    console.log('Бонусы пересчитаны:', { clickPower, maxEnergy, energyRegen, energy: playerData.energy });
+    console.log('⚡️ Бонусы пересчитаны:', { clickPower, maxEnergy, energyRegen, energy: playerData.energy });
 }
 
 async function loadPurchases() {
@@ -91,7 +78,7 @@ async function loadPurchases() {
             recalculateBonuses();
         }
     } catch (error) {
-        console.error('Load purchases error:', error);
+        console.error('❌ Ошибка загрузки покупок:', error);
     }
 }
 
@@ -123,57 +110,54 @@ async function loadData() {
             document.getElementById('maintenance-overlay').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
         }
-        if (data.error) {
-            loadLocalData();
-            return;
-        }
+        if (data.error) { loadLocalData(); return; }
         apiWorking = true;
-        playerData = { 
-            xp: data.xp || 0, 
-            totalClicks: data.total_clicks || 0, 
+        playerData = {
+            xp: data.xp || 0,
+            totalClicks: data.total_clicks || 0,
             energy: (data.energy !== undefined && data.energy !== null) ? data.energy : 1000,
-            maxEnergy: data.max_energy || 1000, 
-            clickPower: data.click_power || 1, 
-            level: Math.floor((data.xp || 0) / 100) + 1, 
-            wins: data.wins || 0, 
-            referrals: data.referrals || 0, 
-            achievements: data.achievements || [], 
-            username: data.username || '', 
-            firstName: data.first_name || '', 
-            lastSave: Date.now(), 
-            lastSpin: data.last_spin || 0, 
-            isAdmin: isAdmin, 
+            maxEnergy: data.max_energy || 1000,
+            clickPower: data.click_power || 1,
+            level: Math.floor((data.xp || 0) / 100) + 1,
+            wins: data.wins || 0,
+            referrals: data.referrals || 0,
+            achievements: data.achievements || [],
+            username: data.username || '',
+            firstName: data.first_name || '',
+            lastSave: Date.now(),
+            lastSpin: data.last_spin || 0,
+            isAdmin: isAdmin,
             skin: data.skin || 'default',
             energyRegen: data.energy_regen || 1,
             isBanned: data.is_banned === 1
         };
         applySkin(playerData.skin);
         await loadPurchases();
-        lastSavedXp = playerData.xp; 
-        updateUI(); 
-        updateProfile(); 
-        renderShop(); 
+        lastSavedXp = playerData.xp;
+        updateUI();
+        updateProfile();
+        renderShop();
         checkWheelTimer();
-        const adminBtn = document.getElementById('admin-btn'); 
+        const adminBtn = document.getElementById('admin-btn');
         if (adminBtn && playerData.isAdmin) adminBtn.style.display = 'block';
-    } catch (error) { 
-        console.error('Load data error:', error);
-        showToast('❌ Не удалось загрузить данные: ' + error.message, 'error'); 
-        loadLocalData(); 
+    } catch (error) {
+        console.error('❌ Ошибка загрузки данных:', error);
+        showToast('❌ Не удалось загрузить данные: ' + error.message, 'error');
+        loadLocalData();
     }
 }
 
 function loadLocalData() {
     const saved = localStorage.getItem('bearTapData');
-    if (saved) { 
+    if (saved) {
         playerData = JSON.parse(saved);
-        const timePassed = (Date.now() - playerData.lastSave) / 1000; 
-        playerData.energy = Math.min(playerData.maxEnergy || 1000, (playerData.energy || 1000) + Math.floor(timePassed / 2) * (playerData.energyRegen || 1)); 
+        const timePassed = (Date.now() - playerData.lastSave) / 1000;
+        playerData.energy = Math.min(playerData.maxEnergy || 1000, (playerData.energy || 1000) + Math.floor(timePassed / 5) * (playerData.energyRegen || 1));
     }
-    if (tg.initDataUnsafe?.user) { 
-        playerData.username = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name || 'Игрок'; 
-        playerData.firstName = tg.initDataUnsafe.user.first_name || 'Игрок'; 
-        playerData.isAdmin = tg.initDataUnsafe.user.id === ADMIN_ID; 
+    if (tg.initDataUnsafe?.user) {
+        playerData.username = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name || 'Игрок';
+        playerData.firstName = tg.initDataUnsafe.user.first_name || 'Игрок';
+        playerData.isAdmin = tg.initDataUnsafe.user.id === ADMIN_ID;
     }
     updateUI();
     updateProfile();
@@ -205,7 +189,7 @@ async function saveProgress() {
         });
         lastSavedXp = playerData.xp;
     } catch (error) {
-        console.error('Save error:', error);
+        console.error('❌ Ошибка сохранения:', error);
     }
 }
 
@@ -220,7 +204,7 @@ function updateUI() {
     if (energyCurrent) energyCurrent.textContent = Math.floor(playerData.energy);
     if (energyMax) energyMax.textContent = playerData.maxEnergy;
     if (energyFill) {
-        const energyPercent = (playerData.energy / playerData.maxEnergy) * 100;
+        const energyPercent = Math.min(100, Math.max(0, (playerData.energy / playerData.maxEnergy) * 100));
         energyFill.style.width = energyPercent + '%';
     }
 }
@@ -263,7 +247,7 @@ async function updateTopLists() {
         const topXpList = document.getElementById('top-xp-list');
         const topWinsList = document.getElementById('top-wins-list');
         if (topXpList) topXpList.innerHTML = '<div class="empty-state">❌ Ошибка загрузки</div>';
-        if (topWinsList) topWinsList.innerHTML = '<div class="empty-state">❌ Ошибка загрузки</div>';
+        if (topWinsList) topWinsList.innerHTML = '<div class="empty-state"> Ошибка загрузки</div>';
     }
 }
 
@@ -290,7 +274,7 @@ function setupReferralLink() {
                 showToast('✅ Ссылка скопирована!', 'success');
                 if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             }).catch(() => {
-                showToast('❌ Ошибка копирования', 'error');
+                showToast(' Ошибка копирования', 'error');
             });
         };
     }
@@ -307,11 +291,11 @@ function renderShop() {
         items = [
             {id: 'click_power_2', name: '⚡️ Сила клика x2', price: 250000, desc: 'Тапай в 2 раза эффективнее'},
             {id: 'click_power_5', name: '⚡️⚡️ Сила клика x5', price: 1000000, desc: 'Тапай в 5 раз эффективнее'},
-            {id: 'click_power_10', name: '⚡️⚡️⚡️ Сила клика x10', price: 5000000, desc: 'Тапай в 10 раз эффективнее'},
+            {id: 'click_power_10', name: '️⚡️⚡️ Сила клика x10', price: 5000000, desc: 'Тапай в 10 раз эффективнее'},
             {id: 'max_energy_2000', name: '🔋 Энергия 2000', price: 500000, desc: 'Больше энергии для тапов'},
             {id: 'max_energy_5000', name: '🔋🔋 Энергия 5000', price: 2000000, desc: 'Огромный запас энергии'},
             {id: 'energy_regen_2', name: '⚡️ Реген x2', price: 750000, desc: 'Энергия восстанавливается быстрее'},
-            {id: 'energy_regen_5', name: '⚡️⚡️ Реген x5', price: 3000000, desc: 'Супер быстрая регенерация'}
+            {id: 'energy_regen_5', name: '️⚡️ Реген x5', price: 3000000, desc: 'Супер быстрая регенерация'}
         ];
     } else {
         items = [
@@ -351,15 +335,15 @@ async function buyItem(itemId) {
     if (!userId) return;
     const items = {
         'click_power_2': {price: 250000, name: '⚡️ Сила клика x2'},
-        'click_power_5': {price: 1000000, name: '⚡️⚡️ Сила клика x5'},
+        'click_power_5': {price: 1000000, name: '️⚡️ Сила клика x5'},
         'click_power_10': {price: 5000000, name: '⚡️⚡️⚡️ Сила клика x10'},
-        'max_energy_2000': {price: 500000, name: '🔋 Энергия 2000'},
-        'max_energy_5000': {price: 2000000, name: '🔋🔋 Энергия 5000'},
+        'max_energy_2000': {price: 500000, name: ' Энергия 2000'},
+        'max_energy_5000': {price: 2000000, name: '🔋 Энергия 5000'},
         'energy_regen_2': {price: 750000, name: '⚡️ Реген x2'},
         'energy_regen_5': {price: 3000000, name: '⚡️⚡️ Реген x5'},
         'skin_gold': {price: 1000000, name: '🌟 Золотой мишка'},
         'skin_diamond': {price: 5000000, name: '💎 Алмазный мишка'},
-        'skin_rainbow': {price: 10000000, name: '🌈 Радужный мишка'}
+        'skin_rainbow': {price: 10000000, name: ' Радужный мишка'}
     };
     const item = items[itemId];
     if (!item || playerData.xp < item.price) {
@@ -392,7 +376,7 @@ async function buyItem(itemId) {
             showToast('❌ ' + (data.error || 'Ошибка'), 'error');
         }
     } catch (error) {
-        showToast('❌ Ошибка покупки', 'error');
+        showToast(' Ошибка покупки', 'error');
     }
 }
 
@@ -477,7 +461,7 @@ async function spinWheel() {
             playerData.lastSpin = Number(data.last_spin || Math.floor(Date.now() / 1000));
             playerData.xp = Number(playerData.xp || 0) + wonPrize;
             if (wonPrize > 0) {
-                showToast(`🎉 Вы выиграли ${wonPrize.toLocaleString()} XP!`, 'success');
+                showToast(` Вы выиграли ${wonPrize.toLocaleString()} XP!`, 'success');
             } else {
                 showToast('😔 Ничего не выиграли. Попробуйте через час!', 'error');
             }
@@ -487,7 +471,7 @@ async function spinWheel() {
             updateProfile();
             checkWheelTimer();
         } catch (error) {
-            console.error('Ошибка вращения:', error);
+            console.error('❌ Ошибка вращения:', error);
             showToast(`❌ ${error.message || 'Ошибка вращения'}`, 'error');
         } finally {
             wheelSpinning = false;
@@ -521,6 +505,8 @@ function openGame(game) {
     switchScreen(`game-${game}`);
     if (game === 'mines') initMinesGrid();
     if (game === 'ninja') initNinjaGrid();
+    if (game === 'tower') initTowerGrid();
+    if (game === 'bubbles') initBubblesGrid();
 }
 
 async function startCrash() {
@@ -563,7 +549,7 @@ async function startCrash() {
                 }
             }, 100);
         } else {
-            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
+            showToast(' ' + (data.error || 'Ошибка'), 'error');
         }
     } catch (error) {
         showToast('❌ Ошибка', 'error');
@@ -582,7 +568,7 @@ async function cashoutCrash() {
         });
         const data = await response.json();
         if (data.status === 'won') {
-            showToast(`✅ Вы забрали ${data.win} XP!`, 'success');
+            showToast(`✅ Вы забрали ${data.win.toLocaleString()} XP!`, 'success');
             const display = document.getElementById('crash-multiplier');
             const cashoutBtn = document.getElementById('crash-cashout');
             const startBtn = document.getElementById('crash-start');
@@ -676,7 +662,7 @@ async function revealMine(index) {
             minesState.multiplier = data.multiplier;
             updateMinesInfo();
             const cashoutBtn = document.getElementById('mines-cashout');
-            if (cashoutBtn) { cashoutBtn.textContent = `💰 Забрать ${data.win} XP`; cashoutBtn.disabled = false; }
+            if (cashoutBtn) { cashoutBtn.textContent = `💰 Забрать ${data.win.toLocaleString()} XP`; cashoutBtn.disabled = false; }
         }
     } catch (error) {
         showToast('❌ Ошибка', 'error');
@@ -688,7 +674,7 @@ function updateMinesInfo() {
     const multEl = document.getElementById('mines-multiplier');
     const winEl = document.getElementById('mines-win');
     if (multEl) multEl.textContent = minesState.multiplier.toFixed(2);
-    if (winEl) winEl.textContent = Math.floor(minesState.bet * minesState.multiplier);
+    if (winEl) winEl.textContent = Math.floor(minesState.bet * minesState.multiplier).toLocaleString();
 }
 
 async function cashoutMines() {
@@ -702,10 +688,10 @@ async function cashoutMines() {
         });
         const data = await response.json();
         if (data.status === 'won') {
-            showToast(`✅ Вы забрали ${data.win} XP!`, 'success');
+            showToast(`✅ Вы забрали ${data.win.toLocaleString()} XP!`, 'success');
             const cashoutBtn = document.getElementById('mines-cashout');
             const startBtn = document.getElementById('mines-start');
-            if (cashoutBtn) { cashoutBtn.textContent = '💰 Забрать'; cashoutBtn.disabled = true; }
+            if (cashoutBtn) { cashoutBtn.textContent = ' Забрать'; cashoutBtn.disabled = true; }
             if (startBtn) startBtn.disabled = false;
             currentGame = null;
             minesState = null;
@@ -734,13 +720,13 @@ async function spinRoulette(color) {
         const data = await response.json();
         const resultEl = document.getElementById('roulette-result');
         if (resultEl) {
-            const colorEmojis = { red: '🔴', black: '⚫', green: '🟢' };
+            const colorEmojis = { red: '🔴', black: '⚫', green: '' };
             const colorNames = { red: 'Красное', black: 'Чёрное', green: 'Зелёное' };
             resultEl.textContent = `Выпало: ${colorEmojis[data.result]} ${colorNames[data.result]}`;
             if (data.status === 'won') {
-                resultEl.textContent += ` | Выигрыш: ${data.win} XP! 🎉`;
+                resultEl.textContent += ` | Выигрыш: ${data.win.toLocaleString()} XP! 🎉`;
                 resultEl.style.color = '#2ed573';
-                showToast(`✅ Вы выиграли ${data.win} XP!`, 'success');
+                showToast(`✅ Вы выиграли ${data.win.toLocaleString()} XP!`, 'success');
             } else {
                 resultEl.textContent += ' | Вы проиграли 😔';
                 resultEl.style.color = '#ff4757';
@@ -771,13 +757,12 @@ async function playDouble(choice) {
         const data = await response.json();
         const resultEl = document.getElementById('double-result');
         if (resultEl) {
-            const colorEmojis = { red: '🔴', black: '⚫', green: '🟢' };
-            const colorNames = { red: 'Красное', black: 'Чёрное', green: 'Зелёное' };
-            resultEl.textContent = `Выпало: ${colorEmojis[data.result]} ${colorNames[data.result]}`;
+            const names = { '2': '⚡️ x2', '3': '🔥 x3', '5': '🌟 x5', '50': '💎 x50' };
+            resultEl.textContent = `Выпало: ${names[data.result] || data.result}`;
             if (data.status === 'won') {
-                resultEl.textContent += ` | Выигрыш: ${data.win} XP! 🎉`;
+                resultEl.textContent += ` | Выигрыш: ${data.win.toLocaleString()} XP! 🎉`;
                 resultEl.style.color = '#2ed573';
-                showToast(`✅ Вы выиграли ${data.win} XP!`, 'success');
+                showToast(`✅ Вы выиграли ${data.win.toLocaleString()} XP!`, 'success');
             } else {
                 resultEl.textContent += ' | Вы проиграли 😔';
                 resultEl.style.color = '#ff4757';
@@ -852,7 +837,7 @@ async function pickNinja(index) {
         cell.classList.add('revealed');
         if (data.status === 'hit') {
             cell.classList.add('hit');
-            cell.textContent = '💥';
+            cell.textContent = '🥷';
             showToast('💥 Вы попали на ниндзя!', 'error');
             const cashoutBtn = document.getElementById('ninja-cashout');
             const startBtn = document.getElementById('ninja-start');
@@ -877,8 +862,10 @@ function updateNinjaInfo() {
     if (!ninjaState) return;
     const multEl = document.getElementById('ninja-multiplier');
     const roundsEl = document.getElementById('ninja-rounds');
+    const winEl = document.getElementById('ninja-win');
     if (multEl) multEl.textContent = ninjaState.multiplier.toFixed(2) + 'x';
-    if (roundsEl) roundsEl.textContent = `Раунд: ${ninjaState.rounds}`;
+    if (roundsEl) roundsEl.textContent = `🎯 Раунд: ${ninjaState.rounds}`;
+    if (winEl) winEl.textContent = Math.floor(ninjaState.bet * ninjaState.multiplier).toLocaleString();
 }
 
 async function cashoutNinja() {
@@ -892,7 +879,7 @@ async function cashoutNinja() {
         });
         const data = await response.json();
         if (data.status === 'won') {
-            showToast(`✅ Вы забрали ${data.win} XP!`, 'success');
+            showToast(`✅ Вы забрали ${data.win.toLocaleString()} XP!`, 'success');
             const cashoutBtn = document.getElementById('ninja-cashout');
             const startBtn = document.getElementById('ninja-start');
             if (cashoutBtn) cashoutBtn.disabled = true;
@@ -901,6 +888,283 @@ async function cashoutNinja() {
             ninjaState = null;
             loadData();
         }
+    } catch (error) {
+        showToast('❌ Ошибка', 'error');
+    }
+}
+
+function initTowerGrid() {
+    const grid = document.getElementById('tower-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    const levels = [
+        { bombs: 1, mult: 1.13 },
+        { bombs: 2, mult: 1.41 },
+        { bombs: 3, mult: 2.34 },
+        { bombs: 4, mult: 3.91 }
+    ];
+    levels.forEach((level, idx) => {
+        const cell = document.createElement('div');
+        cell.className = 'tower-cell';
+        cell.dataset.level = idx + 1;
+        cell.innerHTML = `<div>Ур. ${idx + 1}<br>${level.bombs} 💣<br>x${level.mult}</div>`;
+        cell.onclick = () => pickTower(idx + 1);
+        grid.appendChild(cell);
+    });
+}
+
+async function startTower() {
+    const userId = getUserId();
+    if (!userId) return;
+    const betInput = document.getElementById('tower-bet');
+    const bet = parseInt(betInput.value);
+    if (!bet || bet < 100 || bet > playerData.xp) {
+        showToast(' Неверная ставка!', 'error');
+        return;
+    }
+    currentGame = 'tower';
+    towerState = { bet: bet, level: 0, multiplier: 1.0 };
+    try {
+        const response = await fetch(`${API_URL}/api/tower`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, action: 'start', bet: bet })
+        });
+        const data = await response.json();
+        if (data.status === 'started') {
+            initTowerGrid();
+            const cashoutBtn = document.getElementById('tower-cashout');
+            const startBtn = document.getElementById('tower-start');
+            if (cashoutBtn) cashoutBtn.disabled = false;
+            if (startBtn) startBtn.disabled = true;
+            updateTowerInfo();
+        } else {
+            showToast(' ' + (data.error || 'Ошибка'), 'error');
+        }
+    } catch (error) {
+        showToast('❌ Ошибка', 'error');
+    }
+}
+
+async function pickTower(level) {
+    const userId = getUserId();
+    if (!userId || currentGame !== 'tower') return;
+    const cell = document.querySelector(`.tower-cell[data-level="${level}"]`);
+    if (!cell || cell.classList.contains('revealed')) return;
+    try {
+        const response = await fetch(`${API_URL}/api/tower`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, action: 'pick', level: level })
+        });
+        const data = await response.json();
+        cell.classList.add('revealed');
+        if (data.status === 'lost') {
+            cell.classList.add('fail');
+            cell.innerHTML = '💥';
+            showToast('💥 Вы упали с башни!', 'error');
+            const cashoutBtn = document.getElementById('tower-cashout');
+            const startBtn = document.getElementById('tower-start');
+            if (cashoutBtn) cashoutBtn.disabled = true;
+            if (startBtn) startBtn.disabled = false;
+            currentGame = null;
+            towerState = null;
+            loadData();
+        } else if (data.status === 'safe') {
+            cell.classList.add('safe');
+            cell.innerHTML = '✅';
+            towerState.level = level;
+            towerState.multiplier = data.multiplier;
+            updateTowerInfo();
+        }
+    } catch (error) {
+        showToast('❌ Ошибка', 'error');
+    }
+}
+
+function updateTowerInfo() {
+    if (!towerState) return;
+    const levelEl = document.getElementById('tower-level');
+    const multEl = document.getElementById('tower-multiplier');
+    if (levelEl) levelEl.textContent = `🏁 Уровень: ${towerState.level}`;
+    if (multEl) multEl.textContent = `x${towerState.multiplier.toFixed(2)}`;
+}
+
+async function cashoutTower() {
+    const userId = getUserId();
+    if (!userId || currentGame !== 'tower') return;
+    try {
+        const response = await fetch(`${API_URL}/api/tower`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, action: 'cashout' })
+        });
+        const data = await response.json();
+        if (data.status === 'won') {
+            showToast(`✅ Вы забрали ${data.win.toLocaleString()} XP!`, 'success');
+            const cashoutBtn = document.getElementById('tower-cashout');
+            const startBtn = document.getElementById('tower-start');
+            if (cashoutBtn) cashoutBtn.disabled = true;
+            if (startBtn) startBtn.disabled = false;
+            currentGame = null;
+            towerState = null;
+            loadData();
+        }
+    } catch (error) {
+        showToast('❌ Ошибка', 'error');
+    }
+}
+
+function initBubblesGrid() {
+    const grid = document.getElementById('bubbles-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    for (let i = 0; i < 16; i++) {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.dataset.index = i;
+        bubble.textContent = '🫧';
+        bubble.onclick = () => popBubble(i);
+        grid.appendChild(bubble);
+    }
+}
+
+async function startBubbles() {
+    const userId = getUserId();
+    if (!userId) return;
+    const betInput = document.getElementById('bubbles-bet');
+    const bet = parseInt(betInput.value);
+    if (!bet || bet < 100 || bet > playerData.xp) {
+        showToast('❌ Неверная ставка!', 'error');
+        return;
+    }
+    currentGame = 'bubbles';
+    bubblesState = { bet: bet, score: 0, multiplier: 1.0 };
+    try {
+        const response = await fetch(`${API_URL}/api/bubbles`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, action: 'start', bet: bet })
+        });
+        const data = await response.json();
+        if (data.status === 'started') {
+            initBubblesGrid();
+            const cashoutBtn = document.getElementById('bubbles-cashout');
+            const startBtn = document.getElementById('bubbles-start');
+            if (cashoutBtn) cashoutBtn.disabled = false;
+            if (startBtn) startBtn.disabled = true;
+            updateBubblesInfo();
+        } else {
+            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
+        }
+    } catch (error) {
+        showToast('❌ Ошибка', 'error');
+    }
+}
+
+async function popBubble(index) {
+    const userId = getUserId();
+    if (!userId || currentGame !== 'bubbles') return;
+    const bubble = document.querySelector(`.bubble[data-index="${index}"]`);
+    if (!bubble || bubble.classList.contains('popped')) return;
+    try {
+        const response = await fetch(`${API_URL}/api/bubbles`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, action: 'pop', index: index })
+        });
+        const data = await response.json();
+        bubble.classList.add('popped');
+        if (data.status === 'bomb') {
+            bubble.classList.add('bomb');
+            bubble.textContent = '💣';
+            showToast('💥 Вы лопнули бомбу!', 'error');
+            const cashoutBtn = document.getElementById('bubbles-cashout');
+            const startBtn = document.getElementById('bubbles-start');
+            if (cashoutBtn) cashoutBtn.disabled = true;
+            if (startBtn) startBtn.disabled = false;
+            currentGame = null;
+            bubblesState = null;
+            loadData();
+        } else if (data.status === 'safe') {
+            bubble.textContent = '✨';
+            bubblesState.score = data.score;
+            bubblesState.multiplier = data.multiplier;
+            updateBubblesInfo();
+        }
+    } catch (error) {
+        showToast('❌ Ошибка', 'error');
+    }
+}
+
+function updateBubblesInfo() {
+    if (!bubblesState) return;
+    const scoreEl = document.getElementById('bubbles-score');
+    const multEl = document.getElementById('bubbles-multiplier');
+    if (scoreEl) scoreEl.textContent = `🎯 Счёт: ${bubblesState.score}`;
+    if (multEl) multEl.textContent = `x${bubblesState.multiplier.toFixed(2)}`;
+}
+
+async function cashoutBubbles() {
+    const userId = getUserId();
+    if (!userId || currentGame !== 'bubbles') return;
+    try {
+        const response = await fetch(`${API_URL}/api/bubbles`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, action: 'cashout' })
+        });
+        const data = await response.json();
+        if (data.status === 'won') {
+            showToast(`✅ Вы забрали ${data.win.toLocaleString()} XP!`, 'success');
+            const cashoutBtn = document.getElementById('bubbles-cashout');
+            const startBtn = document.getElementById('bubbles-start');
+            if (cashoutBtn) cashoutBtn.disabled = true;
+            if (startBtn) startBtn.disabled = false;
+            currentGame = null;
+            bubblesState = null;
+            loadData();
+        }
+    } catch (error) {
+        showToast('❌ Ошибка', 'error');
+    }
+}
+
+async function flipCoin(choice) {
+    const userId = getUserId();
+    if (!userId) return;
+    const betInput = document.getElementById('coins-bet');
+    const bet = parseInt(betInput.value);
+    if (!bet || bet < 100 || bet > playerData.xp) {
+        showToast('❌ Неверная ставка!', 'error');
+        return;
+    }
+    const coinEl = document.getElementById('coin');
+    const resultEl = document.getElementById('coins-result');
+    coinEl.style.animation = 'none';
+    setTimeout(() => { coinEl.style.animation = 'coinFlip 1s ease-in-out'; }, 10);
+    try {
+        const response = await fetch(`${API_URL}/api/coins`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, bet: bet, choice: choice })
+        });
+        const data = await response.json();
+        setTimeout(() => {
+            const names = { heads: ' Орёл', tails: ' Решка' };
+            coinEl.textContent = data.result === 'heads' ? '🦅' : '🪙';
+            resultEl.textContent = `Выпало: ${names[data.result]}`;
+            if (data.status === 'won') {
+                resultEl.textContent += ` | Выигрыш: ${data.win.toLocaleString()} XP! `;
+                resultEl.style.color = '#2ed573';
+                showToast(`✅ Вы выиграли ${data.win.toLocaleString()} XP!`, 'success');
+            } else {
+                resultEl.textContent += ' | Вы проиграли 😔';
+                resultEl.style.color = '#ff4757';
+                showToast('❌ Вы проиграли', 'error');
+            }
+            loadData();
+        }, 1000);
     } catch (error) {
         showToast('❌ Ошибка', 'error');
     }
@@ -941,11 +1205,8 @@ async function loadAdminStats() {
             document.getElementById('admin-total-games').textContent = data.total_games.toLocaleString();
             const maintText = document.getElementById('maintenance-text');
             const maintBtn = document.getElementById('maintenance-btn');
-            if (maintText) {
-                maintText.textContent = data.maintenance ? 'Закрыто' : 'Открыто';
-                maintText.className = data.maintenance ? 'closed' : '';
-            }
-            if (maintBtn) maintBtn.textContent = data.maintenance ? '🔓 Открыть доступ' : '🔒 Закрыть доступ';
+            if (maintText) { maintText.textContent = data.maintenance ? 'Закрыто' : 'Открыто'; maintText.className = data.maintenance ? 'closed' : ''; }
+            if (maintBtn) maintBtn.textContent = data.maintenance ? ' Открыть доступ' : '🔒 Закрыть доступ';
             const topList = document.getElementById('admin-top-users');
             if (topList && data.top_users && data.top_users.length > 0) {
                 topList.innerHTML = '';
@@ -1005,7 +1266,7 @@ async function adminGiveXP() {
             showToast(`✅ Выдано ${amount} XP пользователю ${targetId}`, 'success');
             setTimeout(() => loadData(), 500);
         } else {
-            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
+            showToast(' ' + (data.error || 'Ошибка'), 'error');
         }
     } catch (error) {
         showToast('❌ Ошибка', 'error');
@@ -1021,7 +1282,7 @@ async function adminRemoveXP() {
     }
     const amount = prompt('➖ Введите количество XP для изъятия:');
     if (!amount || isNaN(amount) || amount <= 0) {
-        showToast('❌ Неверное количество', 'error');
+        showToast(' Неверное количество', 'error');
         return;
     }
     try {
@@ -1035,7 +1296,7 @@ async function adminRemoveXP() {
             showToast(`✅ Изъято ${amount} XP у пользователя ${targetId}`, 'success');
             setTimeout(() => loadData(), 500);
         } else {
-            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
+            showToast(' ' + (data.error || 'Ошибка'), 'error');
         }
     } catch (error) {
         showToast('❌ Ошибка', 'error');
@@ -1088,11 +1349,11 @@ async function adminUnbanUser() {
 
 document.getElementById('bear').addEventListener('click', function(e) {
     if (playerData.isBanned) {
-        showToast('⛔ Вы заблокированы!', 'error');
+        showToast(' Вы заблокированы!', 'error');
         return;
     }
     if (playerData.energy < playerData.clickPower) {
-        showToast('⚠️ Недостаточно энергии!', 'error');
+        showToast('️ Недостаточно энергии!', 'error');
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
         return;
     }
