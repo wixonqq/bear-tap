@@ -43,6 +43,9 @@ async function loadPurchases() {
 async function loadData() {
     const userId = getUserId();
     if (!userId) { showToast('Ошибка: не получен ID', 'error'); loadLocalData(); return; }
+    
+    const isAdmin = userId === ADMIN_ID;
+    
     try {
         const response = await fetch(`${API_URL}/api/user_data?user_id=${userId}`);
         if (!response.ok) {
@@ -51,7 +54,6 @@ async function loadData() {
         }
         const data = await response.json();
         
-        // ПРОВЕРКА НА БАН
         if (data.is_banned === 1) {
             document.getElementById('ban-overlay').style.display = 'flex';
             document.getElementById('maintenance-overlay').style.display = 'none';
@@ -59,7 +61,7 @@ async function loadData() {
             return;
         }
         
-        if (data.maintenance && !playerData.isAdmin) {
+        if (data.maintenance && !isAdmin) {
             document.getElementById('ban-overlay').style.display = 'none';
             document.getElementById('maintenance-overlay').style.display = 'flex';
             document.getElementById('main-app').style.display = 'none';
@@ -86,7 +88,7 @@ async function loadData() {
             firstName: data.first_name || '', 
             lastSave: Date.now(), 
             lastSpin: data.last_spin || 0, 
-            isAdmin: userId === ADMIN_ID,
+            isAdmin: isAdmin, 
             skin: data.skin || 'default',
             energyRegen: data.energy_regen || 1,
             isBanned: data.is_banned === 1
@@ -109,7 +111,6 @@ async function loadData() {
         loadLocalData(); 
     }
 }
-
 function loadLocalData() {
     const saved = localStorage.getItem('bearTapData');
     if (saved) { playerData = JSON.parse(saved); const timePassed = (Date.now() - playerData.lastSave) / 1000; playerData.energy = Math.min(playerData.maxEnergy || 1000, (playerData.energy || 1000) + Math.floor(timePassed / 2) * (playerData.energyRegen || 1)); }
