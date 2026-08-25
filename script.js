@@ -128,17 +128,83 @@ async function buyItem(itemId) {
 }
 
 async function spinWheel() {
-    if (wheelSpinning) return; const userId = getUserId(); if (!userId) return;
-    const now = Date.now() / 1000; const timeSinceLastSpin = now - playerData.lastSpin;
-    if (timeSinceLastSpin < 3600) { const remaining = Math.ceil(3600 - timeSinceLastSpin); const minutes = Math.floor(remaining / 60); const seconds = remaining % 60; showToast(`⏳ Подождите ${minutes}м ${seconds}с`, 'error'); return; }
-    wheelSpinning = true; const wheel = document.getElementById('wheel'); const spinBtn = document.getElementById('spin-btn'); spinBtn.disabled = true;
-    const prizes = [100, 500, 1000, 5000, 10000, 50000, 100000, 0]; const chances = [30, 25, 20, 10, 5, 2, 1, 7]; const totalChance = chances.reduce((a, b) => a + b, 0); const rand = Math.floor(Math.random() * totalChance) + 1; let cumulative = 0; let wonIndex = 0;
-    for (let i = 0; i < chances.length; i++) { cumulative += chances[i]; if (rand <= cumulative) { wonIndex = i; break; } }
-    const segmentAngle = 360 / 8; const targetAngle = 360 - (wonIndex * segmentAngle) - (segmentAngle / 2); const fullRotations = 5 * 360; const finalRotation = fullRotations + targetAngle;
+    if (wheelSpinning) return; 
+    const userId = getUserId(); 
+    if (!userId) return;
+    
+    const now = Date.now() / 1000; 
+    const timeSinceLastSpin = now - playerData.lastSpin;
+    
+    if (timeSinceLastSpin < 3600) { 
+        const remaining = Math.ceil(3600 - timeSinceLastSpin); 
+        const minutes = Math.floor(remaining / 60); 
+        const seconds = remaining % 60; 
+        showToast(`⏳ Подождите ${minutes}м ${seconds}с`, 'error'); 
+        return; 
+    }
+    
+    wheelSpinning = true; 
+    const wheel = document.getElementById('wheel'); 
+    const spinBtn = document.getElementById('spin-btn'); 
+    spinBtn.disabled = true;
+    
+    // 12 секторов по 30 градусов
+    const prizes = [100, 500, 1000, 5000, 10000, 20000, 30000, 0, 100, 500, 1000, 5000];
+    const chances = [30, 25, 20, 10, 5, 3, 1, 21, 30, 25, 20, 10];
+    const totalChance = chances.reduce((a, b) => a + b, 0);
+    const rand = Math.floor(Math.random() * totalChance) + 1;
+    let cumulative = 0;
+    let wonIndex = 0;
+    
+    for (let i = 0; i < chances.length; i++) { 
+        cumulative += chances[i]; 
+        if (rand <= cumulative) { wonIndex = i; break; } 
+    }
+    
+    const segmentAngle = 360 / 12;
+    const targetAngle = 360 - (wonIndex * segmentAngle) - (segmentAngle / 2);
+    const fullRotations = 5 * 360;
+    const finalRotation = fullRotations + targetAngle;
+    
     wheel.style.transform = `rotate(${finalRotation}deg)`;
+    
     setTimeout(async () => {
-        try { const response = await fetch(`${API_URL}/api/spin_wheel`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId }) }); const data = await response.json(); if (data.prize !== undefined) { playerData.lastSpin = data.last_spin; playerData.xp += data.prize; if (data.prize > 0) showToast(` Вы выиграли ${data.prize} XP!`, 'success'); else showToast('😔 Ничего не выиграли. Попробуйте через час!', 'error'); updateUI(); updateProfile(); checkWheelTimer(); } else showToast('❌ ' + (data.error || 'Ошибка'), 'error'); } catch (error) { showToast('❌ Ошибка', 'error'); }
-        wheelSpinning = false; spinBtn.disabled = false; wheel.style.transition = 'none'; wheel.style.transform = `rotate(${targetAngle}deg)`; setTimeout(() => { wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)'; }, 50);
+        try { 
+            const response = await fetch(`${API_URL}/api/spin_wheel`, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ user_id: userId }) 
+            }); 
+            const data = await response.json(); 
+            
+            if (data.prize !== undefined) { 
+                playerData.lastSpin = data.last_spin; 
+                playerData.xp += data.prize; 
+                
+                if (data.prize > 0) {
+                    showToast(`🎉 Вы выиграли ${data.prize} XP!`, 'success'); 
+                } else {
+                    showToast('😔 Ничего не выиграли. Попробуйте через час!', 'error'); 
+                }
+                
+                updateUI(); 
+                updateProfile(); 
+                checkWheelTimer(); 
+            } else {
+                showToast('❌ ' + (data.error || 'Ошибка'), 'error'); 
+            }
+        } catch (error) { 
+            showToast('❌ Ошибка', 'error'); 
+        }
+        
+        wheelSpinning = false; 
+        spinBtn.disabled = false; 
+        wheel.style.transition = 'none'; 
+        wheel.style.transform = `rotate(${targetAngle}deg)`; 
+        
+        setTimeout(() => { 
+            wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)'; 
+        }, 50);
     }, 4000);
 }
 
