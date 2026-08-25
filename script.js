@@ -25,7 +25,6 @@ function applySkin(skinName) {
         bear.classList.add('skin-' + skinName);
     }
 }
-
 function recalculateBonuses() {
     let clickPower = 1;
     let maxEnergy = 1000;
@@ -56,7 +55,6 @@ function recalculateBonuses() {
     
     console.log('Бонусы пересчитаны:', { clickPower, maxEnergy, energyRegen, energy: playerData.energy });
 }
-
 async function loadPurchases() {
     const userId = getUserId();
     if (!userId) return;
@@ -106,7 +104,7 @@ async function loadData() {
         playerData = { 
             xp: data.xp || 0, 
             totalClicks: data.total_clicks || 0, 
-            energy: data.energy !== undefined ? data.energy : 1000, 
+            energy: (data.energy !== undefined && data.energy !== null) ? data.energy : 1000,
             maxEnergy: data.max_energy || 1000, 
             clickPower: data.click_power || 1, 
             level: Math.floor((data.xp || 0) / 100) + 1, 
