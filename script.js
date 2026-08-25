@@ -1,5 +1,6 @@
 const tg = window.Telegram.WebApp; tg.expand(); tg.ready();
-const API_URL = 'https://botandreybot-andrey5453.amvera.io';
+//const API_URL = 'https://botandreybot-andrey5453.amvera.io';
+const API_URL = 'http://botandreybot-andrey5453.amvera.io';
 const ADMIN_ID = 7650149888;
 
 let playerData = { xp: 0, totalClicks: 0, energy: 1000, maxEnergy: 1000, clickPower: 1, level: 1, wins: 0, referrals: 0, achievements: [], username: '', firstName: '', lastSave: Date.now(), lastSpin: 0, isAdmin: false };
