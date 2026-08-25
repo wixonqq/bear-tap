@@ -97,17 +97,85 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
 .shop-buy-btn.purchased { background: rgba(46, 213, 115, 0.2); border: 2px solid #2ed573; color: #2ed573; cursor: default; }
 .shop-buy-btn.equipped { background: linear-gradient(135deg, #2ed573, #7bed9f); box-shadow: 0 4px 15px rgba(46, 213, 115, 0.4); color: #fff; }
 
-/* Колесо */
-.wheel-container { display: flex; justify-content: center; margin: 20px 0; position: relative; width: 320px; height: 320px; }
-.wheel { width: 300px; height: 300px; border-radius: 50%; position: absolute; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(0, 0, 0, 0.2); border: 8px solid #1e3a8a; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); background: conic-gradient(#3b82f6 0deg 30deg, #ffffff 30deg 60deg, #60a5fa 60deg 90deg, #ffffff 90deg 120deg, #9333ea 120deg 150deg, #ffffff 150deg 180deg, #ec4899 180deg 210deg, #ffffff 210deg 240deg, #8b5cf6 240deg 270deg, #ffffff 270deg 300deg, #3b82f6 300deg 330deg, #ffffff 330deg 360deg); }
-.wheel-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
-.wheel::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: radial-gradient(circle, #fbbf24, #f59e0b); border-radius: 50%; border: 4px solid #fff; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); z-index: 20; }
-.wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 40px solid #fbbf24; z-index: 30; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)); }
-.wheel-pointer::before { content: ''; position: absolute; top: -45px; left: -15px; width: 30px; height: 20px; background: linear-gradient(135deg, #fbbf24, #f59e0b); border-radius: 4px 4px 0 0; }
-.wheel-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none; border-radius: 14px; color: #0a0e27; font-size: 17px; font-weight: 800; cursor: pointer; margin-top: 18px; transition: all 0.3s; box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4); }
-.wheel-btn:active { transform: scale(0.97); box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); }
-.wheel-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
-.wheel-timer { text-align: center; margin: 14px 0; font-size: 15px; color: #FFD700; font-weight: 700; padding: 12px; background: rgba(255, 215, 0, 0.1); border-radius: 10px; border: 1px solid rgba(255, 215, 0, 0.3); }
+/* Колесо Фортуны */
+.wheel-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    position: relative;
+    width: 320px;
+    height: 320px;
+}
+
+.wheel-svg {
+    width: 300px;
+    height: 300px;
+    transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+}
+
+.wheel-pointer {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 25px solid transparent;
+    border-right: 25px solid transparent;
+    border-top: 50px solid #fbbf24;
+    z-index: 30;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.wheel-pointer::before {
+    content: '';
+    position: absolute;
+    top: -55px;
+    left: -20px;
+    width: 40px;
+    height: 25px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    border-radius: 4px 4px 0 0;
+}
+
+.wheel-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border: none;
+    border-radius: 14px;
+    color: #0a0e27;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 18px;
+    transition: all 0.3s;
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+.wheel-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.wheel-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.wheel-timer {
+    text-align: center;
+    margin: 14px 0;
+    font-size: 15px;
+    color: #FFD700;
+    font-weight: 700;
+    padding: 12px;
+    background: rgba(255, 215, 0, 0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
 
 /* Скины */
 .bear.skin-gold .head, .bear.skin-gold .body, .bear.skin-gold .ear { background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%) !important; }
