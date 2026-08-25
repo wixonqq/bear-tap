@@ -288,86 +288,183 @@ async function equipSkin(skinName) {
 }
 
 async function spinWheel() {
-    if (wheelSpinning) return; 
-    const userId = getUserId(); 
-    if (!userId) return;
-    
-    const now = Date.now() / 1000; 
-    const timeSinceLastSpin = now - playerData.lastSpin;
-    
-    if (timeSinceLastSpin < 3600) { 
-        const remaining = Math.ceil(3600 - timeSinceLastSpin); 
-        const minutes = Math.floor(remaining / 60); 
-        const seconds = remaining % 60; 
-        showToast(`⏳ Подождите ${minutes}м ${seconds}с`, 'error'); 
-        return; 
+    if (wheelSpinning) {
+        return;
     }
-    
-    wheelSpinning = true; 
-    const wheel = document.getElementById('wheel'); 
-    const spinBtn = document.getElementById('spin-btn'); 
+
+    const userId = getUserId();
+
+    if (!userId) {
+        showToast('❌ Пользователь не найден', 'error');
+        return;
+    }
+
+    const now = Math.floor(Date.now() / 1000);
+    const timeSinceLastSpin = now - Number(playerData.lastSpin || 0);
+
+    if (timeSinceLastSpin < 3600) {
+        const remaining = Math.ceil(3600 - timeSinceLastSpin);
+        const minutes = Math.floor(remaining / 60);
+        const seconds = remaining % 60;
+
+        showToast(
+            `⏳ Подождите ${minutes}м ${seconds}с`,
+            'error'
+        );
+
+        return;
+    }
+
+    const wheel = document.getElementById('wheel');
+    const spinBtn = document.getElementById('spin-btn');
+
+    if (!wheel || !spinBtn) {
+        showToast('❌ Элемент колеса не найден', 'error');
+        return;
+    }
+
+    wheelSpinning = true;
     spinBtn.disabled = true;
-    
+
     // 13 секторов
-    const prizes = [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000];
-    const chances = [25, 20, 15, 10, 8, 6, 5, 4, 3, 2, 1, 0.5, 0.5];
-    const totalChance = chances.reduce((a, b) => a + b, 0);
-    const rand = Math.random() * totalChance;
+    const prizes = [
+        0,
+        1000,
+        2000,
+        3000,
+        4000,
+        5000,
+        6000,
+        7000,
+        8000,
+        9000,
+        10000,
+        11000,
+        12000
+    ];
+
+    const chances = [
+        25,
+        20,
+        15,
+        10,
+        8,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1,
+        0.5,
+        0.5
+    ];
+
+    const totalChance = chances.reduce(
+        (sum, chance) => sum + chance,
+        0
+    );
+
+    const randomValue = Math.random() * totalChance;
     let cumulative = 0;
     let wonIndex = 0;
-    
-    for (let i = 0; i < chances.length; i++) { 
-        cumulative += chances[i]; 
-        if (rand <= cumulative) { wonIndex = i; break; } 
+
+    for (let i = 0; i < chances.length; i++) {
+        cumulative += chances[i];
+
+        if (randomValue <= cumulative) {
+            wonIndex = i;
+            break;
+        }
     }
-    
-    const segmentAngle = 360 / 13;
-    const targetAngle = 360 - (wonIndex * segmentAngle) - (segmentAngle / 2);
+
+    const segmentCount = prizes.length;
+    const segmentAngle = 360 / segmentCount;
+
+    // Центр выбранного сектора направляется к указателю
+    const targetAngle =
+        360 - (wonIndex * segmentAngle) - (segmentAngle / 2);
+
     const fullRotations = 5 * 360;
     const finalRotation = fullRotations + targetAngle;
-    
+
+    // Сбрасываем transition перед новым вращением
+    wheel.style.transition =
+        'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+
     wheel.style.transform = `rotate(${finalRotation}deg)`;
-    
+
     setTimeout(async () => {
-        try { 
-            const response = await fetch(`${API_URL}/api/spin_wheel`, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({ user_id: userId, prize: prizes[wonIndex] }) 
-            }); 
-            const data = await response.json(); 
-            
-            if (data.prize !== undefined) { 
-                playerData.lastSpin = data.last_spin; 
-                playerData.xp += prizes[wonIndex]; 
-                
-                if (prizes[wonIndex] > 0) {
-                    showToast(` Вы выиграли ${prizes[wonIndex]} XP!`, 'success'); 
-                } else {
-                    showToast('😔 Ничего не выиграли. Попробуйте через час!', 'error'); 
+        try {
+            const response = await fetch(
+                `${API_URL}/api/spin_wheel`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: userId
+                    })
                 }
-                
-                updateUI(); 
-                updateProfile(); 
-                checkWheelTimer(); 
-            } else {
-                showToast('❌ ' + (data.error || 'Ошибка'), 'error'); 
+            );
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
             }
-        } catch (error) { 
-            showToast('❌ Ошибка', 'error'); 
+
+            const data = await response.json();
+
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            const wonPrize = Number(data.prize || 0);
+
+            playerData.lastSpin = Number(
+                data.last_spin || Math.floor(Date.now() / 1000)
+            );
+
+            playerData.xp = Number(playerData.xp || 0) + wonPrize;
+
+            if (wonPrize > 0) {
+                showToast(
+                    `🎉 Вы выиграли ${wonPrize} XP!`,
+                    'success'
+                );
+            } else {
+                showToast(
+                    '😔 Ничего не выиграли. Попробуйте через час!',
+                    'error'
+                );
+            }
+
+            updateUI();
+            updateProfile();
+            checkWheelTimer();
+
+        } catch (error) {
+            console.error('Ошибка вращения:', error);
+
+            showToast(
+                `❌ ${error.message || 'Ошибка вращения'}`,
+                'error'
+            );
+        } finally {
+            wheelSpinning = false;
+            spinBtn.disabled = false;
+
+            // Оставляем колесо в положении выбранного сектора
+            wheel.style.transition = 'none';
+            wheel.style.transform = `rotate(${targetAngle}deg)`;
+
+            // Возвращаем анимацию для следующего вращения
+            requestAnimationFrame(() => {
+                wheel.style.transition =
+                    'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+            });
         }
-        
-        wheelSpinning = false; 
-        spinBtn.disabled = false; 
-        wheel.style.transition = 'none'; 
-        wheel.style.transform = `rotate(${targetAngle}deg)`; 
-        
-        setTimeout(() => { 
-            wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)'; 
-        }, 50);
     }, 4000);
 }
-
 function checkWheelTimer() {
     const timerEl = document.getElementById('wheel-timer'); if (!timerEl) return;
     const now = Date.now() / 1000; const timeSinceLastSpin = now - playerData.lastSpin;
