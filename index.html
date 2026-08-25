@@ -68,70 +68,30 @@
                 <div class="shop-list" id="shop-list"></div>
             </div>
         </div>
-
-       <!-- Колесо Фортуны -->
-<div class="screen" id="screen-wheel">
-    <div class="glass-card">
+        <!-- Колесо Фортуны -->
+        <div class="screen" id="screen-wheel">
+        <div class="glass-card">
         <h2 class="section-title">🎡 Колесо Фортуны</h2>
         <div class="wheel-timer" id="wheel-timer"></div>
         <div class="wheel-container">
             <div class="wheel-pointer"></div>
-            <svg class="wheel-svg" id="wheel" viewBox="0 0 400 400">
-                <!-- Сектор 0: 0 (синий) -->
-                <path d="M 200 200 L 200 20 A 180 180 0 0 1 348.5 64.2 Z" fill="#3b82f6" stroke="#fff" stroke-width="2"/>
-                <text x="200" y="70" fill="#fff" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(13.85 200 200)">0</text>
-                
-                <!-- Сектор 1: 1к (белый) -->
-                <path d="M 200 200 L 348.5 64.2 A 180 180 0 0 1 380 126.2 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
-                <text x="200" y="70" fill="#1e3a8a" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(41.54 200 200)">1к</text>
-                
-                <!-- Сектор 2: 2к (голубой) -->
-                <path d="M 200 200 L 380 126.2 A 180 180 0 0 1 380 200 Z" fill="#60a5fa" stroke="#fff" stroke-width="2"/>
-                <text x="200" y="70" fill="#fff" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(69.23 200 200)">2к</text>
-                
-                <!-- Сектор 3: 3к (белый) -->
-                <path d="M 200 200 L 380 200 A 180 180 0 0 1 348.5 273.8 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
-                <text x="200" y="70" fill="#1e3a8a" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(96.92 200 200)">3к</text>
-                
-                <!-- Сектор 4: 4к (фиолетовый) -->
-                <path d="M 200 200 L 348.5 273.8 A 180 180 0 0 1 273.8 348.5 Z" fill="#9333ea" stroke="#fff" stroke-width="2"/>
-                <text x="200" y="70" fill="#fff" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(124.62 200 200)">4к</text>
-                
-                <!-- Сектор 5: 5к (белый) -->
-                <path d="M 200 200 L 273.8 348.5 A 180 180 0 0 1 200 380 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
-                <text x="200" y="70" fill="#1e3a8a" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(152.31 200 200)">5к</text>
-                
-                <!-- Сектор 6: 6к (розовый) -->
-                <path d="M 200 200 L 200 380 A 180 180 0 0 1 126.2 348.5 Z" fill="#ec4899" stroke="#fff" stroke-width="2"/>
-                <text x="200" y="70" fill="#fff" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(180 200 200)">6к</text>
-                
-                <!-- Сектор 7: 7к (белый) -->
-                <path d="M 200 200 L 126.2 348.5 A 180 180 0 0 1 64.2 273.8 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
-                <text x="200" y="70" fill="#1e3a8a" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(207.69 200 200)">7к</text>
-                
-                <!-- Сектор 8: 8к (фиолетовый) -->
-                <path d="M 200 200 L 64.2 273.8 A 180 180 0 0 1 20 200 Z" fill="#8b5cf6" stroke="#fff" stroke-width="2"/>
-                <text x="200" y="70" fill="#fff" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(235.38 200 200)">8к</text>
-                
-                <!-- Сектор 9: 9к (белый) -->
-                <path d="M 200 200 L 20 200 A 180 180 0 0 1 64.2 126.2 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
-                <text x="200" y="70" fill="#1e3a8a" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(263.08 200 200)">9к</text>
-                
-                <!-- Сектор 10: 10к (синий) -->
-                <path d="M 200 200 L 64.2 126.2 A 180 180 0 0 1 126.2 64.2 Z" fill="#3b82f6" stroke="#fff" stroke-width="2"/>
-                <text x="200" y="70" fill="#fff" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(290.77 200 200)">10к</text>
-                
-                <!-- Сектор 11: 11к (белый) -->
-                <path d="M 200 200 L 126.2 64.2 A 180 180 0 0 1 200 20 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
-                <text x="200" y="70" fill="#1e3a8a" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(318.46 200 200)">11к</text>
-                
-                <!-- Сектор 12: 12к (голубой) -->
-                <path d="M 200 200 L 200 20 A 180 180 0 0 1 251.5 24.2 Z" fill="#60a5fa" stroke="#fff" stroke-width="2"/>
-                <text x="200" y="70" fill="#fff" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(346.15 200 200)">12к</text>
-                
-                <!-- Центр -->
-                <circle cx="200" cy="200" r="40" fill="#fbbf24" stroke="#fff" stroke-width="4"/>
-            </svg>
+            <div class="wheel" id="wheel">
+                <div class="wheel-center"></div>
+                <!-- 13 текстов, каждый повёрнут на угол своего сектора -->
+                <div class="wheel-text" style="transform: rotate(13.85deg) translateY(-110px)">0</div>
+                <div class="wheel-text" style="transform: rotate(41.54deg) translateY(-110px)">1к</div>
+                <div class="wheel-text" style="transform: rotate(69.23deg) translateY(-110px)">2к</div>
+                <div class="wheel-text" style="transform: rotate(96.92deg) translateY(-110px)">3к</div>
+                <div class="wheel-text" style="transform: rotate(124.62deg) translateY(-110px)">4к</div>
+                <div class="wheel-text" style="transform: rotate(152.31deg) translateY(-110px)">5к</div>
+                <div class="wheel-text" style="transform: rotate(180deg) translateY(-110px)">6к</div>
+                <div class="wheel-text" style="transform: rotate(207.69deg) translateY(-110px)">7к</div>
+                <div class="wheel-text" style="transform: rotate(235.38deg) translateY(-110px)">8к</div>
+                <div class="wheel-text" style="transform: rotate(263.08deg) translateY(-110px)">9к</div>
+                <div class="wheel-text" style="transform: rotate(290.77deg) translateY(-110px)">10к</div>
+                <div class="wheel-text" style="transform: rotate(318.46deg) translateY(-110px)">11к</div>
+                <div class="wheel-text" style="transform: rotate(346.15deg) translateY(-110px)">12к</div>
+            </div>
         </div>
         <button class="wheel-btn" id="spin-btn" onclick="spinWheel()">🎡 Крутить бесплатно</button>
     </div>
