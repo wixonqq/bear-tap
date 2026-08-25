@@ -13,8 +13,8 @@
     <div class="maintenance-overlay" id="maintenance-overlay" style="display:none;">
         <div class="maintenance-box">
             <div class="maintenance-icon">🚧</div>
-            <h2>Приложение временно закрыто</h2>
-            <p>К сожалению, сейчас проводятся технические работы. Попробуйте позже!</p>
+            <h2 id="maintenance-title">Приложение временно закрыто</h2>
+            <p id="maintenance-text-desc">К сожалению, сейчас проводятся технические работы. Попробуйте позже!</p>
         </div>
     </div>
 
@@ -22,7 +22,7 @@
         <!-- Главная -->
         <div class="screen active" id="screen-main">
             <div class="glass-card balance-card">
-                <div class="balance-label">⚡ Твой баланс XP</div>
+                <div class="balance-label"> Твой баланс XP</div>
                 <div class="balance-value"><span id="xp-balance">0</span></div>
                 <div class="per-tap">+<span id="xp-per-tap">1</span> XP за тап</div>
             </div>
@@ -30,7 +30,7 @@
                 <div class="bear-wrapper">
                     <div class="glow-ring"></div><div class="glow-ring ring-2"></div>
                     <button class="bear-btn" id="bear">
-                        <div class="bear">
+                        <div class="bear" id="bear-character">
                             <div class="ear left-ear"></div><div class="ear right-ear"></div>
                             <div class="head"><div class="eye left-eye"></div><div class="eye right-eye"></div><div class="nose"></div><div class="mouth"></div></div>
                             <div class="body"></div><div class="paw left-paw"></div><div class="paw right-paw"></div>
@@ -57,30 +57,30 @@
 
         <!-- Колесо Фортуны -->
         <div class="screen" id="screen-wheel">
-        <div class="glass-card">
-        <h2 class="section-title">🎡 Колесо Фортуны</h2>
-        <div class="wheel-timer" id="wheel-timer"></div>
-        <div class="wheel-container">
-            <div class="wheel-pointer"></div>
-            <div class="wheel" id="wheel"></div>
-            <svg class="wheel-text" viewBox="0 0 300 300">
-                <text x="150" y="45" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(15 150 150)">100</text>
-                <text x="210" y="75" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(45 150 150)">500</text>
-                <text x="245" y="125" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(75 150 150)">1000</text>
-                <text x="245" y="175" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(105 150 150)">5000</text>
-                <text x="210" y="225" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(135 150 150)">10000</text>
-                <text x="150" y="255" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(165 150 150)">20000</text>
-                <text x="90" y="255" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(195 150 150)">30000</text>
-                <text x="55" y="225" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(225 150 150)">0</text>
-                <text x="55" y="175" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(255 150 150)">35000</text>
-                <text x="90" y="125" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(285 150 150)">40000</text>
-                <text x="150" y="95" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(315 150 150)">45000</text>
-                <text x="210" y="125" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(345 150 150)">50000</text>
-            </svg>
+            <div class="glass-card">
+                <h2 class="section-title"> Колесо Фортуны</h2>
+                <div class="wheel-timer" id="wheel-timer"></div>
+                <div class="wheel-container">
+                    <div class="wheel-pointer"></div>
+                    <div class="wheel" id="wheel"></div>
+                    <svg class="wheel-text" viewBox="0 0 300 300">
+                        <text x="176" y="53" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(15 150 150)">100</text>
+                        <text x="221" y="79" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(45 150 150)">500</text>
+                        <text x="247" y="124" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(75 150 150)">1000</text>
+                        <text x="247" y="176" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(105 150 150)">5000</text>
+                        <text x="221" y="221" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(135 150 150)">10000</text>
+                        <text x="176" y="247" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(165 150 150)">20000</text>
+                        <text x="124" y="247" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(195 150 150)">30000</text>
+                        <text x="79" y="221" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(225 150 150)">0</text>
+                        <text x="53" y="176" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(255 150 150)">35000</text>
+                        <text x="53" y="124" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(285 150 150)">40000</text>
+                        <text x="79" y="79" fill="#fff" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(315 150 150)">45000</text>
+                        <text x="124" y="53" fill="#1e3a8a" font-size="14" font-weight="900" text-anchor="middle" transform="rotate(345 150 150)">50000</text>
+                    </svg>
+                </div>
+                <button class="wheel-btn" id="spin-btn" onclick="spinWheel()">🎡 Крутить бесплатно</button>
+            </div>
         </div>
-        <button class="wheel-btn" id="spin-btn" onclick="spinWheel()"> Крутить бесплатно</button>
-    </div>
-</div>
 
         <!-- Игры -->
         <div class="screen" id="screen-games">
@@ -99,22 +99,22 @@
         <!-- Профиль -->
         <div class="screen" id="screen-profile">
             <div class="glass-card profile-card">
-                <div class="profile-avatar"></div>
+                <div class="profile-avatar" id="profile-avatar">🐻</div>
                 <div class="profile-info">
                     <div class="profile-header"><h2 class="profile-name" id="profile-name">Игрок</h2><button class="admin-btn" id="admin-btn" onclick="showAdminPanel()" style="display:none;">⚙️</button></div>
                     <div class="profile-level">⭐ Уровень <span id="profile-level">1</span></div>
                 </div>
             </div>
             <div class="stats-grid">
-                <div class="stat-box"><div class="stat-emoji"></div><div class="stat-num" id="stat-wins">0</div><div class="stat-name">Побед</div></div>
-                <div class="stat-box"><div class="stat-emoji">⚡</div><div class="stat-num" id="stat-xp">0</div><div class="stat-name">Всего XP</div></div>
+                <div class="stat-box"><div class="stat-emoji">🏆</div><div class="stat-num" id="stat-wins">0</div><div class="stat-name">Побед</div></div>
+                <div class="stat-box"><div class="stat-emoji"></div><div class="stat-num" id="stat-xp">0</div><div class="stat-name">Всего XP</div></div>
                 <div class="stat-box"><div class="stat-emoji">👥</div><div class="stat-num" id="stat-refs">0</div><div class="stat-name">Рефералов</div></div>
-                <div class="stat-box"><div class="stat-emoji">👆</div><div class="stat-num" id="stat-clicks">0</div><div class="stat-name">Кликов</div></div>
+                <div class="stat-box"><div class="stat-emoji"></div><div class="stat-num" id="stat-clicks">0</div><div class="stat-name">Кликов</div></div>
             </div>
-            <div class="glass-card"><h3 class="section-title"> Топ по XP</h3><div class="top-list" id="top-xp-list"><div class="empty-state">🔄 Загрузка...</div></div></div>
-            <div class="glass-card"><h3 class="section-title">🎯 Топ победителей</h3><div class="top-list" id="top-wins-list"><div class="empty-state">🔄 Загрузка...</div></div></div>
+            <div class="glass-card"><h3 class="section-title">🏅 Топ по XP</h3><div class="top-list" id="top-xp-list"><div class="empty-state">🔄 Загрузка...</div></div></div>
+            <div class="glass-card"><h3 class="section-title">🎯 Топ победителей</h3><div class="top-list" id="top-wins-list"><div class="empty-state"> Загрузка...</div></div></div>
             <div class="glass-card referral-section">
-                <h3 class="section-title"> Пригласи друга</h3>
+                <h3 class="section-title">🔗 Пригласи друга</h3>
                 <p class="referral-desc">Получи <b>+50 XP</b> за каждого друга!</p>
                 <button class="copy-button" id="referral-btn">📋 Скопировать ссылку</button>
             </div>
@@ -123,14 +123,14 @@
         <!-- Админ Панель -->
         <div class="screen" id="screen-admin">
             <div class="glass-card">
-                <h2 class="section-title"> Админ Панель</h2>
+                <h2 class="section-title">🔧 Админ Панель</h2>
                 <div class="admin-section">
                     <h3 class="admin-title">👤 Управление пользователем</h3>
-                    <div class="admin-input-group"><input type="number" id="admin-user-id" placeholder="🆔 User ID"></div>
+                    <div class="admin-input-group"><input type="number" id="admin-user-id" placeholder=" User ID"></div>
                     <div class="admin-buttons">
                         <button class="admin-action-btn" onclick="adminGiveXP()">💰 Выдать XP</button>
                         <button class="admin-action-btn warning" onclick="adminRemoveXP()">➖ Забрать XP</button>
-                        <button class="admin-action-btn danger" onclick="adminBanUser()">🚫 Забанить</button>
+                        <button class="admin-action-btn danger" onclick="adminBanUser()"> Забанить</button>
                         <button class="admin-action-btn success" onclick="adminUnbanUser()">✅ Разбанить</button>
                     </div>
                 </div>
@@ -146,19 +146,19 @@
                         <div class="admin-stat-item"><span class="stat-label">✅ Активных:</span><span class="stat-value" id="admin-active-users">0</span></div>
                         <div class="admin-stat-item"><span class="stat-label">🚫 Забанено:</span><span class="stat-value" id="admin-banned-users">0</span></div>
                         <div class="admin-stat-item"><span class="stat-label">⭐ Всего XP:</span><span class="stat-value" id="admin-total-xp">0</span></div>
-                        <div class="admin-stat-item"><span class="stat-label"> Средний XP:</span><span class="stat-value" id="admin-avg-xp">0</span></div>
+                        <div class="admin-stat-item"><span class="stat-label">📊 Средний XP:</span><span class="stat-value" id="admin-avg-xp">0</span></div>
                         <div class="admin-stat-item"><span class="stat-label">🔗 Всего рефералов:</span><span class="stat-value" id="admin-total-refs">0</span></div>
-                        <div class="admin-stat-item"><span class="stat-label">🎮 Покупок в магазине:</span><span class="stat-value" id="admin-total-purchases">0</span></div>
+                        <div class="admin-stat-item"><span class="stat-label">🛒 Покупок в магазине:</span><span class="stat-value" id="admin-total-purchases">0</span></div>
                         <div class="admin-stat-item"><span class="stat-label">💰 Доход магазина (XP):</span><span class="stat-value" id="admin-total-revenue">0</span></div>
-                        <div class="admin-stat-item"><span class="stat-label">💻 Всего игр:</span><span class="stat-value" id="admin-total-games">0</span></div>
+                        <div class="admin-stat-item"><span class="stat-label">🎮 Всего игр:</span><span class="stat-value" id="admin-total-games">0</span></div>
                     </div>
                     <button class="admin-action-btn" onclick="loadAdminStats()">🔄 Обновить статистику</button>
                 </div>
                 <div class="admin-section">
-                    <h3 class="admin-title"> Топ пользователей</h3>
+                    <h3 class="admin-title">🏆 Топ пользователей</h3>
                     <div class="top-list" id="admin-top-users"><div class="empty-state">🔄 Загрузка...</div></div>
                 </div>
-                <button class="back-btn" onclick="backToProfile()"> Назад в профиль</button>
+                <button class="back-btn" onclick="backToProfile()">🔙 Назад в профиль</button>
             </div>
         </div>
 
@@ -169,7 +169,7 @@
                 <div class="game-input"><input type="number" id="crash-bet" placeholder="💰 Ставка XP" min="100"></div>
                 <div class="crash-display" id="crash-display"><div class="crash-multiplier" id="crash-multiplier">1.00x</div></div>
                 <div class="game-buttons">
-                    <button class="game-btn start" id="crash-start" onclick="startCrash()"> Начать</button>
+                    <button class="game-btn start" id="crash-start" onclick="startCrash()">🚀 Начать</button>
                     <button class="game-btn cashout" id="crash-cashout" onclick="cashoutCrash()" disabled>💰 Забрать</button>
                 </div>
                 <button class="back-btn" onclick="switchScreen('games')">🔙 Назад к играм</button>
@@ -198,7 +198,7 @@
                 <div class="roulette-wheel" id="roulette-wheel"><div class="roulette-result" id="roulette-result">Выберите цвет</div></div>
                 <div class="roulette-buttons">
                     <button class="roulette-btn red" onclick="spinRoulette('red')">🔴 Красное (x2)</button>
-                    <button class="roulette-btn black" onclick="spinRoulette('black')"> Чёрное (x2)</button>
+                    <button class="roulette-btn black" onclick="spinRoulette('black')">⚫ Чёрное (x2)</button>
                     <button class="roulette-btn green" onclick="spinRoulette('green')">🟢 Зелёное (x14)</button>
                 </div>
                 <button class="back-btn" onclick="switchScreen('games')">🔙 Назад к играм</button>
@@ -224,8 +224,8 @@
                 <div class="ninja-display" id="ninja-display"><div class="ninja-multiplier" id="ninja-multiplier">1.00x</div><div class="ninja-rounds" id="ninja-rounds">Раунд: 0</div></div>
                 <div class="ninja-grid" id="ninja-grid"></div>
                 <div class="game-buttons">
-                    <button class="game-btn start" id="ninja-start" onclick="startNinja()"> Начать</button>
-                    <button class="game-btn cashout" id="ninja-cashout" onclick="cashoutNinja()" disabled> Забрать</button>
+                    <button class="game-btn start" id="ninja-start" onclick="startNinja()">🥷 Начать</button>
+                    <button class="game-btn cashout" id="ninja-cashout" onclick="cashoutNinja()" disabled>💰 Забрать</button>
                 </div>
                 <button class="back-btn" onclick="switchScreen('games')">🔙 Назад к играм</button>
             </div>
@@ -236,10 +236,10 @@
             <button class="nav-btn active" data-screen="main"><span class="nav-emoji">🐻</span><span class="nav-text">Главная</span></button>
             <button class="nav-btn" data-screen="shop"><span class="nav-emoji">🛒</span><span class="nav-text">Магазин</span></button>
             <button class="nav-btn" data-screen="wheel"><span class="nav-emoji">🎡</span><span class="nav-text">Колесо</span></button>
-            <button class="nav-btn" data-screen="games"><span class="nav-emoji">🎮</span><span class="nav-text">Игры</span></button>
+            <button class="nav-btn" data-screen="games"><span class="nav-emoji"></span><span class="nav-text">Игры</span></button>
             <button class="nav-btn" data-screen="profile"><span class="nav-emoji">👤</span><span class="nav-text">Профиль</span></button>
         </nav>
     </div>
-    <script src="script.js?v=52"></script>
+    <script src="script.js?v=60"></script>
 </body>
 </html>
