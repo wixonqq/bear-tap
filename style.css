@@ -162,6 +162,9 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     pointer-events: none;
     opacity: 1;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+    text-align: center;
+    width: 60px;
+    margin-left: -30px; /* Центрируем по горизонтали */
 }
 
 /* Для текста на белых секторах - тёмно-синий цвет */
