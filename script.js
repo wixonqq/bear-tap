@@ -2,10 +2,12 @@ const tg = window.Telegram.WebApp; tg.expand(); tg.ready();
 const API_URL = 'https://botandreybot-andrey5453.amvera.io';
 const ADMIN_ID = 7650149888;
 
-let playerData = { xp: 0, totalClicks: 0, energy: 1000, maxEnergy: 1000, clickPower: 1, level: 1, wins: 0, referrals: 0, achievements: [], username: '', firstName: '', lastSave: Date.now(), lastSpin: 0, isAdmin: false, skin: 'default', energyRegen: 1 };
+let playerData = { xp: 0, totalClicks: 0, energy: 1000, maxEnergy: 1000, clickPower: 1, level: 1, wins: 0, referrals: 0, achievements: [], username: '', firstName: '', lastSave: Date.now(), lastSpin: 0, isAdmin: false, skin: 'default', energyRegen: 1, isBanned: false };
 let lastSavedXp = 0; let apiWorking = false; let toasts = []; let wheelSpinning = false;
 let currentGame = null; let crashInterval = null; let currentMultiplier = 1.0; let crashPoint = 0;
 let minesState = null; let ninjaState = null;
+let purchasedItems = [];
+let currentShopCategory = 'upgrades';
 
 function getUserId() {
     if (tg.initDataUnsafe?.user?.id) return tg.initDataUnsafe.user.id;
@@ -22,6 +24,22 @@ function applySkin(skinName) {
     }
 }
 
+async function loadPurchases() {
+    const userId = getUserId();
+    if (!userId) return;
+    try {
+        const response = await fetch(`${API_URL}/api/purchases?user_id=${userId}`);
+        if (response.ok) {
+            const data = await response.json();
+            purchasedItems = data.purchases || [];
+            if (data.current_skin) {
+                playerData.skin = data.current_skin;
+                applySkin(playerData.skin);
+            }
+        }
+    } catch (error) { console.error('Load purchases error:', error); }
+}
+
 async function loadData() {
     const userId = getUserId();
     if (!userId) { showToast('Ошибка: не получен ID', 'error'); loadLocalData(); return; }
@@ -33,22 +51,21 @@ async function loadData() {
         }
         const data = await response.json();
         
+        // ПРОВЕРКА НА БАН
         if (data.is_banned === 1) {
             document.getElementById('ban-overlay').style.display = 'flex';
-            document.getElementById('main-app').style.display = 'none';
             document.getElementById('maintenance-overlay').style.display = 'none';
+            document.getElementById('main-app').style.display = 'none';
+            return;
+        }
+        
+        if (data.maintenance && !playerData.isAdmin) {
+            document.getElementById('ban-overlay').style.display = 'none';
+            document.getElementById('maintenance-overlay').style.display = 'flex';
+            document.getElementById('main-app').style.display = 'none';
             return;
         } else {
             document.getElementById('ban-overlay').style.display = 'none';
-            document.getElementById('main-app').style.display = 'block';
-        }
-        if (data.maintenance && !playerData.isAdmin) {
-            document.getElementById('maintenance-overlay').style.display = 'flex';
-            document.getElementById('maintenance-title').textContent = '🚧 Приложение временно закрыто';
-            document.getElementById('maintenance-text-desc').textContent = 'К сожалению, сейчас проводятся технические работы. Попробуйте позже!';
-            document.getElementById('main-app').style.display = 'none';
-            return;
-        } else {
             document.getElementById('maintenance-overlay').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
         }
@@ -71,10 +88,12 @@ async function loadData() {
             lastSpin: data.last_spin || 0, 
             isAdmin: userId === ADMIN_ID,
             skin: data.skin || 'default',
-            energyRegen: data.energy_regen || 1
+            energyRegen: data.energy_regen || 1,
+            isBanned: data.is_banned === 1
         };
         
         applySkin(playerData.skin);
+        await loadPurchases();
         
         lastSavedXp = playerData.xp; 
         updateUI(); 
@@ -159,22 +178,49 @@ function renderShop() {
     const shopList = document.getElementById('shop-list'); const shopBalance = document.getElementById('shop-balance');
     if (!shopList) return; if (shopBalance) shopBalance.textContent = playerData.xp.toLocaleString();
     shopList.innerHTML = '';
-    const shopItems = [
-        {id: 'click_power_2', name: ' Сила клика x2', price: 250000, desc: 'Тапай в 2 раза эффективнее'},
-        {id: 'click_power_5', name: '⚡ Сила клика x5', price: 1000000, desc: 'Тапай в 5 раз эффективнее'},
-        {id: 'click_power_10', name: '⚡⚡⚡ Сила клика x10', price: 5000000, desc: 'Тапай в 10 раз эффективнее'},
-        {id: 'max_energy_2000', name: '🔋 Энергия 2000', price: 500000, desc: 'Больше энергии для тапов'},
-        {id: 'max_energy_5000', name: '🔋🔋 Энергия 5000', price: 2000000, desc: 'Огромный запас энергии'},
-        {id: 'energy_regen_2', name: '⚡ Реген x2', price: 750000, desc: 'Энергия восстанавливается быстрее'},
-        {id: 'energy_regen_5', name: '⚡⚡ Реген x5', price: 3000000, desc: 'Супер быстрая регенерация'},
-        {id: 'skin_gold', name: '🌟 Золотой мишка', price: 1000000, desc: 'Золотой скин для мишки'},
-        {id: 'skin_diamond', name: '💎 Алмазный мишка', price: 5000000, desc: 'Алмазный скин для мишки'},
-        {id: 'skin_rainbow', name: '🌈 Радужный мишка', price: 10000000, desc: 'Радужный скин для мишки'}
-    ];
-    shopItems.forEach(item => {
-        const div = document.createElement('div'); div.className = 'shop-item'; const canAfford = playerData.xp >= item.price;
-        div.innerHTML = `<div class="shop-item-info"><div class="shop-item-name">${item.name}</div><div class="shop-item-desc">${item.desc}</div><div class="shop-item-price">💰 ${item.price.toLocaleString()} XP</div></div><button class="shop-buy-btn ${canAfford ? '' : 'disabled'}" ${canAfford ? '' : 'disabled'}>${canAfford ? '✅ Купить' : '❌ Недостаточно'}</button>`;
-        if (canAfford) div.querySelector('.shop-buy-btn').onclick = () => buyItem(item.id);
+    
+    let items = [];
+    if (currentShopCategory === 'upgrades') {
+        items = [
+            {id: 'click_power_2', name: '⚡ Сила клика x2', price: 250000, desc: 'Тапай в 2 раза эффективнее'},
+            {id: 'click_power_5', name: '⚡⚡ Сила клика x5', price: 1000000, desc: 'Тапай в 5 раз эффективнее'},
+            {id: 'click_power_10', name: '⚡⚡ Сила клика x10', price: 5000000, desc: 'Тапай в 10 раз эффективнее'},
+            {id: 'max_energy_2000', name: '🔋 Энергия 2000', price: 500000, desc: 'Больше энергии для тапов'},
+            {id: 'max_energy_5000', name: '🔋🔋 Энергия 5000', price: 2000000, desc: 'Огромный запас энергии'},
+            {id: 'energy_regen_2', name: '⚡ Реген x2', price: 750000, desc: 'Энергия восстанавливается быстрее'},
+            {id: 'energy_regen_5', name: '⚡ Реген x5', price: 3000000, desc: 'Супер быстрая регенерация'}
+        ];
+    } else {
+        items = [
+            {id: 'skin_gold', name: '🌟 Золотой мишка', price: 1000000, desc: 'Золотой скин для мишки'},
+            {id: 'skin_diamond', name: ' Алмазный мишка', price: 5000000, desc: 'Алмазный скин для мишки'},
+            {id: 'skin_rainbow', name: '🌈 Радужный мишка', price: 10000000, desc: 'Радужный скин для мишки'}
+        ];
+    }
+    
+    items.forEach(item => {
+        const div = document.createElement('div'); div.className = 'shop-item';
+        const isPurchased = purchasedItems.includes(item.id);
+        const canAfford = playerData.xp >= item.price;
+        
+        let btnText, btnClass, btnAction;
+        if (isPurchased && item.id.startsWith('skin_')) {
+            const skinName = item.id.replace('skin_', '');
+            if (playerData.skin === skinName) {
+                btnText = '✅ Надето'; btnClass = 'equipped'; btnAction = null;
+            } else {
+                btnText = '👕 Надеть'; btnClass = 'purchased'; btnAction = () => equipSkin(skinName);
+            }
+        } else if (isPurchased) {
+            btnText = '✅ Куплено'; btnClass = 'purchased'; btnAction = null;
+        } else if (canAfford) {
+            btnText = '🛒 Купить'; btnClass = ''; btnAction = () => buyItem(item.id);
+        } else {
+            btnText = '❌ Мало XP'; btnClass = 'disabled'; btnAction = null;
+        }
+        
+        div.innerHTML = `<div class="shop-item-info"><div class="shop-item-name">${item.name}</div><div class="shop-item-desc">${item.desc}</div><div class="shop-item-price"> ${item.price.toLocaleString()} XP</div></div><button class="shop-buy-btn ${btnClass}">${btnText}</button>`;
+        if (btnAction) div.querySelector('.shop-buy-btn').onclick = btnAction;
         shopList.appendChild(div);
     });
 }
@@ -189,7 +235,7 @@ async function buyItem(itemId) {
         'max_energy_5000': {price: 2000000, name: '🔋 Энергия 5000'},
         'energy_regen_2': {price: 750000, name: '⚡ Реген x2'},
         'energy_regen_5': {price: 3000000, name: '⚡⚡ Реген x5'},
-        'skin_gold': {price: 1000000, name: ' Золотой мишка'},
+        'skin_gold': {price: 1000000, name: '🌟 Золотой мишка'},
         'skin_diamond': {price: 5000000, name: '💎 Алмазный мишка'},
         'skin_rainbow': {price: 10000000, name: '🌈 Радужный мишка'}
     };
@@ -208,12 +254,35 @@ async function buyItem(itemId) {
                 const skinName = itemId.replace('skin_', '');
                 applySkin(skinName);
             }
+            await loadPurchases();
             await loadData(); 
         } else {
             showToast('❌ ' + (data.error || 'Ошибка'), 'error'); 
         }
     } catch (error) { 
         showToast('❌ Ошибка покупки', 'error'); 
+    }
+}
+
+async function equipSkin(skinName) {
+    const userId = getUserId(); if (!userId) return;
+    try {
+        const response = await fetch(`${API_URL}/api/equip_skin`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, skin: skinName })
+        });
+        const data = await response.json();
+        if (data.status === 'equipped') {
+            applySkin(skinName);
+            playerData.skin = skinName;
+            showToast(`✅ Скин "${skinName}" надет!`, 'success');
+            renderShop();
+        } else {
+            showToast(' ' + (data.error || 'Ошибка'), 'error');
+        }
+    } catch (error) {
+        showToast('❌ Ошибка', 'error');
     }
 }
 
@@ -373,7 +442,7 @@ async function startMines() {
             initMinesGrid(); 
             const cashoutBtn = document.getElementById('mines-cashout'); 
             const startBtn = document.getElementById('mines-start'); 
-            if (cashoutBtn) { cashoutBtn.textContent = ' Забрать'; cashoutBtn.disabled = false; } 
+            if (cashoutBtn) { cashoutBtn.textContent = '💰 Забрать'; cashoutBtn.disabled = false; } 
             if (startBtn) startBtn.disabled = true; 
             updateMinesInfo(); 
         } else showToast('❌ ' + (data.error || 'Ошибка'), 'error'); 
@@ -391,7 +460,7 @@ async function revealMine(index) {
             showToast(' Вы подорвались на мине!', 'error'); 
             const cashoutBtn = document.getElementById('mines-cashout'); 
             const startBtn = document.getElementById('mines-start'); 
-            if (cashoutBtn) { cashoutBtn.textContent = '💰 Забрать'; cashoutBtn.disabled = true; } 
+            if (cashoutBtn) { cashoutBtn.textContent = ' Забрать'; cashoutBtn.disabled = true; } 
             if (startBtn) startBtn.disabled = false; 
             currentGame = null; minesState = null; loadData(); 
         } else if (data.status === 'safe') { 
@@ -415,7 +484,7 @@ async function cashoutMines() {
             showToast(`✅ Вы забрали ${data.win} XP!`, 'success'); 
             const cashoutBtn = document.getElementById('mines-cashout'); 
             const startBtn = document.getElementById('mines-start'); 
-            if (cashoutBtn) { cashoutBtn.textContent = ' Забрать'; cashoutBtn.disabled = true; } 
+            if (cashoutBtn) { cashoutBtn.textContent = '💰 Забрать'; cashoutBtn.disabled = true; } 
             if (startBtn) startBtn.disabled = false; 
             currentGame = null; minesState = null; loadData(); 
         } 
@@ -430,7 +499,7 @@ async function spinRoulette(color) {
         const data = await response.json(); 
         const resultEl = document.getElementById('roulette-result'); 
         if (resultEl) { 
-            const colorEmojis = {red: '🔴', black: '⚫', green: '🟢'}; 
+            const colorEmojis = {red: '🔴', black: '⚫', green: ''}; 
             const colorNames = {red: 'Красное', black: 'Чёрное', green: 'Зелёное'}; 
             resultEl.textContent = `Выпало: ${colorEmojis[data.result]} ${colorNames[data.result]}`; 
             if (data.status === 'won') { 
@@ -455,7 +524,7 @@ async function playDouble(choice) {
         const data = await response.json(); 
         const resultEl = document.getElementById('double-result'); 
         if (resultEl) { 
-            const colorEmojis = {red: '', black: '⚫', green: '🟢'}; 
+            const colorEmojis = {red: '🔴', black: '⚫', green: '🟢'}; 
             const colorNames = {red: 'Красное', black: 'Чёрное', green: 'Зелёное'}; 
             resultEl.textContent = `Выпало: ${colorEmojis[data.result]} ${colorNames[data.result]}`; 
             if (data.status === 'won') { 
@@ -511,7 +580,7 @@ async function pickNinja(index) {
             ninjaState.multiplier = data.multiplier; ninjaState.rounds = data.rounds; 
             updateNinjaInfo(); 
         } 
-    } catch (error) { showToast(' Ошибка', 'error'); }
+    } catch (error) { showToast('❌ Ошибка', 'error'); }
 }
 
 function updateNinjaInfo() { if (!ninjaState) return; const multEl = document.getElementById('ninja-multiplier'); const roundsEl = document.getElementById('ninja-rounds'); if (multEl) multEl.textContent = ninjaState.multiplier.toFixed(2) + 'x'; if (roundsEl) roundsEl.textContent = `Раунд: ${ninjaState.rounds}`; }
@@ -553,7 +622,7 @@ async function loadAdminStats() {
             const maintText = document.getElementById('maintenance-text'); 
             const maintBtn = document.getElementById('maintenance-btn'); 
             if (maintText) { maintText.textContent = data.maintenance ? 'Закрыто' : 'Открыто'; maintText.className = data.maintenance ? 'closed' : ''; } 
-            if (maintBtn) maintBtn.textContent = data.maintenance ? ' Открыть доступ' : '🔒 Закрыть доступ'; 
+            if (maintBtn) maintBtn.textContent = data.maintenance ? '🔓 Открыть доступ' : '🔒 Закрыть доступ'; 
             const topList = document.getElementById('admin-top-users'); 
             if (topList && data.top_users && data.top_users.length > 0) { 
                 topList.innerHTML = ''; 
@@ -574,7 +643,7 @@ async function toggleMaintenance() {
         const response = await fetch(`${API_URL}/api/admin_action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ admin_id: userId, action: 'toggle_maintenance' }) }); 
         const data = await response.json(); 
         if (data.status === 'maintenance_toggled') { 
-            showToast(data.maintenance ? ' Доступ закрыт' : '🔓 Доступ открыт', 'success'); 
+            showToast(data.maintenance ? '🔒 Доступ закрыт' : ' Доступ открыт', 'success'); 
             loadAdminStats(); 
         } 
     } catch (error) { showToast('❌ Ошибка', 'error'); }
@@ -608,7 +677,7 @@ async function adminRemoveXP() {
     const userId = getUserId(); 
     const targetId = document.getElementById('admin-user-id').value; 
     if (!userId || !targetId) { showToast('❌ Введите User ID', 'error'); return; } 
-    const amount = prompt('➖ Введите количество XP для изъятия:'); 
+    const amount = prompt(' Введите количество XP для изъятия:'); 
     if (!amount || isNaN(amount) || amount <= 0) { showToast('❌ Неверное количество', 'error'); return; } 
     try { 
         const response = await fetch(`${API_URL}/api/admin_action`, { 
@@ -624,14 +693,14 @@ async function adminRemoveXP() {
             showToast('❌ ' + (data.error || 'Ошибка'), 'error'); 
         }
     } catch (error) { 
-        showToast('❌ Ошибка', 'error'); 
+        showToast(' Ошибка', 'error'); 
     } 
 }
 
 async function adminBanUser() { 
     const userId = getUserId(); 
     const targetId = document.getElementById('admin-user-id').value; 
-    if (!userId || !targetId) { showToast(' Введите User ID', 'error'); return; } 
+    if (!userId || !targetId) { showToast('❌ Введите User ID', 'error'); return; } 
     if (!confirm(`🚫 Забанить пользователя ${targetId}?`)) return; 
     try { 
         const response = await fetch(`${API_URL}/api/admin_action`, { 
@@ -663,8 +732,9 @@ async function adminUnbanUser() {
 }
 
 document.getElementById('bear').addEventListener('click', function(e) { 
+    if (playerData.isBanned) { showToast('⛔ Вы заблокированы!', 'error'); return; }
     if (playerData.energy < playerData.clickPower) { 
-        showToast('️ Недостаточно энергии!', 'error'); 
+        showToast('⚠️ Недостаточно энергии!', 'error'); 
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error'); 
         return; 
     } 
@@ -716,6 +786,16 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', function() { switchScreen(this.dataset.screen); }); 
 });
 
+// Вкладки магазина
+document.querySelectorAll('.shop-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        currentShopCategory = this.dataset.category;
+        renderShop();
+    });
+});
+
 function showToast(text, type = 'info') { 
     const toast = document.createElement('div'); 
     toast.className = 'toast' + (type === 'error' ? ' error' : ''); 
@@ -755,4 +835,4 @@ setInterval(saveProgress, 10000);
 setInterval(checkWheelTimer, 1000);
 
 loadData(); 
-showToast(' Тапай и зарабатывай XP!', 'success');
+showToast('🐻 Тапай и зарабатывай XP!', 'success');
