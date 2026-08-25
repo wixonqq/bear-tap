@@ -246,3 +246,83 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     .roulette-buttons, .double-buttons { flex-wrap: wrap; }
     .roulette-btn, .double-btn { min-width: calc(50% - 5px); }
 }
+.win-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease;
+}
+
+.win-modal-content {
+    background: linear-gradient(135deg, #667eea, #f093fb);
+    padding: 40px;
+    border-radius: 24px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.5);
+    animation: scaleIn 0.5s ease;
+    max-width: 90%;
+}
+
+@keyframes scaleIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.win-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    animation: bounce 1s ease infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.win-title {
+    color: #fff;
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.win-amount {
+    color: #FFD700;
+    font-size: 48px;
+    font-weight: 900;
+    margin-bottom: 30px;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.win-close {
+    background: #fff;
+    color: #667eea;
+    border: none;
+    padding: 16px 40px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.win-close:active {
+    transform: scale(0.95);
+}
+
+.toast.warning {
+    background: rgba(255, 165, 0, 0.95);
+    box-shadow: 0 8px 30px rgba(255, 165, 0, 0.5);
+}
+
+.toast.info {
+    background: rgba(59, 130, 246, 0.95);
+    box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
+}
