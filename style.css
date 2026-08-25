@@ -656,9 +656,10 @@ body {
 
 .wheel-segment span {
     position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%) rotate(90deg);
+    top: 50%;
+    left: 75%;
+    transform-origin: 0 0;
+    transform: rotate(90deg) translateX(-50%);
     font-size: 14px;
     font-weight: 800;
     color: #1e3a8a;
