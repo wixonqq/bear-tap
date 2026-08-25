@@ -26,7 +26,7 @@ let purchasedItems = [];
 let currentShopCategory = 'upgrades';
 
 function getUserId() {
-    if (tg.initDataUnsafe?.user?.id) return tg.initDataUnsafe.user.id;
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) return tg.initDataUnsafe.user.id;
     try {
         const urlParams = new URLSearchParams(window.location.search);
         const urlUserId = urlParams.get('user_id');
@@ -60,6 +60,7 @@ function recalculateBonuses() {
     playerData.clickPower = clickPower;
     playerData.maxEnergy = maxEnergy;
     playerData.energyRegen = energyRegen;
+    console.log('️ Бонусы пересчитаны:', { clickPower, maxEnergy, energyRegen, energy: playerData.energy });
 }
 
 async function loadPurchases() {
@@ -140,7 +141,7 @@ async function loadData() {
         const adminBtn = document.getElementById('admin-btn');
         if (adminBtn && playerData.isAdmin) adminBtn.style.display = 'block';
     } catch (error) {
-        console.error('❌ Ошибка загрузки данных:', error);
+        console.error(' Ошибка загрузки данных:', error);
         showToast('❌ Не удалось загрузить данные: ' + error.message, 'error');
         loadLocalData();
     }
@@ -153,7 +154,7 @@ function loadLocalData() {
         const timePassed = (Date.now() - playerData.lastSave) / 1000;
         playerData.energy = Math.min(playerData.maxEnergy || 1000, (playerData.energy || 1000) + Math.floor(timePassed / 5) * (playerData.energyRegen || 1));
     }
-    if (tg.initDataUnsafe?.user) {
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
         playerData.username = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name || 'Игрок';
         playerData.firstName = tg.initDataUnsafe.user.first_name || 'Игрок';
         playerData.isAdmin = tg.initDataUnsafe.user.id === ADMIN_ID;
@@ -288,13 +289,13 @@ function renderShop() {
     let items = [];
     if (currentShopCategory === 'upgrades') {
         items = [
-            {id: 'click_power_2', name: '⚡ Сила клика x2', price: 250000, desc: 'Тапай в 2 раза эффективнее'},
-            {id: 'click_power_5', name: '⚡⚡ Сила клика x5', price: 1000000, desc: 'Тапай в 5 раз эффективнее'},
-            {id: 'click_power_10', name: '⚡⚡⚡ Сила клика x10', price: 5000000, desc: 'Тапай в 10 раз эффективнее'},
-            {id: 'max_energy_2000', name: '🔋 Энергия 2000', price: 500000, desc: 'Больше энергии для тапов'},
-            {id: 'max_energy_5000', name: '🔋🔋 Энергия 5000', price: 2000000, desc: 'Огромный запас энергии'},
-            {id: 'energy_regen_2', name: '⚡ Реген x2', price: 750000, desc: 'Энергия восстанавливается быстрее'},
-            {id: 'energy_regen_5', name: '⚡⚡ Реген x5', price: 3000000, desc: 'Супер быстрая регенерация'}
+            {id: 'click_power_2', name: '⚡️ Сила клика x2', price: 250000, desc: 'Тапай в 2 раза эффективнее'},
+            {id: 'click_power_5', name: '⚡️⚡️ Сила клика x5', price: 1000000, desc: 'Тапай в 5 раз эффективнее'},
+            {id: 'click_power_10', name: '⚡️⚡️⚡️ Сила клика x10', price: 5000000, desc: 'Тапай в 10 раз эффективнее'},
+            {id: 'max_energy_2000', name: ' Энергия 2000', price: 500000, desc: 'Больше энергии для тапов'},
+            {id: 'max_energy_5000', name: '🔋 Энергия 5000', price: 2000000, desc: 'Огромный запас энергии'},
+            {id: 'energy_regen_2', name: '️ Реген x2', price: 750000, desc: 'Энергия восстанавливается быстрее'},
+            {id: 'energy_regen_5', name: '⚡️️ Реген x5', price: 3000000, desc: 'Супер быстрая регенерация'}
         ];
     } else {
         items = [
@@ -323,7 +324,7 @@ function renderShop() {
         } else {
             btnText = '🔒 Мало XP'; btnClass = 'disabled'; btnAction = null;
         }
-        div.innerHTML = `<div class="shop-item-info"><div class="shop-item-name">${item.name}</div><div class="shop-item-desc">${item.desc}</div><div class="shop-item-price">💰 ${item.price.toLocaleString()} XP</div></div><button class="shop-buy-btn ${btnClass}">${btnText}</button>`;
+        div.innerHTML = `<div class="shop-item-info"><div class="shop-item-name">${item.name}</div><div class="shop-item-desc">${item.desc}</div><div class="shop-item-price"> ${item.price.toLocaleString()} XP</div></div><button class="shop-buy-btn ${btnClass}">${btnText}</button>`;
         if (btnAction) div.querySelector('.shop-buy-btn').onclick = btnAction;
         shopList.appendChild(div);
     });
@@ -333,13 +334,13 @@ async function buyItem(itemId) {
     const userId = getUserId();
     if (!userId) return;
     const items = {
-        'click_power_2': {price: 250000, name: '⚡ Сила клика x2'},
-        'click_power_5': {price: 1000000, name: '⚡⚡ Сила клика x5'},
-        'click_power_10': {price: 5000000, name: '⚡⚡⚡ Сила клика x10'},
-        'max_energy_2000': {price: 500000, name: '🔋 Энергия 2000'},
-        'max_energy_5000': {price: 2000000, name: '🔋🔋 Энергия 5000'},
-        'energy_regen_2': {price: 750000, name: '⚡ Реген x2'},
-        'energy_regen_5': {price: 3000000, name: '⚡⚡ Реген x5'},
+        'click_power_2': {price: 250000, name: '⚡️ Сила клика x2'},
+        'click_power_5': {price: 1000000, name: '⚡️ Сила клика x5'},
+        'click_power_10': {price: 5000000, name: '⚡️⚡️️ Сила клика x10'},
+        'max_energy_2000': {price: 500000, name: ' Энергия 2000'},
+        'max_energy_5000': {price: 2000000, name: '🔋 Энергия 5000'},
+        'energy_regen_2': {price: 750000, name: '️ Реген x2'},
+        'energy_regen_5': {price: 3000000, name: '⚡️️ Реген x5'},
         'skin_gold': {price: 1000000, name: '🌟 Золотой мишка'},
         'skin_diamond': {price: 5000000, name: '💎 Алмазный мишка'},
         'skin_rainbow': {price: 10000000, name: '🌈 Радужный мишка'}
@@ -727,7 +728,7 @@ async function spinRoulette(color) {
                 resultEl.style.color = '#2ed573';
                 showToast(`✅ Вы выиграли ${data.win.toLocaleString()} XP!`, 'success');
             } else {
-                resultEl.textContent += ' | Вы проиграли 😔';
+                resultEl.textContent += ' | Вы проиграли ';
                 resultEl.style.color = '#ff4757';
                 showToast('❌ Вы проиграли', 'error');
             }
@@ -756,7 +757,7 @@ async function playDouble(choice) {
         const data = await response.json();
         const resultEl = document.getElementById('double-result');
         if (resultEl) {
-            const names = { '2': '⚡ x2', '3': '🔥 x3', '5': '🌟 x5', '50': '💎 x50' };
+            const names = { '2': '⚡️ x2', '3': '🔥 x3', '5': '🌟 x5', '50': '💎 x50' };
             resultEl.textContent = `Выпало: ${names[data.result] || data.result}`;
             if (data.status === 'won') {
                 resultEl.textContent += ` | Выигрыш: ${data.win.toLocaleString()} XP! 🎉`;
@@ -770,7 +771,7 @@ async function playDouble(choice) {
         }
         loadData();
     } catch (error) {
-        showToast('❌ Ошибка', 'error');
+        showToast(' Ошибка', 'error');
     }
 }
 
@@ -906,7 +907,7 @@ function initTowerGrid() {
         const cell = document.createElement('div');
         cell.className = 'tower-cell';
         cell.dataset.level = idx + 1;
-        cell.innerHTML = `<div>Ур. ${idx + 1}<br>${level.bombs} 💣<br>x${level.mult}</div>`;
+        cell.innerHTML = `<div>Ур. ${idx + 1}<br>${level.bombs} <br>x${level.mult}</div>`;
         cell.onclick = () => pickTower(idx + 1);
         grid.appendChild(cell);
     });
@@ -1022,7 +1023,7 @@ function initBubblesGrid() {
         const bubble = document.createElement('div');
         bubble.className = 'bubble';
         bubble.dataset.index = i;
-        bubble.textContent = '🫧';
+        bubble.textContent = '';
         bubble.onclick = () => popBubble(i);
         grid.appendChild(bubble);
     }
@@ -1076,7 +1077,7 @@ async function popBubble(index) {
         bubble.classList.add('popped');
         if (data.status === 'bomb') {
             bubble.classList.add('bomb');
-            bubble.textContent = '💣';
+            bubble.textContent = '';
             showToast('💥 Вы лопнули бомбу!', 'error');
             const cashoutBtn = document.getElementById('bubbles-cashout');
             const startBtn = document.getElementById('bubbles-start');
@@ -1100,7 +1101,7 @@ function updateBubblesInfo() {
     if (!bubblesState) return;
     const scoreEl = document.getElementById('bubbles-score');
     const multEl = document.getElementById('bubbles-multiplier');
-    if (scoreEl) scoreEl.textContent = `🎯 Счёт: ${bubblesState.score}`;
+    if (scoreEl) scoreEl.textContent = ` Счёт: ${bubblesState.score}`;
     if (multEl) multEl.textContent = `x${bubblesState.multiplier.toFixed(2)}`;
 }
 
@@ -1135,7 +1136,7 @@ async function flipCoin(choice) {
     const betInput = document.getElementById('coins-bet');
     const bet = parseInt(betInput.value);
     if (!bet || bet < 100 || bet > playerData.xp) {
-        showToast('❌ Неверная ставка!', 'error');
+        showToast(' Неверная ставка!', 'error');
         return;
     }
     const coinEl = document.getElementById('coin');
@@ -1205,7 +1206,7 @@ async function loadAdminStats() {
             const maintText = document.getElementById('maintenance-text');
             const maintBtn = document.getElementById('maintenance-btn');
             if (maintText) { maintText.textContent = data.maintenance ? 'Закрыто' : 'Открыто'; maintText.className = data.maintenance ? 'closed' : ''; }
-            if (maintBtn) maintBtn.textContent = data.maintenance ? '🔓 Открыть доступ' : '🔒 Закрыть доступ';
+            if (maintBtn) maintBtn.textContent = data.maintenance ? '🔓 Открыть доступ' : ' Закрыть доступ';
             const topList = document.getElementById('admin-top-users');
             if (topList && data.top_users && data.top_users.length > 0) {
                 topList.innerHTML = '';
@@ -1251,7 +1252,7 @@ async function adminGiveXP() {
     }
     const amount = prompt('💰 Введите количество XP для выдачи:');
     if (!amount || isNaN(amount) || amount <= 0) {
-        showToast('❌ Неверное количество', 'error');
+        showToast(' Неверное количество', 'error');
         return;
     }
     try {
@@ -1348,18 +1349,18 @@ async function adminUnbanUser() {
 
 document.getElementById('bear').addEventListener('click', function(e) {
     if (playerData.isBanned) {
-        showToast('⛔ Вы заблокированы!', 'error');
+        showToast('❌ Вы заблокированы!', 'error');
         return;
     }
     if (playerData.energy < playerData.clickPower) {
-        showToast('⚡ Недостаточно энергии!', 'error');
+        showToast('⚠️ Недостаточно энергии!', 'error');
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
         return;
     }
     playerData.xp += playerData.clickPower;
     playerData.totalClicks++;
     playerData.energy -= playerData.clickPower;
-    const newLevel = Math.floor((playerData.xp || 0) / 100) + 1;
+    const newLevel = Math.floor(playerData.totalClicks / 1000) + 1;
     if (newLevel > playerData.level) {
         playerData.level = newLevel;
         showToast(`🎉 Новый уровень: ${playerData.level}!`, 'success');
