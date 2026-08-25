@@ -30,6 +30,7 @@ function recalculateBonuses() {
     let clickPower = 1;
     let maxEnergy = 1000;
     let energyRegen = 1;
+    
     purchasedItems.forEach(item => {
         if (item === 'click_power_2') clickPower += 2;
         else if (item === 'click_power_5') clickPower += 5;
@@ -39,10 +40,21 @@ function recalculateBonuses() {
         else if (item === 'energy_regen_2') energyRegen += 2;
         else if (item === 'energy_regen_5') energyRegen += 5;
     });
+    
+    const oldMaxEnergy = playerData.maxEnergy || 1000;
+    const energyRatio = playerData.energy / oldMaxEnergy;
+    
     playerData.clickPower = clickPower;
     playerData.maxEnergy = maxEnergy;
     playerData.energyRegen = energyRegen;
-    console.log('Бонусы пересчитаны:', { clickPower, maxEnergy, energyRegen });
+    
+    if (playerData.energy > 0) {
+        playerData.energy = Math.min(maxEnergy, Math.floor(energyRatio * maxEnergy));
+    } else {
+        playerData.energy = maxEnergy; 
+    }
+    
+    console.log('Бонусы пересчитаны:', { clickPower, maxEnergy, energyRegen, energy: playerData.energy });
 }
 
 async function loadPurchases() {
