@@ -23,21 +23,48 @@ function applySkin(skinName) {
         bear.classList.add('skin-' + skinName);
     }
 }
-
+function recalculateBonuses() {
+    
+    let clickPower = 1;
+    let maxEnergy = 1000;
+    let energyRegen = 1;
+    
+    purchasedItems.forEach(item => {
+        if (item === 'click_power_2') clickPower += 2;
+        else if (item === 'click_power_5') clickPower += 5;
+        else if (item === 'click_power_10') clickPower += 10;
+        else if (item === 'max_energy_2000') maxEnergy += 2000;
+        else if (item === 'max_energy_5000') maxEnergy += 5000;
+        else if (item === 'energy_regen_2') energyRegen += 2;
+        else if (item === 'energy_regen_5') energyRegen += 5;
+    });
+    
+    playerData.clickPower = clickPower;
+    playerData.maxEnergy = maxEnergy;
+    playerData.energyRegen = energyRegen;
+    
+    console.log('Бонусы пересчитаны:', { clickPower, maxEnergy, energyRegen });
+}
 async function loadPurchases() {
     const userId = getUserId();
     if (!userId) return;
+    
     try {
         const response = await fetch(`${API_URL}/api/purchases?user_id=${userId}`);
         if (response.ok) {
             const data = await response.json();
             purchasedItems = data.purchases || [];
+            
             if (data.current_skin) {
                 playerData.skin = data.current_skin;
                 applySkin(playerData.skin);
             }
+            
+            recalculateBonuses();
         }
-    } catch (error) { console.error('Load purchases error:', error); }
+    } catch (error) { 
+        console.error('Load purchases error:', error); 
+    }
 }
 
 async function loadData() {
@@ -225,46 +252,68 @@ function renderShop() {
         shopList.appendChild(div);
     });
 }
-
 async function buyItem(itemId) {
-    const userId = getUserId(); if (!userId) return;
+    const userId = getUserId(); 
+    if (!userId) return;
+    
     const items = {
-        'click_power_2': {price: 250000, name: '⚡ Сила клика x2'},
-        'click_power_5': {price: 1000000, name: '⚡ Сила клика x5'},
-        'click_power_10': {price: 5000000, name: '⚡⚡ Сила клика x10'},
-        'max_energy_2000': {price: 500000, name: '🔋 Энергия 2000'},
-        'max_energy_5000': {price: 2000000, name: '🔋 Энергия 5000'},
-        'energy_regen_2': {price: 750000, name: '⚡ Реген x2'},
-        'energy_regen_5': {price: 3000000, name: '⚡⚡ Реген x5'},
+        'click_power_2': {price: 250000, name: '⚡ Сила клика x2', bonus: {clickPower: 2}},
+        'click_power_5': {price: 1000000, name: '⚡ Сила клика x5', bonus: {clickPower: 5}},
+        'click_power_10': {price: 5000000, name: '⚡⚡ Сила клика x10', bonus: {clickPower: 10}},
+        'max_energy_2000': {price: 500000, name: '🔋 Энергия 2000', bonus: {maxEnergy: 2000}},
+        'max_energy_5000': {price: 2000000, name: '🔋 Энергия 5000', bonus: {maxEnergy: 5000}},
+        'energy_regen_2': {price: 750000, name: '⚡ Реген x2', bonus: {energyRegen: 2}},
+        'energy_regen_5': {price: 3000000, name: '⚡ Реген x5', bonus: {energyRegen: 5}},
         'skin_gold': {price: 1000000, name: '🌟 Золотой мишка'},
         'skin_diamond': {price: 5000000, name: '💎 Алмазный мишка'},
         'skin_rainbow': {price: 10000000, name: '🌈 Радужный мишка'}
     };
+    
     const item = items[itemId];
-    if (!item || playerData.xp < item.price) { showToast('❌ Недостаточно XP!', 'error'); return; }
-    try { 
-        const response = await fetch(`${API_URL}/api/buy_item`, { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify({ user_id: userId, item: itemId }) 
-        }); 
-        const data = await response.json(); 
-        if (data.status === 'success') { 
-            showToast(`✅ ${item.name} куплен!`, 'success'); 
+    if (!item || playerData.xp < item.price) { 
+        showToast('❌ Недостаточно XP!', 'error'); 
+        return; 
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/api/buy_item`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, item: itemId })
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            showToast(`✅ ${item.name} куплен!`, 'success');
+            
+            // Добавляем предмет в список купленных
+            if (!purchasedItems.includes(itemId)) {
+                purchasedItems.push(itemId);
+            }
+            
+            // Применяем скин если куплен
             if (itemId.startsWith('skin_')) {
                 const skinName = itemId.replace('skin_', '');
                 applySkin(skinName);
+                playerData.skin = skinName;
             }
-            await loadPurchases();
-            await loadData(); 
+            
+            // Пересчитываем бонусы
+            recalculateBonuses();
+            
+            // Сохраняем и обновляем
+            saveData();
+            await saveProgress();
+            updateUI();
+            renderShop();
         } else {
-            showToast('❌ ' + (data.error || 'Ошибка'), 'error'); 
+            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
         }
-    } catch (error) { 
-        showToast('❌ Ошибка покупки', 'error'); 
+    } catch (error) {
+        showToast('❌ Ошибка покупки', 'error');
     }
 }
-
 async function equipSkin(skinName) {
     const userId = getUserId(); if (!userId) return;
     try {
@@ -437,7 +486,10 @@ async function spinWheel() {
                     'error'
                 );
             }
-
+            
+            saveData(); 
+            await saveProgress(); 
+            
             updateUI();
             updateProfile();
             checkWheelTimer();
