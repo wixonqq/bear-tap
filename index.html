@@ -22,7 +22,7 @@
         <!-- Главная -->
         <div class="screen active" id="screen-main">
             <div class="glass-card balance-card">
-                <div class="balance-label"> Твой баланс XP</div>
+                <div class="balance-label">💰 Твой баланс XP</div>
                 <div class="balance-value"><span id="xp-balance">0</span></div>
                 <div class="per-tap">+<span id="xp-per-tap">1</span> XP за тап</div>
             </div>
@@ -58,7 +58,7 @@
         <!-- Колесо Фортуны -->
         <div class="screen" id="screen-wheel">
             <div class="glass-card">
-                <h2 class="section-title"> Колесо Фортуны</h2>
+                <h2 class="section-title">🎡 Колесо Фортуны</h2>
                 <div class="wheel-timer" id="wheel-timer"></div>
                 <div class="wheel-container">
                     <div class="wheel-pointer"></div>
@@ -89,7 +89,7 @@
                 <div class="games-grid">
                     <div class="game-card" onclick="openGame('crash')"><div class="game-icon">🚀</div><div class="game-name">Краш</div><div class="game-desc">Успей забрать до краша!</div></div>
                     <div class="game-card" onclick="openGame('mines')"><div class="game-icon">💣</div><div class="game-name">Мины</div><div class="game-desc">Найди безопасные клетки</div></div>
-                    <div class="game-card" onclick="openGame('roulette')"><div class="game-icon"></div><div class="game-name">Рулетка</div><div class="game-desc">Красное или чёрное?</div></div>
+                    <div class="game-card" onclick="openGame('roulette')"><div class="game-icon">🎰</div><div class="game-name">Рулетка</div><div class="game-desc">Красное или чёрное?</div></div>
                     <div class="game-card" onclick="openGame('double')"><div class="game-icon">🎲</div><div class="game-name">Double</div><div class="game-desc">Угадай цвет</div></div>
                     <div class="game-card" onclick="openGame('ninja')"><div class="game-icon">🥷</div><div class="game-name">Ninja</div><div class="game-desc">Не попади на ниндзя</div></div>
                 </div>
@@ -107,12 +107,12 @@
             </div>
             <div class="stats-grid">
                 <div class="stat-box"><div class="stat-emoji">🏆</div><div class="stat-num" id="stat-wins">0</div><div class="stat-name">Побед</div></div>
-                <div class="stat-box"><div class="stat-emoji"></div><div class="stat-num" id="stat-xp">0</div><div class="stat-name">Всего XP</div></div>
+                <div class="stat-box"><div class="stat-emoji">⚡</div><div class="stat-num" id="stat-xp">0</div><div class="stat-name">Всего XP</div></div>
                 <div class="stat-box"><div class="stat-emoji">👥</div><div class="stat-num" id="stat-refs">0</div><div class="stat-name">Рефералов</div></div>
-                <div class="stat-box"><div class="stat-emoji"></div><div class="stat-num" id="stat-clicks">0</div><div class="stat-name">Кликов</div></div>
+                <div class="stat-box"><div class="stat-emoji">👆</div><div class="stat-num" id="stat-clicks">0</div><div class="stat-name">Кликов</div></div>
             </div>
             <div class="glass-card"><h3 class="section-title">🏅 Топ по XP</h3><div class="top-list" id="top-xp-list"><div class="empty-state">🔄 Загрузка...</div></div></div>
-            <div class="glass-card"><h3 class="section-title">🎯 Топ победителей</h3><div class="top-list" id="top-wins-list"><div class="empty-state"> Загрузка...</div></div></div>
+            <div class="glass-card"><h3 class="section-title">🎯 Топ победителей</h3><div class="top-list" id="top-wins-list"><div class="empty-state">🔄 Загрузка...</div></div></div>
             <div class="glass-card referral-section">
                 <h3 class="section-title">🔗 Пригласи друга</h3>
                 <p class="referral-desc">Получи <b>+50 XP</b> за каждого друга!</p>
@@ -126,11 +126,11 @@
                 <h2 class="section-title">🔧 Админ Панель</h2>
                 <div class="admin-section">
                     <h3 class="admin-title">👤 Управление пользователем</h3>
-                    <div class="admin-input-group"><input type="number" id="admin-user-id" placeholder=" User ID"></div>
+                    <div class="admin-input-group"><input type="number" id="admin-user-id" placeholder="🆔 User ID"></div>
                     <div class="admin-buttons">
                         <button class="admin-action-btn" onclick="adminGiveXP()">💰 Выдать XP</button>
                         <button class="admin-action-btn warning" onclick="adminRemoveXP()">➖ Забрать XP</button>
-                        <button class="admin-action-btn danger" onclick="adminBanUser()"> Забанить</button>
+                        <button class="admin-action-btn danger" onclick="adminBanUser()">🚫 Забанить</button>
                         <button class="admin-action-btn success" onclick="adminUnbanUser()">✅ Разбанить</button>
                     </div>
                 </div>
@@ -236,7 +236,7 @@
             <button class="nav-btn active" data-screen="main"><span class="nav-emoji">🐻</span><span class="nav-text">Главная</span></button>
             <button class="nav-btn" data-screen="shop"><span class="nav-emoji">🛒</span><span class="nav-text">Магазин</span></button>
             <button class="nav-btn" data-screen="wheel"><span class="nav-emoji">🎡</span><span class="nav-text">Колесо</span></button>
-            <button class="nav-btn" data-screen="games"><span class="nav-emoji"></span><span class="nav-text">Игры</span></button>
+            <button class="nav-btn" data-screen="games"><span class="nav-emoji">🎮</span><span class="nav-text">Игры</span></button>
             <button class="nav-btn" data-screen="profile"><span class="nav-emoji">👤</span><span class="nav-text">Профиль</span></button>
         </nav>
     </div>
