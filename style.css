@@ -58,7 +58,7 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
 .body::before { content: ''; position: absolute; top: 30px; left: 50%; transform: translateX(-50%); width: 110px; height: 130px; background: linear-gradient(135deg, #FFB347, #FFCC99); border-radius: 50%; opacity: 0.7; }
 .paw { position: absolute; bottom: 10px; width: 75px; height: 65px; background: linear-gradient(135deg, #FFA500, #FF8C00); border-radius: 50%; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3); z-index: 4; }
 .paw::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 55px; height: 42px; background: linear-gradient(135deg, #FFB347, #FFCC99); border-radius: 50%; }
-.paw::after { content: ''; position: absolute; top: 15px; left: 50%; transform: translateX(-50%); font-size: 30px; opacity: 0.6; }
+.paw::after { content: '🐾'; position: absolute; top: 15px; left: 50%; transform: translateX(-50%); font-size: 30px; opacity: 0.6; }
 .left-paw { left: 30px; } .right-paw { right: 30px; }
 .tap-hint { margin-top: 20px; font-size: 20px; font-weight: 800; color: #FFD700; text-shadow: 0 0 25px rgba(255, 215, 0, 0.7); animation: pulse 2s infinite; letter-spacing: 1px; }
 @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.05); } }
@@ -91,13 +91,11 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
 .shop-item-price { font-size: 15px; color: #FFD700; font-weight: 700; }
 .shop-buy-btn { padding: 12px 24px; background: linear-gradient(135deg, #667eea, #f093fb); border: none; border-radius: 10px; color: #fff; font-weight: 700; cursor: pointer; transition: all 0.3s; min-width: 110px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); }
 .shop-buy-btn.disabled { background: rgba(255, 255, 255, 0.1); cursor: not-allowed; opacity: 0.5; box-shadow: none; }
-.shop-buy-btn.equipped { background: linear-gradient(135deg, #2ed573, #7bed9f); box-shadow: 0 4px 15px rgba(46, 213, 115, 0.4); }
-.shop-buy-btn.purchased { background: rgba(255, 255, 255, 0.15); }
-.shop-buy-btn:not(.disabled):not(.equipped):not(.purchased):active { transform: scale(0.95); }
-.shop-buy-btn.purchased { background: rgba(46, 213, 115, 0.2); border: 2px solid #2ed573; color: #2ed573; cursor: default; }
 .shop-buy-btn.equipped { background: linear-gradient(135deg, #2ed573, #7bed9f); box-shadow: 0 4px 15px rgba(46, 213, 115, 0.4); color: #fff; }
+.shop-buy-btn.purchased { background: rgba(46, 213, 115, 0.2); border: 2px solid #2ed573; color: #2ed573; cursor: default; }
+.shop-buy-btn:not(.disabled):not(.equipped):not(.purchased):active { transform: scale(0.95); }
 
-/* ===== КОЛЕСО ФОРТУНЫ ===== */
+/* Колесо Фортуны */
 .wheel-container {
     display: flex;
     justify-content: center;
@@ -108,7 +106,6 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     margin: 20px auto;
 }
 
-/* Само колесо - текст НЕ внутри */
 .wheel {
     position: relative;
     width: 300px;
@@ -135,7 +132,6 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     overflow: hidden;
 }
 
-/* Центральная кнопка с мишкой */
 .wheel-center {
     position: absolute;
     top: 50%;
@@ -146,7 +142,7 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     background: radial-gradient(circle, #fbbf24, #f59e0b);
     border: 4px solid #ffffff;
     border-radius: 50%;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 0 8px rgba(255, 255, 255, 0.35);
     z-index: 20;
     display: flex;
     align-items: center;
@@ -154,7 +150,6 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     font-size: 32px;
 }
 
-/* Текст вынесен из .wheel, позиционируется относительно .wheel-container */
 .wheel-label {
     position: absolute;
     top: 50%;
@@ -180,7 +175,6 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     pointer-events: none;
 }
 
-/* Тёмный текст на белых секторах (2, 4, 6, 8, 10, 12, 14 элементы) */
 .wheel-label:nth-child(2) span,
 .wheel-label:nth-child(4) span,
 .wheel-label:nth-child(6) span,
@@ -192,7 +186,6 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
 }
 
-/* Указатель сверху */
 .wheel-pointer {
     position: absolute;
     top: -10px;
@@ -218,7 +211,6 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     border-radius: 4px 4px 0 0;
 }
 
-/* Кнопка вращения */
 .wheel-btn {
     width: 100%;
     padding: 18px;
@@ -230,22 +222,14 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     border: none;
     border-radius: 14px;
     cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
     box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
 }
 
-.wheel-btn:active {
-    transform: scale(0.97);
-}
+.wheel-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255, 215, 0, 0.55); }
+.wheel-btn:active { transform: scale(0.97); }
+.wheel-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; transform: none; }
 
-.wheel-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
-}
-
-/* Таймер */
 .wheel-timer {
     margin: 14px 0;
     padding: 12px;
@@ -258,28 +242,6 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     border-radius: 10px;
 }
 
-/* Адаптив для маленьких экранов */
-@media (max-width: 380px) {
-    .wheel-container {
-        width: 280px;
-        height: 280px;
-    }
-    .wheel {
-        width: 260px;
-        height: 260px;
-    }
-    .wheel-label span {
-        top: -95px;
-        font-size: 15px;
-        width: 50px;
-        left: -25px;
-    }
-    .wheel-center {
-        width: 50px;
-        height: 50px;
-        font-size: 26px;
-    }
-}
 /* Скины */
 .bear.skin-gold .head, .bear.skin-gold .body, .bear.skin-gold .ear { background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%) !important; }
 .bear.skin-gold .head::before, .bear.skin-gold .body::before, .bear.skin-gold .ear::after { background: linear-gradient(135deg, #FFF4A3, #FFE066) !important; }
@@ -406,5 +368,6 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     .balance-value { font-size: 48px; }
     .wheel-container { width: 280px; height: 280px; }
     .wheel { width: 260px; height: 260px; }
-    .wheel-text { width: 260px; height: 260px; }
+    .wheel-label span { top: -95px; font-size: 15px; width: 50px; left: -25px; }
+    .wheel-center { width: 50px; height: 50px; font-size: 26px; }
 }
