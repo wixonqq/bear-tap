@@ -153,25 +153,27 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     top: 50%;
     left: 50%;
     transform-origin: 0 0;
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 900;
-    color: #1e3a8a;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 255, 255, 0.5);
     white-space: nowrap;
     z-index: 10;
     pointer-events: none;
+    opacity: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
 }
 
-/* Для текста на цветных секторах - белый цвет */
-.wheel-text:nth-child(1),
+/* Для текста на белых секторах - тёмно-синий цвет */
 .wheel-text:nth-child(3),
 .wheel-text:nth-child(5),
 .wheel-text:nth-child(7),
 .wheel-text:nth-child(9),
 .wheel-text:nth-child(11),
-.wheel-text:nth-child(13) {
-    color: #fff;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+.wheel-text:nth-child(13),
+.wheel-text:nth-child(15) {
+    color: #1e3a8a;
+    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
 }
 
 .wheel-pointer {
