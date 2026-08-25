@@ -294,7 +294,30 @@ async function toggleMaintenance() {
     try { const response = await fetch(`${API_URL}/api/admin_action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ admin_id: userId, action: 'toggle_maintenance' }) }); const data = await response.json(); if (data.status === 'maintenance_toggled') { showToast(data.maintenance ? '🔒 Доступ закрыт' : '🔓 Доступ открыт', 'success'); loadAdminStats(); } } catch (error) { showToast('❌ Ошибка', 'error'); }
 }
 
-async function adminGiveXP() { const userId = getUserId(); const targetId = document.getElementById('admin-user-id').value; if (!userId || !targetId) { showToast('❌ Введите User ID', 'error'); return; } const amount = prompt('💰 Введите количество XP для выдачи:'); if (!amount || isNaN(amount) || amount <= 0) { showToast(' Неверное количество', 'error'); return; } try { const response = await fetch(`${API_URL}/api/admin_action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ admin_id: userId, action: 'add_xp', target_id: parseInt(targetId), amount: parseInt(amount) }) }); const data = await response.json(); if (data.status === 'xp_added') showToast(`✅ Выдано ${amount} XP пользователю ${targetId}`, 'success'); else showToast('❌ ' + (data.error || 'Ошибка'), 'error'); } catch (error) { showToast('❌ Ошибка', 'error'); } }
+async function adminGiveXP() { 
+    const userId = getUserId(); 
+    const targetId = document.getElementById('admin-user-id').value; 
+    if (!userId || !targetId) { showToast('❌ Введите User ID', 'error'); return; } 
+    const amount = prompt('💰 Введите количество XP для выдачи:'); 
+    if (!amount || isNaN(amount) || amount <= 0) { showToast('❌ Неверное количество', 'error'); return; } 
+    try { 
+        const response = await fetch(`${API_URL}/api/admin_action`, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ admin_id: userId, action: 'add_xp', target_id: parseInt(targetId), amount: parseInt(amount) }) 
+        }); 
+        const data = await response.json(); 
+        if (data.status === 'xp_added') {
+            showToast(`✅ Выдано ${amount} XP пользователю ${targetId}`, 'success');
+            // Принудительно обновляем данные
+            setTimeout(() => loadData(), 500);
+        } else {
+            showToast('❌ ' + (data.error || 'Ошибка'), 'error'); 
+        }
+    } catch (error) { 
+        showToast('❌ Ошибка', 'error'); 
+    } 
+}
 
 async function adminRemoveXP() { const userId = getUserId(); const targetId = document.getElementById('admin-user-id').value; if (!userId || !targetId) { showToast('❌ Введите User ID', 'error'); return; } const amount = prompt('➖ Введите количество XP для изъятия:'); if (!amount || isNaN(amount) || amount <= 0) { showToast('❌ Неверное количество', 'error'); return; } try { const response = await fetch(`${API_URL}/api/admin_action`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ admin_id: userId, action: 'remove_xp', target_id: parseInt(targetId), amount: parseInt(amount) }) }); const data = await response.json(); if (data.status === 'xp_removed') showToast(`✅ Изъято ${amount} XP у пользователя ${targetId}`, 'success'); else showToast(' ' + (data.error || 'Ошибка'), 'error'); } catch (error) { showToast('❌ Ошибка', 'error'); } }
 
