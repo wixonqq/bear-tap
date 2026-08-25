@@ -97,6 +97,7 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
 .shop-buy-btn.purchased { background: rgba(46, 213, 115, 0.2); border: 2px solid #2ed573; color: #2ed573; cursor: default; }
 .shop-buy-btn.equipped { background: linear-gradient(135deg, #2ed573, #7bed9f); box-shadow: 0 4px 15px rgba(46, 213, 115, 0.4); color: #fff; }
 
+/* ===== КОЛЕСО ФОРТУНЫ ===== */
 .wheel-container {
     display: flex;
     justify-content: center;
@@ -107,6 +108,7 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     margin: 20px auto;
 }
 
+/* Само колесо - текст НЕ внутри */
 .wheel {
     position: relative;
     width: 300px;
@@ -133,41 +135,7 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     overflow: hidden;
 }
 
-.wheel-label {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    transform: rotate(var(--angle));
-    z-index: 10;
-}
-
-.wheel-label span {
-    position: absolute;
-    left: -30px; 
-    top: -110px;
-    width: 60px;
-    text-align: center;
-    font-size: 18px;
-    font-weight: 900;
-    color: #ffffff;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-    transform: rotate(calc(-1 * var(--angle))); 
-    pointer-events: none;
-}
-
-.wheel-label:nth-child(2) span,
-.wheel-label:nth-child(4) span,
-.wheel-label:nth-child(6) span,
-.wheel-label:nth-child(8) span,
-.wheel-label:nth-child(10) span,
-.wheel-label:nth-child(12) span,
-.wheel-label:nth-child(14) span {
-    color: #1e3a8a;
-    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
-}
-
+/* Центральная кнопка с мишкой */
 .wheel-center {
     position: absolute;
     top: 50%;
@@ -186,6 +154,45 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     font-size: 32px;
 }
 
+/* Текст вынесен из .wheel, позиционируется относительно .wheel-container */
+.wheel-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    transform: rotate(var(--angle));
+    z-index: 10;
+    pointer-events: none;
+}
+
+.wheel-label span {
+    position: absolute;
+    left: -30px;
+    top: -110px;
+    width: 60px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    transform: rotate(calc(-1 * var(--angle)));
+    pointer-events: none;
+}
+
+/* Тёмный текст на белых секторах (2, 4, 6, 8, 10, 12, 14 элементы) */
+.wheel-label:nth-child(2) span,
+.wheel-label:nth-child(4) span,
+.wheel-label:nth-child(6) span,
+.wheel-label:nth-child(8) span,
+.wheel-label:nth-child(10) span,
+.wheel-label:nth-child(12) span,
+.wheel-label:nth-child(14) span {
+    color: #1e3a8a;
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
+}
+
+/* Указатель сверху */
 .wheel-pointer {
     position: absolute;
     top: -10px;
@@ -211,6 +218,7 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     border-radius: 4px 4px 0 0;
 }
 
+/* Кнопка вращения */
 .wheel-btn {
     width: 100%;
     padding: 18px;
@@ -237,6 +245,7 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     transform: none;
 }
 
+/* Таймер */
 .wheel-timer {
     margin: 14px 0;
     padding: 12px;
@@ -249,18 +258,28 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     border-radius: 10px;
 }
 
+/* Адаптив для маленьких экранов */
 @media (max-width: 380px) {
-    .wheel-container { width: 280px; height: 280px; }
-    .wheel { width: 260px; height: 260px; }
-    .wheel-label span { 
-        top: -95px; 
-        font-size: 15px; 
+    .wheel-container {
+        width: 280px;
+        height: 280px;
+    }
+    .wheel {
+        width: 260px;
+        height: 260px;
+    }
+    .wheel-label span {
+        top: -95px;
+        font-size: 15px;
         width: 50px;
         left: -25px;
     }
-    .wheel-center { width: 50px; height: 50px; font-size: 26px; }
+    .wheel-center {
+        width: 50px;
+        height: 50px;
+        font-size: 26px;
+    }
 }
-
 /* Скины */
 .bear.skin-gold .head, .bear.skin-gold .body, .bear.skin-gold .ear { background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%) !important; }
 .bear.skin-gold .head::before, .bear.skin-gold .body::before, .bear.skin-gold .ear::after { background: linear-gradient(135deg, #FFF4A3, #FFE066) !important; }
