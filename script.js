@@ -60,7 +60,6 @@ function recalculateBonuses() {
     playerData.clickPower = clickPower;
     playerData.maxEnergy = maxEnergy;
     playerData.energyRegen = energyRegen;
-    console.log('⚡️ Бонусы пересчитаны:', { clickPower, maxEnergy, energyRegen, energy: playerData.energy });
 }
 
 async function loadPurchases() {
@@ -247,7 +246,7 @@ async function updateTopLists() {
         const topXpList = document.getElementById('top-xp-list');
         const topWinsList = document.getElementById('top-wins-list');
         if (topXpList) topXpList.innerHTML = '<div class="empty-state">❌ Ошибка загрузки</div>';
-        if (topWinsList) topWinsList.innerHTML = '<div class="empty-state"> Ошибка загрузки</div>';
+        if (topWinsList) topWinsList.innerHTML = '<div class="empty-state">❌ Ошибка загрузки</div>';
     }
 }
 
@@ -274,7 +273,7 @@ function setupReferralLink() {
                 showToast('✅ Ссылка скопирована!', 'success');
                 if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             }).catch(() => {
-                showToast(' Ошибка копирования', 'error');
+                showToast('❌ Ошибка копирования', 'error');
             });
         };
     }
@@ -289,13 +288,13 @@ function renderShop() {
     let items = [];
     if (currentShopCategory === 'upgrades') {
         items = [
-            {id: 'click_power_2', name: '⚡️ Сила клика x2', price: 250000, desc: 'Тапай в 2 раза эффективнее'},
-            {id: 'click_power_5', name: '⚡️⚡️ Сила клика x5', price: 1000000, desc: 'Тапай в 5 раз эффективнее'},
-            {id: 'click_power_10', name: '️⚡️⚡️ Сила клика x10', price: 5000000, desc: 'Тапай в 10 раз эффективнее'},
+            {id: 'click_power_2', name: '⚡ Сила клика x2', price: 250000, desc: 'Тапай в 2 раза эффективнее'},
+            {id: 'click_power_5', name: '⚡⚡ Сила клика x5', price: 1000000, desc: 'Тапай в 5 раз эффективнее'},
+            {id: 'click_power_10', name: '⚡⚡⚡ Сила клика x10', price: 5000000, desc: 'Тапай в 10 раз эффективнее'},
             {id: 'max_energy_2000', name: '🔋 Энергия 2000', price: 500000, desc: 'Больше энергии для тапов'},
             {id: 'max_energy_5000', name: '🔋🔋 Энергия 5000', price: 2000000, desc: 'Огромный запас энергии'},
-            {id: 'energy_regen_2', name: '⚡️ Реген x2', price: 750000, desc: 'Энергия восстанавливается быстрее'},
-            {id: 'energy_regen_5', name: '️⚡️ Реген x5', price: 3000000, desc: 'Супер быстрая регенерация'}
+            {id: 'energy_regen_2', name: '⚡ Реген x2', price: 750000, desc: 'Энергия восстанавливается быстрее'},
+            {id: 'energy_regen_5', name: '⚡⚡ Реген x5', price: 3000000, desc: 'Супер быстрая регенерация'}
         ];
     } else {
         items = [
@@ -334,16 +333,16 @@ async function buyItem(itemId) {
     const userId = getUserId();
     if (!userId) return;
     const items = {
-        'click_power_2': {price: 250000, name: '⚡️ Сила клика x2'},
-        'click_power_5': {price: 1000000, name: '️⚡️ Сила клика x5'},
-        'click_power_10': {price: 5000000, name: '⚡️⚡️⚡️ Сила клика x10'},
-        'max_energy_2000': {price: 500000, name: ' Энергия 2000'},
-        'max_energy_5000': {price: 2000000, name: '🔋 Энергия 5000'},
-        'energy_regen_2': {price: 750000, name: '⚡️ Реген x2'},
-        'energy_regen_5': {price: 3000000, name: '⚡️⚡️ Реген x5'},
+        'click_power_2': {price: 250000, name: '⚡ Сила клика x2'},
+        'click_power_5': {price: 1000000, name: '⚡⚡ Сила клика x5'},
+        'click_power_10': {price: 5000000, name: '⚡⚡⚡ Сила клика x10'},
+        'max_energy_2000': {price: 500000, name: '🔋 Энергия 2000'},
+        'max_energy_5000': {price: 2000000, name: '🔋🔋 Энергия 5000'},
+        'energy_regen_2': {price: 750000, name: '⚡ Реген x2'},
+        'energy_regen_5': {price: 3000000, name: '⚡⚡ Реген x5'},
         'skin_gold': {price: 1000000, name: '🌟 Золотой мишка'},
         'skin_diamond': {price: 5000000, name: '💎 Алмазный мишка'},
-        'skin_rainbow': {price: 10000000, name: ' Радужный мишка'}
+        'skin_rainbow': {price: 10000000, name: '🌈 Радужный мишка'}
     };
     const item = items[itemId];
     if (!item || playerData.xp < item.price) {
@@ -376,7 +375,7 @@ async function buyItem(itemId) {
             showToast('❌ ' + (data.error || 'Ошибка'), 'error');
         }
     } catch (error) {
-        showToast(' Ошибка покупки', 'error');
+        showToast('❌ Ошибка покупки', 'error');
     }
 }
 
@@ -461,7 +460,7 @@ async function spinWheel() {
             playerData.lastSpin = Number(data.last_spin || Math.floor(Date.now() / 1000));
             playerData.xp = Number(playerData.xp || 0) + wonPrize;
             if (wonPrize > 0) {
-                showToast(` Вы выиграли ${wonPrize.toLocaleString()} XP!`, 'success');
+                showToast(`🎉 Вы выиграли ${wonPrize.toLocaleString()} XP!`, 'success');
             } else {
                 showToast('😔 Ничего не выиграли. Попробуйте через час!', 'error');
             }
@@ -549,7 +548,7 @@ async function startCrash() {
                 }
             }, 100);
         } else {
-            showToast(' ' + (data.error || 'Ошибка'), 'error');
+            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
         }
     } catch (error) {
         showToast('❌ Ошибка', 'error');
@@ -691,7 +690,7 @@ async function cashoutMines() {
             showToast(`✅ Вы забрали ${data.win.toLocaleString()} XP!`, 'success');
             const cashoutBtn = document.getElementById('mines-cashout');
             const startBtn = document.getElementById('mines-start');
-            if (cashoutBtn) { cashoutBtn.textContent = ' Забрать'; cashoutBtn.disabled = true; }
+            if (cashoutBtn) { cashoutBtn.textContent = '💰 Забрать'; cashoutBtn.disabled = true; }
             if (startBtn) startBtn.disabled = false;
             currentGame = null;
             minesState = null;
@@ -720,7 +719,7 @@ async function spinRoulette(color) {
         const data = await response.json();
         const resultEl = document.getElementById('roulette-result');
         if (resultEl) {
-            const colorEmojis = { red: '🔴', black: '⚫', green: '' };
+            const colorEmojis = { red: '🔴', black: '⚫', green: '🟢' };
             const colorNames = { red: 'Красное', black: 'Чёрное', green: 'Зелёное' };
             resultEl.textContent = `Выпало: ${colorEmojis[data.result]} ${colorNames[data.result]}`;
             if (data.status === 'won') {
@@ -757,7 +756,7 @@ async function playDouble(choice) {
         const data = await response.json();
         const resultEl = document.getElementById('double-result');
         if (resultEl) {
-            const names = { '2': '⚡️ x2', '3': '🔥 x3', '5': '🌟 x5', '50': '💎 x50' };
+            const names = { '2': '⚡ x2', '3': '🔥 x3', '5': '🌟 x5', '50': '💎 x50' };
             resultEl.textContent = `Выпало: ${names[data.result] || data.result}`;
             if (data.status === 'won') {
                 resultEl.textContent += ` | Выигрыш: ${data.win.toLocaleString()} XP! 🎉`;
@@ -919,7 +918,7 @@ async function startTower() {
     const betInput = document.getElementById('tower-bet');
     const bet = parseInt(betInput.value);
     if (!bet || bet < 100 || bet > playerData.xp) {
-        showToast(' Неверная ставка!', 'error');
+        showToast('❌ Неверная ставка!', 'error');
         return;
     }
     currentGame = 'tower';
@@ -939,7 +938,7 @@ async function startTower() {
             if (startBtn) startBtn.disabled = true;
             updateTowerInfo();
         } else {
-            showToast(' ' + (data.error || 'Ошибка'), 'error');
+            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
         }
     } catch (error) {
         showToast('❌ Ошибка', 'error');
@@ -1151,11 +1150,11 @@ async function flipCoin(choice) {
         });
         const data = await response.json();
         setTimeout(() => {
-            const names = { heads: ' Орёл', tails: ' Решка' };
+            const names = { heads: '🦅 Орёл', tails: '🪙 Решка' };
             coinEl.textContent = data.result === 'heads' ? '🦅' : '🪙';
             resultEl.textContent = `Выпало: ${names[data.result]}`;
             if (data.status === 'won') {
-                resultEl.textContent += ` | Выигрыш: ${data.win.toLocaleString()} XP! `;
+                resultEl.textContent += ` | Выигрыш: ${data.win.toLocaleString()} XP! 🎉`;
                 resultEl.style.color = '#2ed573';
                 showToast(`✅ Вы выиграли ${data.win.toLocaleString()} XP!`, 'success');
             } else {
@@ -1206,7 +1205,7 @@ async function loadAdminStats() {
             const maintText = document.getElementById('maintenance-text');
             const maintBtn = document.getElementById('maintenance-btn');
             if (maintText) { maintText.textContent = data.maintenance ? 'Закрыто' : 'Открыто'; maintText.className = data.maintenance ? 'closed' : ''; }
-            if (maintBtn) maintBtn.textContent = data.maintenance ? ' Открыть доступ' : '🔒 Закрыть доступ';
+            if (maintBtn) maintBtn.textContent = data.maintenance ? '🔓 Открыть доступ' : '🔒 Закрыть доступ';
             const topList = document.getElementById('admin-top-users');
             if (topList && data.top_users && data.top_users.length > 0) {
                 topList.innerHTML = '';
@@ -1266,7 +1265,7 @@ async function adminGiveXP() {
             showToast(`✅ Выдано ${amount} XP пользователю ${targetId}`, 'success');
             setTimeout(() => loadData(), 500);
         } else {
-            showToast(' ' + (data.error || 'Ошибка'), 'error');
+            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
         }
     } catch (error) {
         showToast('❌ Ошибка', 'error');
@@ -1282,7 +1281,7 @@ async function adminRemoveXP() {
     }
     const amount = prompt('➖ Введите количество XP для изъятия:');
     if (!amount || isNaN(amount) || amount <= 0) {
-        showToast(' Неверное количество', 'error');
+        showToast('❌ Неверное количество', 'error');
         return;
     }
     try {
@@ -1296,7 +1295,7 @@ async function adminRemoveXP() {
             showToast(`✅ Изъято ${amount} XP у пользователя ${targetId}`, 'success');
             setTimeout(() => loadData(), 500);
         } else {
-            showToast(' ' + (data.error || 'Ошибка'), 'error');
+            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
         }
     } catch (error) {
         showToast('❌ Ошибка', 'error');
@@ -1349,18 +1348,18 @@ async function adminUnbanUser() {
 
 document.getElementById('bear').addEventListener('click', function(e) {
     if (playerData.isBanned) {
-        showToast(' Вы заблокированы!', 'error');
+        showToast('⛔ Вы заблокированы!', 'error');
         return;
     }
     if (playerData.energy < playerData.clickPower) {
-        showToast('️ Недостаточно энергии!', 'error');
+        showToast('⚡ Недостаточно энергии!', 'error');
         if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
         return;
     }
     playerData.xp += playerData.clickPower;
     playerData.totalClicks++;
     playerData.energy -= playerData.clickPower;
-    const newLevel = Math.floor(playerData.totalClicks / 1000) + 1;
+    const newLevel = Math.floor((playerData.xp || 0) / 100) + 1;
     if (newLevel > playerData.level) {
         playerData.level = newLevel;
         showToast(`🎉 Новый уровень: ${playerData.level}!`, 'success');
