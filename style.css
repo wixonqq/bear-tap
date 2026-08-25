@@ -107,11 +107,71 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     height: 320px;
 }
 
-.wheel-svg {
+.wheel {
     width: 300px;
     height: 300px;
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(0, 0, 0, 0.3);
+    border: 6px solid #1e3a8a;
     transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+    /* 13 секторов по 27.69 градусов */
+    background: conic-gradient(
+        #3b82f6 0deg 27.69deg,
+        #ffffff 27.69deg 55.38deg,
+        #60a5fa 55.38deg 83.08deg,
+        #ffffff 83.08deg 110.77deg,
+        #9333ea 110.77deg 138.46deg,
+        #ffffff 138.46deg 166.15deg,
+        #ec4899 166.15deg 193.85deg,
+        #ffffff 193.85deg 221.54deg,
+        #8b5cf6 221.54deg 249.23deg,
+        #ffffff 249.23deg 276.92deg,
+        #3b82f6 276.92deg 304.62deg,
+        #ffffff 304.62deg 332.31deg,
+        #60a5fa 332.31deg 360deg
+    );
+    overflow: hidden;
+}
+
+.wheel-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, #fbbf24, #f59e0b);
+    border-radius: 50%;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    z-index: 20;
+}
+
+.wheel-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: 0 0;
+    font-size: 18px;
+    font-weight: 900;
+    color: #1e3a8a;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+    white-space: nowrap;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Для текста на цветных секторах - белый цвет */
+.wheel-text:nth-child(1),
+.wheel-text:nth-child(3),
+.wheel-text:nth-child(5),
+.wheel-text:nth-child(7),
+.wheel-text:nth-child(9),
+.wheel-text:nth-child(11),
+.wheel-text:nth-child(13) {
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .wheel-pointer {
