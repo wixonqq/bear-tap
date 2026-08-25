@@ -126,7 +126,6 @@ async function buyItem(itemId) {
     if (!item || playerData.xp < item.price) { showToast('❌ Недостаточно XP!', 'error'); return; }
     try { const response = await fetch(`${API_URL}/api/buy_item`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, item: itemId }) }); const data = await response.json(); if (data.status === 'success') { showToast(`✅ ${item.name} куплен!`, 'success'); await loadData(); } else showToast('❌ ' + (data.error || 'Ошибка'), 'error'); } catch (error) { showToast('❌ Ошибка покупки', 'error'); }
 }
-
 async function spinWheel() {
     if (wheelSpinning) return; 
     const userId = getUserId(); 
@@ -181,7 +180,7 @@ async function spinWheel() {
                 playerData.xp += data.prize; 
                 
                 if (data.prize > 0) {
-                    showToast(` Вы выиграли ${data.prize} XP!`, 'success'); 
+                    showToast(`🎉 Вы выиграли ${data.prize} XP!`, 'success'); 
                 } else {
                     showToast('😔 Ничего не выиграли. Попробуйте через час!', 'error'); 
                 }
@@ -206,7 +205,6 @@ async function spinWheel() {
         }, 50);
     }, 4000);
 }
-
 function checkWheelTimer() {
     const timerEl = document.getElementById('wheel-timer'); if (!timerEl) return;
     const now = Date.now() / 1000; const timeSinceLastSpin = now - playerData.lastSpin;
