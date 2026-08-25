@@ -33,15 +33,15 @@ async function loadData() {
         }
         const data = await response.json();
         
-        // ПРОВЕРКА НА БАН
         if (data.is_banned === 1) {
-            document.getElementById('maintenance-overlay').style.display = 'flex';
-            document.getElementById('maintenance-title').textContent = '⛔ ВЫ ЗАБЛОКИРОВАНЫ';
-            document.getElementById('maintenance-text-desc').textContent = 'Вы были заблокированы администрацией. Обратитесь к администратору.';
+            document.getElementById('ban-overlay').style.display = 'flex';
             document.getElementById('main-app').style.display = 'none';
+            document.getElementById('maintenance-overlay').style.display = 'none';
             return;
+        } else {
+            document.getElementById('ban-overlay').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
         }
-        
         if (data.maintenance && !playerData.isAdmin) {
             document.getElementById('maintenance-overlay').style.display = 'flex';
             document.getElementById('maintenance-title').textContent = '🚧 Приложение временно закрыто';
