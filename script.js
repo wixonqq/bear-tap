@@ -10,6 +10,7 @@ let playerData = {
     lastSave: Date.now(), lastSpin: 0, isAdmin: false, skin: 'default',
     energyRegen: 1, isBanned: false
 };
+
 let lastSavedXp = 0;
 let apiWorking = false;
 let toasts = [];
@@ -24,6 +25,8 @@ let towerState = null;
 let bubblesState = null;
 let purchasedItems = [];
 let currentShopCategory = 'upgrades';
+let lastActivity = Date.now();
+let saveInterval = null;
 
 function getUserId() {
     if (tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) return tg.initDataUnsafe.user.id;
@@ -33,6 +36,24 @@ function getUserId() {
         if (urlUserId) return parseInt(urlUserId);
     } catch (e) {}
     return null;
+}
+
+function trackActivity() {
+    lastActivity = Date.now();
+}
+
+document.addEventListener('click', trackActivity);
+document.addEventListener('touchstart', trackActivity);
+document.addEventListener('scroll', trackActivity);
+
+function startAutoSave() {
+    if (saveInterval) clearInterval(saveInterval);
+    saveInterval = setInterval(() => {
+        const timeSinceActivity = Date.now() - lastActivity;
+        if (timeSinceActivity < 5000 && apiWorking) {
+            saveProgress();
+        }
+    }, 1000);
 }
 
 function applySkin(skinName) {
@@ -60,7 +81,7 @@ function recalculateBonuses() {
     playerData.clickPower = clickPower;
     playerData.maxEnergy = maxEnergy;
     playerData.energyRegen = energyRegen;
-    console.log('️ Бонусы пересчитаны:', { clickPower, maxEnergy, energyRegen, energy: playerData.energy });
+    console.log('️ Бонусы пересчитаны:', { clickPower, maxEnergy, energyRegen });
 }
 
 async function loadPurchases() {
@@ -90,16 +111,19 @@ async function loadData() {
         return;
     }
     const isAdmin = userId === ADMIN_ID;
+    
     try {
         const response = await fetch(`${API_URL}/api/user_data?user_id=${userId}`);
         if (!response.ok) throw new Error('HTTP ' + response.status);
         const data = await response.json();
+        
         if (data.is_banned === 1) {
             document.getElementById('ban-overlay').style.display = 'flex';
             document.getElementById('maintenance-overlay').style.display = 'none';
             document.getElementById('main-app').style.display = 'none';
             return;
         }
+        
         if (data.maintenance && !isAdmin) {
             document.getElementById('ban-overlay').style.display = 'none';
             document.getElementById('maintenance-overlay').style.display = 'flex';
@@ -110,8 +134,10 @@ async function loadData() {
             document.getElementById('maintenance-overlay').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
         }
+        
         if (data.error) { loadLocalData(); return; }
         apiWorking = true;
+        
         playerData = {
             xp: data.xp || 0,
             totalClicks: data.total_clicks || 0,
@@ -131,6 +157,7 @@ async function loadData() {
             energyRegen: data.energy_regen || 1,
             isBanned: data.is_banned === 1
         };
+        
         applySkin(playerData.skin);
         await loadPurchases();
         lastSavedXp = playerData.xp;
@@ -138,10 +165,12 @@ async function loadData() {
         updateProfile();
         renderShop();
         checkWheelTimer();
+        startAutoSave();
+        
         const adminBtn = document.getElementById('admin-btn');
         if (adminBtn && playerData.isAdmin) adminBtn.style.display = 'block';
     } catch (error) {
-        console.error(' Ошибка загрузки данных:', error);
+        console.error('❌ Ошибка загрузки данных:', error);
         showToast('❌ Не удалось загрузить данные: ' + error.message, 'error');
         loadLocalData();
     }
@@ -274,7 +303,7 @@ function setupReferralLink() {
                 showToast('✅ Ссылка скопирована!', 'success');
                 if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             }).catch(() => {
-                showToast('❌ Ошибка копирования', 'error');
+                showToast(' Ошибка копирования', 'error');
             });
         };
     }
@@ -291,17 +320,17 @@ function renderShop() {
         items = [
             {id: 'click_power_2', name: '⚡️ Сила клика x2', price: 250000, desc: 'Тапай в 2 раза эффективнее'},
             {id: 'click_power_5', name: '⚡️⚡️ Сила клика x5', price: 1000000, desc: 'Тапай в 5 раз эффективнее'},
-            {id: 'click_power_10', name: '⚡️⚡️⚡️ Сила клика x10', price: 5000000, desc: 'Тапай в 10 раз эффективнее'},
-            {id: 'max_energy_2000', name: ' Энергия 2000', price: 500000, desc: 'Больше энергии для тапов'},
-            {id: 'max_energy_5000', name: '🔋 Энергия 5000', price: 2000000, desc: 'Огромный запас энергии'},
-            {id: 'energy_regen_2', name: '️ Реген x2', price: 750000, desc: 'Энергия восстанавливается быстрее'},
-            {id: 'energy_regen_5', name: '⚡️️ Реген x5', price: 3000000, desc: 'Супер быстрая регенерация'}
+            {id: 'click_power_10', name: '️⚡️⚡️ Сила клика x10', price: 5000000, desc: 'Тапай в 10 раз эффективнее'},
+            {id: 'max_energy_2000', name: '🔋 Энергия 2000', price: 500000, desc: 'Больше энергии для тапов'},
+            {id: 'max_energy_5000', name: '🔋🔋 Энергия 5000', price: 2000000, desc: 'Огромный запас энергии'},
+            {id: 'energy_regen_2', name: '⚡️ Реген x2', price: 750000, desc: 'Энергия восстанавливается быстрее'},
+            {id: 'energy_regen_5', name: '️⚡️ Реген x5', price: 3000000, desc: 'Супер быстрая регенерация'}
         ];
     } else {
         items = [
             {id: 'skin_gold', name: '🌟 Золотой мишка', price: 1000000, desc: 'Золотой скин для мишки'},
             {id: 'skin_diamond', name: '💎 Алмазный мишка', price: 5000000, desc: 'Алмазный скин для мишки'},
-            {id: 'skin_rainbow', name: '🌈 Радужный мишка', price: 10000000, desc: 'Радужный скин для мишки'}
+            {id: 'skin_rainbow', name: ' Радужный мишка', price: 10000000, desc: 'Радужный скин для мишки'}
         ];
     }
     items.forEach(item => {
@@ -324,7 +353,7 @@ function renderShop() {
         } else {
             btnText = '🔒 Мало XP'; btnClass = 'disabled'; btnAction = null;
         }
-        div.innerHTML = `<div class="shop-item-info"><div class="shop-item-name">${item.name}</div><div class="shop-item-desc">${item.desc}</div><div class="shop-item-price"> ${item.price.toLocaleString()} XP</div></div><button class="shop-buy-btn ${btnClass}">${btnText}</button>`;
+        div.innerHTML = `<div class="shop-item-info"><div class="shop-item-name">${item.name}</div><div class="shop-item-desc">${item.desc}</div><div class="shop-item-price">💰 ${item.price.toLocaleString()} XP</div></div><button class="shop-buy-btn ${btnClass}">${btnText}</button>`;
         if (btnAction) div.querySelector('.shop-buy-btn').onclick = btnAction;
         shopList.appendChild(div);
     });
@@ -335,11 +364,11 @@ async function buyItem(itemId) {
     if (!userId) return;
     const items = {
         'click_power_2': {price: 250000, name: '⚡️ Сила клика x2'},
-        'click_power_5': {price: 1000000, name: '⚡️ Сила клика x5'},
-        'click_power_10': {price: 5000000, name: '⚡️⚡️️ Сила клика x10'},
-        'max_energy_2000': {price: 500000, name: ' Энергия 2000'},
+        'click_power_5': {price: 1000000, name: '️ Сила клика x5'},
+        'click_power_10': {price: 5000000, name: '️⚡️⚡️ Сила клика x10'},
+        'max_energy_2000': {price: 500000, name: '🔋 Энергия 2000'},
         'max_energy_5000': {price: 2000000, name: '🔋 Энергия 5000'},
-        'energy_regen_2': {price: 750000, name: '️ Реген x2'},
+        'energy_regen_2': {price: 750000, name: '⚡️ Реген x2'},
         'energy_regen_5': {price: 3000000, name: '⚡️️ Реген x5'},
         'skin_gold': {price: 1000000, name: '🌟 Золотой мишка'},
         'skin_diamond': {price: 5000000, name: '💎 Алмазный мишка'},
@@ -403,6 +432,18 @@ async function equipSkin(skinName) {
     }
 }
 
+function showWinModal(amount) {
+    const modal = document.getElementById('win-modal');
+    const amountEl = document.getElementById('win-amount');
+    amountEl.textContent = `+${amount.toLocaleString()} XP`;
+    modal.style.display = 'flex';
+    if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+}
+
+function closeWinModal() {
+    document.getElementById('win-modal').style.display = 'none';
+}
+
 async function spinWheel() {
     if (wheelSpinning) return;
     const userId = getUserId();
@@ -416,7 +457,7 @@ async function spinWheel() {
         const remaining = Math.ceil(3600 - timeSinceLastSpin);
         const minutes = Math.floor(remaining / 60);
         const seconds = remaining % 60;
-        showToast(`⏳ Подождите ${minutes}м ${seconds}с`, 'error');
+        showToast(` Подождите ${minutes}м ${seconds}с`, 'warning');
         return;
     }
     const wheel = document.getElementById('wheel');
@@ -461,9 +502,9 @@ async function spinWheel() {
             playerData.lastSpin = Number(data.last_spin || Math.floor(Date.now() / 1000));
             playerData.xp = Number(playerData.xp || 0) + wonPrize;
             if (wonPrize > 0) {
-                showToast(`🎉 Вы выиграли ${wonPrize.toLocaleString()} XP!`, 'success');
+                showWinModal(wonPrize);
             } else {
-                showToast('😔 Ничего не выиграли. Попробуйте через час!', 'error');
+                showToast('😔 Ничего не выиграли. Попробуйте через час!', 'info');
             }
             saveData();
             await saveProgress();
@@ -549,7 +590,7 @@ async function startCrash() {
                 }
             }, 100);
         } else {
-            showToast('❌ ' + (data.error || 'Ошибка'), 'error');
+            showToast(' ' + (data.error || 'Ошибка'), 'error');
         }
     } catch (error) {
         showToast('❌ Ошибка', 'error');
@@ -665,7 +706,7 @@ async function revealMine(index) {
             if (cashoutBtn) { cashoutBtn.textContent = `💰 Забрать ${data.win.toLocaleString()} XP`; cashoutBtn.disabled = false; }
         }
     } catch (error) {
-        showToast('❌ Ошибка', 'error');
+        showToast(' Ошибка', 'error');
     }
 }
 
@@ -698,7 +739,7 @@ async function cashoutMines() {
             loadData();
         }
     } catch (error) {
-        showToast('❌ Ошибка', 'error');
+        showToast(' Ошибка', 'error');
     }
 }
 
@@ -720,7 +761,7 @@ async function spinRoulette(color) {
         const data = await response.json();
         const resultEl = document.getElementById('roulette-result');
         if (resultEl) {
-            const colorEmojis = { red: '🔴', black: '⚫', green: '🟢' };
+            const colorEmojis = { red: '🔴', black: '', green: '🟢' };
             const colorNames = { red: 'Красное', black: 'Чёрное', green: 'Зелёное' };
             resultEl.textContent = `Выпало: ${colorEmojis[data.result]} ${colorNames[data.result]}`;
             if (data.status === 'won') {
@@ -728,7 +769,7 @@ async function spinRoulette(color) {
                 resultEl.style.color = '#2ed573';
                 showToast(`✅ Вы выиграли ${data.win.toLocaleString()} XP!`, 'success');
             } else {
-                resultEl.textContent += ' | Вы проиграли ';
+                resultEl.textContent += ' | Вы проиграли 😔';
                 resultEl.style.color = '#ff4757';
                 showToast('❌ Вы проиграли', 'error');
             }
@@ -771,7 +812,7 @@ async function playDouble(choice) {
         }
         loadData();
     } catch (error) {
-        showToast(' Ошибка', 'error');
+        showToast('❌ Ошибка', 'error');
     }
 }
 
@@ -865,7 +906,7 @@ function updateNinjaInfo() {
     const winEl = document.getElementById('ninja-win');
     if (multEl) multEl.textContent = ninjaState.multiplier.toFixed(2) + 'x';
     if (roundsEl) roundsEl.textContent = `🎯 Раунд: ${ninjaState.rounds}`;
-    if (winEl) winEl.textContent = Math.floor(ninjaState.bet * ninjaState.multiplier).toLocaleString();
+    if (winEl) winEl.textContent = `💰 Выигрыш: ${Math.floor(ninjaState.bet * ninjaState.multiplier).toLocaleString()} XP`;
 }
 
 async function cashoutNinja() {
@@ -907,7 +948,7 @@ function initTowerGrid() {
         const cell = document.createElement('div');
         cell.className = 'tower-cell';
         cell.dataset.level = idx + 1;
-        cell.innerHTML = `<div>Ур. ${idx + 1}<br>${level.bombs} <br>x${level.mult}</div>`;
+        cell.innerHTML = `<div>Ур. ${idx + 1}<br>${level.bombs} 💣<br>x${level.mult}</div>`;
         cell.onclick = () => pickTower(idx + 1);
         grid.appendChild(cell);
     });
@@ -1023,7 +1064,7 @@ function initBubblesGrid() {
         const bubble = document.createElement('div');
         bubble.className = 'bubble';
         bubble.dataset.index = i;
-        bubble.textContent = '';
+        bubble.textContent = '🫧';
         bubble.onclick = () => popBubble(i);
         grid.appendChild(bubble);
     }
@@ -1077,7 +1118,7 @@ async function popBubble(index) {
         bubble.classList.add('popped');
         if (data.status === 'bomb') {
             bubble.classList.add('bomb');
-            bubble.textContent = '';
+            bubble.textContent = '💣';
             showToast('💥 Вы лопнули бомбу!', 'error');
             const cashoutBtn = document.getElementById('bubbles-cashout');
             const startBtn = document.getElementById('bubbles-start');
@@ -1101,7 +1142,7 @@ function updateBubblesInfo() {
     if (!bubblesState) return;
     const scoreEl = document.getElementById('bubbles-score');
     const multEl = document.getElementById('bubbles-multiplier');
-    if (scoreEl) scoreEl.textContent = ` Счёт: ${bubblesState.score}`;
+    if (scoreEl) scoreEl.textContent = `🎯 Счёт: ${bubblesState.score}`;
     if (multEl) multEl.textContent = `x${bubblesState.multiplier.toFixed(2)}`;
 }
 
@@ -1136,7 +1177,7 @@ async function flipCoin(choice) {
     const betInput = document.getElementById('coins-bet');
     const bet = parseInt(betInput.value);
     if (!bet || bet < 100 || bet > playerData.xp) {
-        showToast(' Неверная ставка!', 'error');
+        showToast('❌ Неверная ставка!', 'error');
         return;
     }
     const coinEl = document.getElementById('coin');
@@ -1152,10 +1193,10 @@ async function flipCoin(choice) {
         const data = await response.json();
         setTimeout(() => {
             const names = { heads: '🦅 Орёл', tails: '🪙 Решка' };
-            coinEl.textContent = data.result === 'heads' ? '🦅' : '🪙';
+            coinEl.textContent = data.result === 'heads' ? '' : '🪙';
             resultEl.textContent = `Выпало: ${names[data.result]}`;
             if (data.status === 'won') {
-                resultEl.textContent += ` | Выигрыш: ${data.win.toLocaleString()} XP! 🎉`;
+                resultEl.textContent += ` | Выигрыш: ${data.win.toLocaleString()} XP! `;
                 resultEl.style.color = '#2ed573';
                 showToast(`✅ Вы выиграли ${data.win.toLocaleString()} XP!`, 'success');
             } else {
@@ -1349,7 +1390,7 @@ async function adminUnbanUser() {
 
 document.getElementById('bear').addEventListener('click', function(e) {
     if (playerData.isBanned) {
-        showToast('❌ Вы заблокированы!', 'error');
+        showToast(' Вы заблокированы!', 'error');
         return;
     }
     if (playerData.energy < playerData.clickPower) {
@@ -1372,6 +1413,7 @@ document.getElementById('bear').addEventListener('click', function(e) {
     updateUI();
     updateProfile();
     saveData();
+    trackActivity();
 });
 
 function showClickEffect(e) {
@@ -1399,6 +1441,7 @@ function switchScreen(screen) {
     if (screen === 'profile') updateProfile();
     if (screen === 'shop') renderShop();
     if (screen === 'wheel') checkWheelTimer();
+    trackActivity();
 }
 
 document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -1416,7 +1459,7 @@ document.querySelectorAll('.shop-tab').forEach(tab => {
 
 function showToast(text, type = 'info') {
     const toast = document.createElement('div');
-    toast.className = 'toast' + (type === 'error' ? ' error' : '');
+    toast.className = 'toast ' + type;
     toast.textContent = text;
     document.body.appendChild(toast);
     toasts.push(toast);
@@ -1449,7 +1492,6 @@ setInterval(() => {
     }
 }, 5000);
 
-setInterval(saveProgress, 10000);
 setInterval(checkWheelTimer, 1000);
 
 loadData();
