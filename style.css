@@ -575,6 +575,8 @@ body {
     justify-content: center;
     margin: 20px 0;
     position: relative;
+    width: 320px;
+    height: 320px;
 }
 
 .wheel {
@@ -582,9 +584,10 @@ body {
     height: 300px;
     border-radius: 50%;
     position: relative;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(0, 0, 0, 0.2);
     border: 8px solid #1e3a8a;
     transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+    overflow: hidden;
     background: conic-gradient(
         #3b82f6 0deg 30deg,
         #ffffff 30deg 60deg,
@@ -599,7 +602,6 @@ body {
         #3b82f6 300deg 330deg,
         #ffffff 330deg 360deg
     );
-    overflow: hidden;
 }
 
 .wheel::before {
@@ -608,51 +610,61 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     background: radial-gradient(circle, #fbbf24, #f59e0b);
     border-radius: 50%;
     border: 4px solid #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     z-index: 20;
 }
 
 .wheel-pointer {
     position: absolute;
-    top: -20px;
+    top: -10px;
     left: 50%;
     transform: translateX(-50%);
-    width: 40px;
-    height: 50px;
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    clip-path: polygon(50% 100%, 0 0, 100% 0);
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 40px solid #fbbf24;
     z-index: 30;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+}
+
+.wheel-pointer::before {
+    content: '';
+    position: absolute;
+    top: -45px;
+    left: -15px;
+    width: 30px;
+    height: 20px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    border-radius: 4px 4px 0 0;
 }
 
 .wheel-segment {
     position: absolute;
-    width: 50%;
-    height: 50%;
-    top: 50%;
-    left: 50%;
-    transform-origin: 0% 0%;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transform-origin: 50% 50%;
     transform: rotate(calc(30deg * var(--i)));
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .wheel-segment span {
     position: absolute;
-    top: 35%;
-    left: 60%;
-    transform: translate(-50%, -50%) rotate(90deg);
-    font-size: 16px;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
     font-weight: 800;
     color: #1e3a8a;
-    text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
     white-space: nowrap;
+    writing-mode: horizontal-tb;
 }
 
 .wheel-center {
