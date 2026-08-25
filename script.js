@@ -858,7 +858,7 @@ setInterval(() => {
         updateUI();
         saveData();
     }
-}, 2000);
+}, 5000);
 
 setInterval(saveProgress, 10000);
 setInterval(checkWheelTimer, 1000);
