@@ -64,7 +64,7 @@
             </div>
             <div class="glass-card energy-card">
                 <div class="energy-header">
-                    <span class="energy-icon"></span>
+                    <span class="energy-icon">⚡</span>
                     <span class="energy-label">Энергия</span>
                 </div>
                 <div class="energy-bar">
@@ -230,7 +230,7 @@
                     </div>
                     <div class="admin-buttons">
                         <button class="admin-action-btn" onclick="adminGiveXP()">💰 Выдать XP</button>
-                        <button class="admin-action-btn warning" onclick="adminRemoveXP()"> Забрать XP</button>
+                        <button class="admin-action-btn warning" onclick="adminRemoveXP()">➖ Забрать XP</button>
                         <button class="admin-action-btn danger" onclick="adminBanUser()">🚫 Забанить</button>
                         <button class="admin-action-btn success" onclick="adminUnbanUser()">✅ Разбанить</button>
                     </div>
@@ -240,7 +240,7 @@
                     <div class="maintenance-status" id="maintenance-status">
                         Статус: <span id="maintenance-text">Открыто</span>
                     </div>
-                    <button class="admin-action-btn" id="maintenance-btn" onclick="toggleMaintenance()"> Закрыть доступ</button>
+                    <button class="admin-action-btn" id="maintenance-btn" onclick="toggleMaintenance()">🔒 Закрыть доступ</button>
                 </div>
                 <div class="admin-section">
                     <h3 class="admin-title">📊 Статистика бота</h3>
@@ -287,7 +287,7 @@
                 <div class="admin-section">
                     <h3 class="admin-title">🏆 Топ пользователей</h3>
                     <div class="top-list" id="admin-top-users">
-                        <div class="empty-state"> Загрузка...</div>
+                        <div class="empty-state">🔄 Загрузка...</div>
                     </div>
                 </div>
                 <button class="back-btn" onclick="backToProfile()">🔙 Назад в профиль</button>
@@ -299,7 +299,7 @@
             <div class="glass-card">
                 <h2 class="section-title">📈 Краш</h2>
                 <div class="game-input">
-                    <input type="number" id="crash-bet" placeholder=" Ставка XP" min="100">
+                    <input type="number" id="crash-bet" placeholder="💰 Ставка XP" min="100">
                 </div>
                 <div class="crash-display" id="crash-display">
                     <div class="crash-multiplier" id="crash-multiplier">1.00x</div>
@@ -314,9 +314,9 @@
 
         <div class="screen" id="screen-game-mines">
             <div class="glass-card">
-                <h2 class="section-title"> Мины</h2>
+                <h2 class="section-title">💣 Мины</h2>
                 <div class="game-input">
-                    <input type="number" id="mines-bet" placeholder=" Ставка XP" min="100">
+                    <input type="number" id="mines-bet" placeholder="💰 Ставка XP" min="100">
                     <select id="mines-count">
                         <option value="3">💣 3 мины</option>
                         <option value="5" selected>💣 5 мин</option>
@@ -349,7 +349,7 @@
                     <button class="roulette-btn black" onclick="spinRoulette('black')">⚫ Чёрное (x2)</button>
                     <button class="roulette-btn green" onclick="spinRoulette('green')">🟢 Зелёное (x14)</button>
                 </div>
-                <button class="back-btn" onclick="switchScreen('games')"> Назад к играм</button>
+                <button class="back-btn" onclick="switchScreen('games')">🔙 Назад к играм</button>
             </div>
         </div>
 
@@ -360,7 +360,7 @@
                     <input type="number" id="double-bet" placeholder="💰 Ставка XP" min="100">
                 </div>
                 <div class="double-display" id="double-display">
-                    <div class="double-result" id="double-result"> Выберите множитель</div>
+                    <div class="double-result" id="double-result">🎯 Выберите множитель</div>
                 </div>
                 <div class="double-buttons">
                     <button class="double-btn x2" onclick="playDouble('2')">⚡ x2</button>
@@ -413,9 +413,9 @@
 
         <div class="screen" id="screen-game-bubbles">
             <div class="glass-card">
-                <h2 class="section-title"> Пузыри</h2>
+                <h2 class="section-title">🫧 Пузыри</h2>
                 <div class="game-input">
-                    <input type="number" id="bubbles-bet" placeholder=" Ставка XP" min="100">
+                    <input type="number" id="bubbles-bet" placeholder="💰 Ставка XP" min="100">
                 </div>
                 <div class="bubbles-display" id="bubbles-display">
                     <div class="bubbles-score" id="bubbles-score">🎯 Счёт: 0</div>
