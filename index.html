@@ -54,88 +54,91 @@
                 <div class="shop-list" id="shop-list"></div>
             </div>
         </div>
-        
-       <div class="screen" id="screen-wheel">
-    <div class="glass-card">
-        <h2 class="section-title">🎡 Колесо Фортуны</h2>
-        <div class="wheel-timer" id="wheel-timer"></div>
-        <div class="wheel-container">
-            <div class="wheel-pointer"></div>
-            <svg class="wheel-svg" viewBox="0 0 300 300" id="wheel">
-                <!-- Сектор 0: 100 (синий) -->
-                <g transform="rotate(0 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#3b82f6" stroke="#fff" stroke-width="1"/>
-                    <text x="200" y="60" fill="#fff" font-size="16" font-weight="900" transform="rotate(15 200 60)">100</text>
-                </g>
-                <!-- Сектор 1: 500 (белый) -->
-                <g transform="rotate(30 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="1"/>
-                    <text x="200" y="60" fill="#1e3a8a" font-size="16" font-weight="900" transform="rotate(15 200 60)">500</text>
-                </g>
-                <!-- Сектор 2: 1000 (голубой) -->
-                <g transform="rotate(60 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#60a5fa" stroke="#fff" stroke-width="1"/>
-                    <text x="200" y="60" fill="#fff" font-size="16" font-weight="900" transform="rotate(15 200 60)">1000</text>
-                </g>
-                <!-- Сектор 3: 5000 (белый) -->
-                <g transform="rotate(90 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="1"/>
-                    <text x="200" y="60" fill="#1e3a8a" font-size="16" font-weight="900" transform="rotate(15 200 60)">5000</text>
-                </g>
-                <!-- Сектор 4: 10000 (фиолетовый) -->
-                <g transform="rotate(120 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#9333ea" stroke="#fff" stroke-width="1"/>
-                    <text x="200" y="60" fill="#fff" font-size="16" font-weight="900" transform="rotate(15 200 60)">10000</text>
-                </g>
-                <!-- Сектор 5: 20000 (белый) -->
-                <g transform="rotate(150 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="1"/>
-                    <text x="200" y="60" fill="#1e3a8a" font-size="16" font-weight="900" transform="rotate(15 200 60)">20000</text>
-                </g>
-                <!-- Сектор 6: 30000 (розовый) -->
-                <g transform="rotate(180 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ec4899" stroke="#fff" stroke-width="1"/>
-                    <text x="200" y="60" fill="#fff" font-size="16" font-weight="900" transform="rotate(15 200 60)">30000</text>
-                </g>
-                <!-- Сектор 7: 0 (белый) -->
-                <g transform="rotate(210 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="1"/>
-                    <text x="200" y="60" fill="#1e3a8a" font-size="16" font-weight="900" transform="rotate(15 200 60)">0</text>
-                </g>
-                <!-- Сектор 8: 100 (фиолетовый) -->
-                <g transform="rotate(240 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#8b5cf6" stroke="#fff" stroke-width="1"/>
-                    <text x="200" y="60" fill="#fff" font-size="16" font-weight="900" transform="rotate(15 200 60)">100</text>
-                </g>
-                <!-- Сектор 9: 500 (белый) -->
-                <g transform="rotate(270 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="1"/>
-                    <text x="200" y="60" fill="#1e3a8a" font-size="16" font-weight="900" transform="rotate(15 200 60)">500</text>
-                </g>
-                <!-- Сектор 10: 1000 (синий) -->
-                <g transform="rotate(300 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#3b82f6" stroke="#fff" stroke-width="1"/>
-                    <text x="200" y="60" fill="#fff" font-size="16" font-weight="900" transform="rotate(15 200 60)">1000</text>
-                </g>
-                <!-- Сектор 11: 5000 (белый) -->
-                <g transform="rotate(330 150 150)">
-                    <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="1"/>
-                    <text x="200" y="60" fill="#1e3a8a" font-size="16" font-weight="900" transform="rotate(15 200 60)">5000</text>
-                </g>
-                <!-- Центр -->
-                <circle cx="150" cy="150" r="30" fill="#fbbf24" stroke="#fff" stroke-width="4"/>
-            </svg>
+
+        <!-- Колесо Фортуны -->
+        <div class="screen" id="screen-wheel">
+            <div class="glass-card">
+                <h2 class="section-title">🎡 Колесо Фортуны</h2>
+                <div class="wheel-timer" id="wheel-timer"></div>
+                <div class="wheel-container">
+                    <div class="wheel-pointer"></div>
+                    <svg class="wheel-svg" viewBox="0 0 300 300" id="wheel">
+                        <!-- Сектор 0: 100 -->
+                        <g>
+                            <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#3b82f6" stroke="#fff" stroke-width="2"/>
+                            <text x="150" y="50" fill="#fff" font-size="18" font-weight="900" text-anchor="middle" transform="rotate(15 150 150)">100</text>
+                        </g>
+                        <!-- Сектор 1: 500 -->
+                        <g>
+                            <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
+                            <text x="150" y="50" fill="#1e3a8a" font-size="18" font-weight="900" text-anchor="middle" transform="rotate(45 150 150)">500</text>
+                        </g>
+                        <!-- Сектор 2: 1000 -->
+                        <g>
+                            <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#60a5fa" stroke="#fff" stroke-width="2"/>
+                            <text x="150" y="50" fill="#fff" font-size="18" font-weight="900" text-anchor="middle" transform="rotate(75 150 150)">1000</text>
+                        </g>
+                        <!-- Сектор 3: 5000 -->
+                        <g>
+                            <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
+                            <text x="150" y="50" fill="#1e3a8a" font-size="18" font-weight="900" text-anchor="middle" transform="rotate(105 150 150)">5000</text>
+                        </g>
+                        <!-- Сектор 4: 10000 -->
+                        <g>
+                            <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#9333ea" stroke="#fff" stroke-width="2"/>
+                            <text x="150" y="50" fill="#fff" font-size="18" font-weight="900" text-anchor="middle" transform="rotate(135 150 150)">10000</text>
+                        </g>
+                        <!-- Сектор 5: 20000 -->
+                        <g>
+                            <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
+                            <text x="150" y="50" fill="#1e3a8a" font-size="18" font-weight="900" text-anchor="middle" transform="rotate(165 150 150)">20000</text>
+                        </g>
+                        <!-- Сектор 6: 30000 -->
+                        <g>
+                            <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ec4899" stroke="#fff" stroke-width="2"/>
+                            <text x="150" y="50" fill="#fff" font-size="18" font-weight="900" text-anchor="middle" transform="rotate(195 150 150)">30000</text>
+                        </g>
+                        <!-- Сектор 7: 0 -->
+                        <g>
+                            <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
+                            <text x="150" y="50" fill="#1e3a8a" font-size="18" font-weight="900" text-anchor="middle" transform="rotate(225 150 150)">0</text>
+                        </g>
+                        <!-- Сектор 8: 35000 -->
+                        <g>
+                            <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#8b5cf6" stroke="#fff" stroke-width="2"/>
+                            <text x="150" y="50" fill="#fff" font-size="18" font-weight="900" text-anchor="middle" transform="rotate(255 150 150)">35000</text>
+                        </g>
+                        <!-- Сектор 9: 40000 -->
+                        <g>
+                            <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
+                            <text x="150" y="50" fill="#1e3a8a" font-size="18" font-weight="900" text-anchor="middle" transform="rotate(285 150 150)">40000</text>
+                        </g>
+                        <!-- Сектор 10: 45000 -->
+                        <g>
+                            <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#3b82f6" stroke="#fff" stroke-width="2"/>
+                            <text x="150" y="50" fill="#fff" font-size="18" font-weight="900" text-anchor="middle" transform="rotate(315 150 150)">45000</text>
+                        </g>
+                        <!-- Сектор 11: 50000 -->
+                        <g>
+                            <path d="M 150 150 L 150 10 A 140 140 0 0 1 271.24 80 Z" fill="#ffffff" stroke="#fff" stroke-width="2"/>
+                            <text x="150" y="50" fill="#1e3a8a" font-size="18" font-weight="900" text-anchor="middle" transform="rotate(345 150 150)">50000</text>
+                        </g>
+                        <!-- Центр -->
+                        <circle cx="150" cy="150" r="30" fill="#fbbf24" stroke="#fff" stroke-width="4"/>
+                    </svg>
+                </div>
+                <button class="wheel-btn" id="spin-btn" onclick="spinWheel()">🎡 Крутить бесплатно</button>
+            </div>
         </div>
-        <button class="wheel-btn" id="spin-btn" onclick="spinWheel()">🎡 Крутить бесплатно</button>
-    </div>
-</div>
+
+        <!-- Игры -->
         <div class="screen" id="screen-games">
             <div class="glass-card">
                 <h2 class="section-title">🎮 Мини-игры</h2>
                 <div class="games-grid">
                     <div class="game-card" onclick="openGame('crash')"><div class="game-icon">🚀</div><div class="game-name">Краш</div><div class="game-desc">Успей забрать до краша!</div></div>
                     <div class="game-card" onclick="openGame('mines')"><div class="game-icon">💣</div><div class="game-name">Мины</div><div class="game-desc">Найди безопасные клетки</div></div>
-                    <div class="game-card" onclick="openGame('roulette')"><div class="game-icon">🎰</div><div class="game-name">Рулетка</div><div class="game-desc">Красное или чёрное?</div></div>
+                    <div class="game-card" onclick="openGame('roulette')"><div class="game-icon"></div><div class="game-name">Рулетка</div><div class="game-desc">Красное или чёрное?</div></div>
                     <div class="game-card" onclick="openGame('double')"><div class="game-icon">🎲</div><div class="game-name">Double</div><div class="game-desc">Угадай цвет</div></div>
                     <div class="game-card" onclick="openGame('ninja')"><div class="game-icon">🥷</div><div class="game-name">Ninja</div><div class="game-desc">Не попади на ниндзя</div></div>
                 </div>
@@ -145,22 +148,22 @@
         <!-- Профиль -->
         <div class="screen" id="screen-profile">
             <div class="glass-card profile-card">
-                <div class="profile-avatar">👤</div>
+                <div class="profile-avatar"></div>
                 <div class="profile-info">
                     <div class="profile-header"><h2 class="profile-name" id="profile-name">Игрок</h2><button class="admin-btn" id="admin-btn" onclick="showAdminPanel()" style="display:none;">⚙️</button></div>
                     <div class="profile-level">⭐ Уровень <span id="profile-level">1</span></div>
                 </div>
             </div>
             <div class="stats-grid">
-                <div class="stat-box"><div class="stat-emoji">🏆</div><div class="stat-num" id="stat-wins">0</div><div class="stat-name">Побед</div></div>
+                <div class="stat-box"><div class="stat-emoji"></div><div class="stat-num" id="stat-wins">0</div><div class="stat-name">Побед</div></div>
                 <div class="stat-box"><div class="stat-emoji">⚡</div><div class="stat-num" id="stat-xp">0</div><div class="stat-name">Всего XP</div></div>
                 <div class="stat-box"><div class="stat-emoji">👥</div><div class="stat-num" id="stat-refs">0</div><div class="stat-name">Рефералов</div></div>
                 <div class="stat-box"><div class="stat-emoji">👆</div><div class="stat-num" id="stat-clicks">0</div><div class="stat-name">Кликов</div></div>
             </div>
-            <div class="glass-card"><h3 class="section-title">🏅 Топ по XP</h3><div class="top-list" id="top-xp-list"><div class="empty-state">🔄 Загрузка...</div></div></div>
+            <div class="glass-card"><h3 class="section-title"> Топ по XP</h3><div class="top-list" id="top-xp-list"><div class="empty-state">🔄 Загрузка...</div></div></div>
             <div class="glass-card"><h3 class="section-title">🎯 Топ победителей</h3><div class="top-list" id="top-wins-list"><div class="empty-state">🔄 Загрузка...</div></div></div>
             <div class="glass-card referral-section">
-                <h3 class="section-title">🔗 Пригласи друга</h3>
+                <h3 class="section-title"> Пригласи друга</h3>
                 <p class="referral-desc">Получи <b>+50 XP</b> за каждого друга!</p>
                 <button class="copy-button" id="referral-btn">📋 Скопировать ссылку</button>
             </div>
@@ -169,7 +172,7 @@
         <!-- Админ Панель -->
         <div class="screen" id="screen-admin">
             <div class="glass-card">
-                <h2 class="section-title">🔧 Админ Панель</h2>
+                <h2 class="section-title"> Админ Панель</h2>
                 <div class="admin-section">
                     <h3 class="admin-title">👤 Управление пользователем</h3>
                     <div class="admin-input-group"><input type="number" id="admin-user-id" placeholder="🆔 User ID"></div>
@@ -192,7 +195,7 @@
                         <div class="admin-stat-item"><span class="stat-label">✅ Активных:</span><span class="stat-value" id="admin-active-users">0</span></div>
                         <div class="admin-stat-item"><span class="stat-label">🚫 Забанено:</span><span class="stat-value" id="admin-banned-users">0</span></div>
                         <div class="admin-stat-item"><span class="stat-label">⭐ Всего XP:</span><span class="stat-value" id="admin-total-xp">0</span></div>
-                        <div class="admin-stat-item"><span class="stat-label">🎉 Средний XP:</span><span class="stat-value" id="admin-avg-xp">0</span></div>
+                        <div class="admin-stat-item"><span class="stat-label"> Средний XP:</span><span class="stat-value" id="admin-avg-xp">0</span></div>
                         <div class="admin-stat-item"><span class="stat-label">🔗 Всего рефералов:</span><span class="stat-value" id="admin-total-refs">0</span></div>
                         <div class="admin-stat-item"><span class="stat-label">🎮 Покупок в магазине:</span><span class="stat-value" id="admin-total-purchases">0</span></div>
                         <div class="admin-stat-item"><span class="stat-label">💰 Доход магазина (XP):</span><span class="stat-value" id="admin-total-revenue">0</span></div>
@@ -201,21 +204,21 @@
                     <button class="admin-action-btn" onclick="loadAdminStats()">🔄 Обновить статистику</button>
                 </div>
                 <div class="admin-section">
-                    <h3 class="admin-title">🏆 Топ пользователей</h3>
+                    <h3 class="admin-title"> Топ пользователей</h3>
                     <div class="top-list" id="admin-top-users"><div class="empty-state">🔄 Загрузка...</div></div>
                 </div>
-                <button class="back-btn" onclick="backToProfile()">🔙 Назад в профиль</button>
+                <button class="back-btn" onclick="backToProfile()"> Назад в профиль</button>
             </div>
         </div>
 
-        <!-- Экраны игр (Краш, Мины, Рулетка, Double, Ninja) -->
+        <!-- Экраны игр -->
         <div class="screen" id="screen-game-crash">
             <div class="glass-card">
                 <h2 class="section-title">📈 Краш</h2>
                 <div class="game-input"><input type="number" id="crash-bet" placeholder="💰 Ставка XP" min="100"></div>
                 <div class="crash-display" id="crash-display"><div class="crash-multiplier" id="crash-multiplier">1.00x</div></div>
                 <div class="game-buttons">
-                    <button class="game-btn start" id="crash-start" onclick="startCrash()">🚀 Начать</button>
+                    <button class="game-btn start" id="crash-start" onclick="startCrash()"> Начать</button>
                     <button class="game-btn cashout" id="crash-cashout" onclick="cashoutCrash()" disabled>💰 Забрать</button>
                 </div>
                 <button class="back-btn" onclick="switchScreen('games')">🔙 Назад к играм</button>
@@ -244,7 +247,7 @@
                 <div class="roulette-wheel" id="roulette-wheel"><div class="roulette-result" id="roulette-result">Выберите цвет</div></div>
                 <div class="roulette-buttons">
                     <button class="roulette-btn red" onclick="spinRoulette('red')">🔴 Красное (x2)</button>
-                    <button class="roulette-btn black" onclick="spinRoulette('black')">⚫ Чёрное (x2)</button>
+                    <button class="roulette-btn black" onclick="spinRoulette('black')"> Чёрное (x2)</button>
                     <button class="roulette-btn green" onclick="spinRoulette('green')">🟢 Зелёное (x14)</button>
                 </div>
                 <button class="back-btn" onclick="switchScreen('games')">🔙 Назад к играм</button>
@@ -270,8 +273,8 @@
                 <div class="ninja-display" id="ninja-display"><div class="ninja-multiplier" id="ninja-multiplier">1.00x</div><div class="ninja-rounds" id="ninja-rounds">Раунд: 0</div></div>
                 <div class="ninja-grid" id="ninja-grid"></div>
                 <div class="game-buttons">
-                    <button class="game-btn start" id="ninja-start" onclick="startNinja()">🥷 Начать</button>
-                    <button class="game-btn cashout" id="ninja-cashout" onclick="cashoutNinja()" disabled>💰 Забрать</button>
+                    <button class="game-btn start" id="ninja-start" onclick="startNinja()"> Начать</button>
+                    <button class="game-btn cashout" id="ninja-cashout" onclick="cashoutNinja()" disabled> Забрать</button>
                 </div>
                 <button class="back-btn" onclick="switchScreen('games')">🔙 Назад к играм</button>
             </div>
@@ -286,6 +289,6 @@
             <button class="nav-btn" data-screen="profile"><span class="nav-emoji">👤</span><span class="nav-text">Профиль</span></button>
         </nav>
     </div>
-    <script src="script.js?v=51"></script>
+    <script src="script.js?v=52"></script>
 </body>
 </html>
