@@ -579,14 +579,53 @@ body {
     height: 320px;
 }
 
-.wheel-svg {
+.wheel {
     width: 300px;
     height: 300px;
     border-radius: 50%;
+    position: relative;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(0, 0, 0, 0.2);
     border: 8px solid #1e3a8a;
     transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-    overflow: visible;
+    overflow: hidden;
+    background: conic-gradient(
+        #3b82f6 0deg 30deg,
+        #ffffff 30deg 60deg,
+        #60a5fa 60deg 90deg,
+        #ffffff 90deg 120deg,
+        #9333ea 120deg 150deg,
+        #ffffff 150deg 180deg,
+        #ec4899 180deg 210deg,
+        #ffffff 210deg 240deg,
+        #8b5cf6 240deg 270deg,
+        #ffffff 270deg 300deg,
+        #3b82f6 300deg 330deg,
+        #ffffff 330deg 360deg
+    );
+}
+
+.wheel-text-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.wheel::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, #fbbf24, #f59e0b);
+    border-radius: 50%;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    z-index: 20;
 }
 
 .wheel-pointer {
@@ -651,7 +690,6 @@ body {
     border-radius: 10px;
     border: 1px solid rgba(255, 215, 0, 0.3);
 }
-
 /* ===== ИГРЫ ===== */
 .games-grid {
     display: grid;
