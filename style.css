@@ -97,38 +97,24 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
 .shop-buy-btn.purchased { background: rgba(46, 213, 115, 0.2); border: 2px solid #2ed573; color: #2ed573; cursor: default; }
 .shop-buy-btn.equipped { background: linear-gradient(135deg, #2ed573, #7bed9f); box-shadow: 0 4px 15px rgba(46, 213, 115, 0.4); color: #fff; }
 
-/* Колесо Фортуны */
 .wheel-container {
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
-
     width: 320px;
     height: 320px;
     margin: 20px auto;
 }
 
-/* Само колесо */
 .wheel {
     position: relative;
-
     width: 300px;
     height: 300px;
-
-    box-sizing: border-box;
-    overflow: hidden;
-
-    border: 6px solid #1e3a8a;
     border-radius: 50%;
-
-    box-shadow:
-        0 10px 40px rgba(0, 0, 0, 0.5),
-        inset 0 0 30px rgba(0, 0, 0, 0.3);
-
-    transition:
-        transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-
+    border: 6px solid #1e3a8a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(0, 0, 0, 0.3);
+    transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
     background: conic-gradient(
         #3b82f6 0deg 27.69deg,
         #ffffff 27.69deg 55.38deg,
@@ -144,166 +130,100 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
         #ffffff 304.62deg 332.31deg,
         #60a5fa 332.31deg 360deg
     );
+    overflow: hidden;
 }
 
-/* Текст внутри секторов */
-.wheel-text {
+.wheel-label {
     position: absolute;
     top: 50%;
     left: 50%;
-    /* Это критически важно для центрирования */
-    transform-origin: center center;
-
-    width: 58px; /* Ширина блока текста */
-    min-height: 24px;
-    padding: 2px 3px;
-    margin: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    box-sizing: border-box;
-
-    color: #ffffff;
-    font-size: 15px; /* Уменьшен шрифт, чтобы лучше вписывался */
-    line-height: 1;
-    font-weight: 900;
-    text-align: center;
-    white-space: nowrap;
-
-    pointer-events: none;
-    user-select: none;
+    width: 0;
+    height: 0;
+    transform: rotate(var(--angle));
     z-index: 10;
-
-    text-shadow:
-        0 2px 4px rgba(0, 0, 0, 0.9),
-        0 0 8px rgba(255, 255, 255, 0.4);
-
-    filter: drop-shadow(
-        0 2px 4px rgba(0, 0, 0, 0.8)
-    );
 }
 
-/* Тёмный текст на белых секторах */
-.wheel-text:nth-child(3),
-.wheel-text:nth-child(5),
-.wheel-text:nth-child(7),
-.wheel-text:nth-child(9),
-.wheel-text:nth-child(11),
-.wheel-text:nth-child(13),
-.wheel-text:nth-child(15) {
+.wheel-label span {
+    position: absolute;
+    left: -30px; 
+    top: -110px;
+    width: 60px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    transform: rotate(calc(-1 * var(--angle))); 
+    pointer-events: none;
+}
+
+.wheel-label:nth-child(2) span,
+.wheel-label:nth-child(4) span,
+.wheel-label:nth-child(6) span,
+.wheel-label:nth-child(8) span,
+.wheel-label:nth-child(10) span,
+.wheel-label:nth-child(12) span,
+.wheel-label:nth-child(14) span {
     color: #1e3a8a;
-
-    text-shadow:
-        0 1px 3px rgba(255, 255, 255, 0.95),
-        0 0 5px rgba(255, 255, 255, 0.7);
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9);
 }
 
-
-/* Центральная кнопка */
 .wheel-center {
     position: absolute;
     top: 50%;
     left: 50%;
-
     width: 60px;
     height: 60px;
-
-    box-sizing: border-box;
     transform: translate(-50%, -50%);
-
-    background: radial-gradient(
-        circle,
-        #fbbf24,
-        #f59e0b
-    );
-
+    background: radial-gradient(circle, #fbbf24, #f59e0b);
     border: 4px solid #ffffff;
     border-radius: 50%;
-
-    box-shadow:
-        0 4px 15px rgba(0, 0, 0, 0.5),
-        inset 0 0 8px rgba(255, 255, 255, 0.35);
-
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
 }
 
-/* Указатель */
 .wheel-pointer {
     position: absolute;
     top: -10px;
     left: 50%;
-
+    transform: translateX(-50%);
     width: 0;
     height: 0;
-
-    transform: translateX(-50%);
-
     border-left: 25px solid transparent;
     border-right: 25px solid transparent;
     border-top: 50px solid #fbbf24;
-
     z-index: 30;
-
-    filter: drop-shadow(
-        0 4px 8px rgba(0, 0, 0, 0.5)
-    );
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
 }
 
 .wheel-pointer::before {
     content: '';
-
     position: absolute;
     top: -55px;
     left: -20px;
-
     width: 40px;
     height: 25px;
-
-    background: linear-gradient(
-        135deg,
-        #fbbf24,
-        #f59e0b
-    );
-
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
     border-radius: 4px 4px 0 0;
 }
 
-/* Кнопка вращения */
 .wheel-btn {
     width: 100%;
     padding: 18px;
     margin-top: 18px;
-
     color: #0a0e27;
     font-size: 17px;
     font-weight: 800;
-
-    background: linear-gradient(
-        135deg,
-        #ffd700,
-        #ffa500
-    );
-
+    background: linear-gradient(135deg, #ffd700, #ffa500);
     border: none;
     border-radius: 14px;
-
     cursor: pointer;
-
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease,
-        opacity 0.3s ease;
-
-    box-shadow:
-        0 6px 20px rgba(255, 215, 0, 0.4);
-}
-
-.wheel-btn:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 8px 24px rgba(255, 215, 0, 0.55);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
 }
 
 .wheel-btn:active {
@@ -317,44 +237,28 @@ body { background: #0a0e27; color: #fff; min-height: 100vh; overflow-x: hidden; 
     transform: none;
 }
 
-/* Таймер */
 .wheel-timer {
     margin: 14px 0;
     padding: 12px;
-
     color: #ffd700;
     font-size: 15px;
     font-weight: 700;
     text-align: center;
-
     background: rgba(255, 215, 0, 0.1);
-
     border: 1px solid rgba(255, 215, 0, 0.3);
     border-radius: 10px;
 }
 
-/* Маленькие экраны */
 @media (max-width: 380px) {
-    .wheel-container {
-        width: 290px;
-        height: 290px;
+    .wheel-container { width: 280px; height: 280px; }
+    .wheel { width: 260px; height: 260px; }
+    .wheel-label span { 
+        top: -95px; 
+        font-size: 15px; 
+        width: 50px;
+        left: -25px;
     }
-
-    .wheel {
-        width: 270px;
-        height: 270px;
-    }
-
-    .wheel-text {
-        width: 52px;
-        min-height: 20px;
-        font-size: 12px;
-    }
-
-    .wheel-center {
-        width: 54px;
-        height: 54px;
-    }
+    .wheel-center { width: 50px; height: 50px; font-size: 26px; }
 }
 
 /* Скины */
