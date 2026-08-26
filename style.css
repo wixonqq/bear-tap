@@ -31,17 +31,17 @@ body { margin: 0; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing:
 .bear { width: 200px; height: 200px; position: relative; transform-origin: center bottom; }
 .bear .head { width: 120px; height: 100px; background-color: #5a3c2e; border-radius: 60px 60px 40px 40px; position: absolute; top: 30px; left: 40px; border: 3px solid #3d261e; }
 .bear .ear { width: 50px; height: 50px; background-color: #5a3c2e; border-radius: 50%; position: absolute; top: 0; border: 3px solid #3d261e; z-index: -1; }
-.bear .left-ear { left: 30px; }
-.bear .right-ear { right: 30px; }
+.ear.left-ear { left: 30px; }
+.ear.right-ear { right: 30px; }
 .bear .eye { width: 15px; height: 15px; background-color: #000; border-radius: 50%; position: absolute; top: 30px; }
-.bear .left-eye { left: 30px; }
-.bear .right-eye { right: 70px; }
+.eye.left-eye { left: 30px; }
+.eye.right-eye { right: 70px; }
 .bear .nose { width: 30px; height: 20px; background-color: #000; border-radius: 15px 15px 10px 10px; position: absolute; top: 55px; left: 45px; }
 .bear .mouth { width: 40px; height: 15px; border: 2px solid #000; border-top: none; border-radius: 0 0 15px 15px; position: absolute; top: 70px; left: 40px; }
 .bear .body { width: 150px; height: 120px; background-color: #5a3c2e; border-radius: 75px 75px 50px 50px; position: absolute; top: 80px; left: 25px; border: 3px solid #3d261e; }
 .bear .paw { width: 50px; height: 50px; background-color: #5a3c2e; border-radius: 50%; position: absolute; bottom: 0; border: 3px solid #3d261e; }
-.bear .left-paw { left: 10px; }
-.bear .right-paw { right: 10px; }
+.paw.left-paw { left: 10px; }
+.paw.right-paw { right: 10px; }
 
 @keyframes floatBear { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
 
@@ -188,9 +188,10 @@ body { margin: 0; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing:
 /* Roulette Track Animation */
 .roulette-track-container, .double-track-container { position: relative; width: 100%; max-width: 300px; height: 60px; margin: 20px auto; overflow: hidden; border-radius: 12px; background: rgba(0, 0, 0, 0.4); box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6); }
 .track-pointer { position: absolute; top: 0; bottom: 0; left: 50%; width: 4px; background-color: #ffd700; box-shadow: 0 0 10px #ffd700; transform: translateX(-50%); z-index: 10; }
-.roulette-track, .double-track { display: flex; height: 100%; transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1); /* Smooth stop */ }
-.roulette-track.spinning, .double-track.spinning { animation: trackSpin 0.5s linear infinite; }
-@keyframes trackSpin { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+.roulette-track, .double-track { display: flex; height: 100%; transition: transform 0s linear; /* Default no transition, set dynamically by JS */ }
+
+/* .roulette-track.spinning, .double-track.spinning { animation: trackSpin 0.5s linear infinite; } */
+/* @keyframes trackSpin { from { transform: translateX(0); } to { transform: translateX(-100%); } } */
 
 .roulette-segment, .double-segment { display: flex; align-items: center; justify-content: center; min-width: 60px; height: 100%; font-weight: 800; font-size: 16px; color: #fff; flex-shrink: 0; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
 .roulette-segment.red { background-color: #ff4757; } .roulette-segment.black { background-color: #2f3542; } .roulette-segment.green { background-color: #2ed573; }
@@ -202,7 +203,10 @@ body { margin: 0; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing:
 .roulette-btn.red { background-color: #ff4757; } .roulette-btn.black { background-color: #2f3542; } .roulette-btn.green { background-color: #2ed573; }
 .double-btn.x2 { background-color: #3b82f6; } .double-btn.x3 { background-color: #f97316; } .double-btn.x5 { background-color: #eab308; } .double-btn.x50 { background-color: #9333ea; }
 .roulette-btn:hover, .double-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3); }
-.roulette-display, .double-display { text-align: center; margin-top: 15px; font-size: 18px; font-weight: bold; color: #ffd700; min-height: 30px; display: flex; align-items: center; justify-content: center; }
+.roulette-display, .double-display { text-align: center; margin-top: 15px; font-size: 18px; font-weight: bold; color: #ffd700; min-height: 30px; display: flex; align-items: center; justify-content: center; } 
+/* .roulette-display.roulette-spin, .double-display.double-spin { animation: spinDisplay 0.5s ease-in-out infinite alternate; } */
+/* @keyframes spinDisplay { from { transform: rotate(0deg); } to { transform: rotate(10deg); } } */
+
 .roulette-numbers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); gap: 5px; margin-top: 20px; }
 .number-chip { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 8px 5px; text-align: center; font-weight: bold; cursor: pointer; transition: all 0.2s ease; }
 .number-chip.selected { background-color: #007bff; border-color: #007bff; box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); }
@@ -221,7 +225,7 @@ body { margin: 0; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing:
 .ninja-cell { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; padding: 20px; text-align: center; font-size: 30px; cursor: pointer; transition: background 0.2s ease; }
 .ninja-cell:hover:not(.revealed) { background: rgba(255, 255, 255, 0.2); }
 .ninja-cell.revealed { cursor: default; }
-.ninja-cell.safe { background-color: #2ed573; }
+.ninja-cell.safe { background-color: #2ed573; } 
 .ninja-cell.hit { background-color: #ff4757; }
 
 /* Tower */
@@ -305,18 +309,18 @@ body { margin: 0; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing:
     .balance-value { font-size: 36px; }
     .bear { width: 180px; height: 180px; }
     .bear .head { width: 100px; height: 80px; top: 25px; left: 35px; }
+    .ear.left-ear { left: 25px; }
+    .ear.right-ear { right: 25px; }
     .bear .ear { width: 40px; height: 40px; }
-    .bear .left-ear { left: 25px; }
-    .bear .right-ear { right: 25px; }
     .bear .eye { width: 12px; height: 12px; top: 25px; }
-    .bear .left-eye { left: 25px; }
-    .bear .right-eye { right: 60px; }
+    .eye.left-eye { left: 25px; }
+    .eye.right-eye { right: 60px; }
     .bear .nose { width: 25px; height: 18px; top: 45px; left: 40px; }
     .bear .mouth { width: 30px; top: 60px; left: 35px; }
     .bear .body { width: 130px; height: 100px; top: 70px; left: 25px; }
     .bear .paw { width: 45px; height: 45px; bottom: -5px; }
-    .bear .left-paw { left: 5px; }
-    .bear .right-paw { right: 5px; }
+    .paw.left-paw { left: 5px; }
+    .paw.right-paw { right: 5px; }
     .tap-hint { font-size: 16px; }
     .energy-label { font-size: 16px; }
     .shop-item-name { font-size: 16px; }
