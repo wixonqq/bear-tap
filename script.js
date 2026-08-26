@@ -279,7 +279,7 @@ async function tapBear(event) {
         playerData.totalClicks = data.total_clicks;
         playerData.energy = data.energy;
         playerData.maxEnergy = data.max_energy;
-        updateUI(); updateProfile(); saveLocal(); showClickEffect(event); haptic('light');
+        updateUI(); updateProfile(); showClickEffect(event); haptic('light');
     } catch (error) {
         if (error.message.toLowerCase().includes('energy')) showToast('⚠️ Недостаточно энергии', 'warning');
         else showToast(`❌ ${error.message}`, 'error');
@@ -307,6 +307,8 @@ function switchScreen(screen) {
     if (screen === 'shop') renderShop();
     if (screen === 'wheel') checkWheelTimer();
     if (screen === 'games') { initTowerGrid(); initBubblesGrid(); }
+    if (screen === 'game-roulette') { fetchGameHistory('roulette'); initRouletteTrackSegments(); }
+    if (screen === 'game-double') { fetchGameHistory('double'); initDoubleTrackSegments(); }
 }
 
 function renderShop() {
@@ -334,7 +336,7 @@ function renderShop() {
         const skin = id.startsWith('skin_');
         const equipped = skin && playerData.skin === id.replace('skin_', '');
         let text = purchased ? (equipped ? '✅ Надето' : skin ? '👕 Надеть' : '✅ Куплено') : playerData.xp >= price ? '🛒 Купить' : '🔒 Мало XP';
-        return `<div class="shop-item"><div class="shop-item-info"><div class="shop-item-name">${name}</div><div class="shop-item-desc">${desc}</div><div class="shop-item-price">💰 ${money(price)} XP</div></div><button class="shop-buy-btn ${equipped ? 'equipped' : purchased ? 'purchased' : playerData.xp < price ? 'disabled' : ''}" data-item="${id}" ${(!purchased && playerData.xp < price) || equipped ? 'disabled' : ''}>${text}</button></div>`;
+        return `<div class="shop-item"><div class="shop-item-info"><div class="shop-item-name"&gt;${name}</div><div class="shop-item-desc">${desc}</div><div class="shop-item-price">💰 ${money(price)} XP</div></div><button class="shop-buy-btn ${equipped ? 'equipped' : purchased ? 'purchased' : playerData.xp < price ? 'disabled' : ''}" data-item="${id}" ${(!purchased && playerData.xp < price) || equipped ? 'disabled' : ''}>${text}</button></div>`;
     }).join('');
 
     list.querySelectorAll('[data-item]').forEach(btn => btn.onclick = () => {
@@ -349,7 +351,7 @@ async function buyItem(item) {
     if (!id) return;
     try {
         const data = await api('/api/buy_item', { method: 'POST', body: JSON.stringify({ user_id: id, item }) });
-        showToast(`✅ Покупка выполнена!`, 'success');
+        showToast(`✅ Улучшение успешно куплено!`, 'success');
         haptic('success');
         await loadData();
         renderShop();
@@ -397,7 +399,8 @@ async function spinWheel() {
 
 function openGame(game) {
     switchScreen(`game-${game}`);
-    if (game === 'roulette') initRouletteNumbers();
+    if (game === 'roulette') { initRouletteNumbers(); fetchGameHistory('roulette'); }
+    if (game === 'double') { fetchGameHistory('double'); }
     if (game === 'ninja') initNinjaGrid();
     if (game === 'tower') initTowerGrid();
     if (game === 'bubbles') initBubblesGrid();
@@ -413,6 +416,38 @@ function validateBet(id) {
         return null;
     }
     return value;
+}
+
+// GAME HISTORY LOADING & RENDERING
+async function fetchGameHistory(game) {
+    const userId = getUserId();
+    if (!userId) return;
+    try {
+        const data = await api(`/api/game_history?game=${game}&user_id=${userId}`);
+        renderGameHistory(game, data.history || []);
+    } catch (e) { console.error(e); }
+}
+
+function renderGameHistory(game, history) {
+    const container = document.getElementById(`${game}-history`);
+    if (!container) return;
+    if (!history || history.length === 0) {
+        container.innerHTML = '<span style="font-size:13px; color:#aaa; margin: 10px auto;">История пуста 🍀</span>';
+        return;
+    }
+    container.innerHTML = history.map(item => {
+        if (game === 'roulette') {
+            const parts = item.split('_');
+            const num = parts[0];
+            const color = parts[1] || 'black';
+            return `<div class="history-chip ${color}">${num}</div>`;
+        } else if (game === 'double') {
+            const parts = item.split('_');
+            const val = parts[1] || '2';
+            return `<div class="history-chip x${val}">x${val}</div>`;
+        }
+        return '';
+    }).join('');
 }
 
 // CRASH
@@ -482,7 +517,6 @@ async function revealMine(index) {
         cell.classList.add('revealed');
         if (data.status === 'lost') {
             cell.classList.add('mine'); cell.textContent = '💣';
-            // Открываем все мины
             if (data.mines) {
                 data.mines.forEach(m => {
                     const c = document.querySelector(`.mine-cell[data-index="${m}"]`);
@@ -527,7 +561,41 @@ function endGameUI(game) {
     if (game === 'bubbles') { document.getElementById('bubbles-start').disabled = false; document.getElementById('bubbles-cashout').disabled = true; bubblesState = null; }
 }
 
-// ROULETTE
+// ROULETTE TRACK AND ANIMATION
+function initRouletteTrackSegments() {
+    const track = document.getElementById('roulette-track');
+    if (!track) return;
+    track.style.transition = 'none';
+    track.style.transform = 'translateX(0px)';
+    
+    let html = '';
+    // Создаем длинную ленту сегментов для реалистичного вращения
+    for (let i = 0; i < 80; i++) {
+        const num = i % 13;
+        const color = num === 0 ? 'green' : (num % 2 !== 0 ? 'black' : 'red');
+        html += `<div class="roulette-segment ${color}">${num}</div>`;
+    }
+    track.innerHTML = html;
+}
+
+function selectWinningRouletteSegment(winningNum, winningColor) {
+    const track = document.getElementById('roulette-track');
+    if (!track) return;
+    const targetIdx = 55; // Сегмент ближе к концу, на котором остановится pointer
+    const segments = track.querySelectorAll('.roulette-segment');
+    if (segments[targetIdx]) {
+        segments[targetIdx].className = `roulette-segment ${winningColor}`;
+        segments[targetIdx].textContent = winningNum;
+    }
+    const segmentWidth = 60; // Штрих CSS (.roulette-segment { min-width: 60px; })
+    const containerWidth = document.querySelector('.roulette-track-container').offsetWidth;
+    const offset = -(targetIdx * segmentWidth - containerWidth / 2 + segmentWidth / 2);
+    
+    track.style.transition = 'transform 3.5s cubic-bezier(0.1, 0.8, 0.1, 1)';
+    track.style.transform = `translateX(${offset}px)`;
+}
+
+// ROULETTE ACTION
 function initRouletteNumbers() {
     const grid = document.getElementById('roulette-numbers-grid'); if (!grid) return;
     selectedRouletteNumbers = [];
@@ -540,33 +608,26 @@ function initRouletteNumbers() {
     });
 }
 
-function rouletteDelay() {
-    return new Promise(resolve => {
-        let seconds = 3;
-        const display = document.getElementById('roulette-result');
-        if (display) display.textContent = `⏳ Вращение через ${seconds} сек.`;
-        rouletteTimer = setInterval(() => {
-            seconds--;
-            if (display) display.textContent = seconds > 0 ? `⏳ Вращение через ${seconds} сек.` : '🎰 Рулетка крутится...';
-            if (seconds <= 0) { clearInterval(rouletteTimer); resolve(); }
-        }, 1000);
-    });
-}
-
 async function spinRoulette(color) {
     if (rouletteBusy) return;
     const bet = validateBet('roulette-bet'); if (!bet) return;
     rouletteBusy = true;
-    animateRouletteVisual();
+    initRouletteTrackSegments();
+    const resultEl = document.getElementById('roulette-result');
+    if (resultEl) resultEl.textContent = '🎰 Рулетка крутится...';
+    
     try {
-        await rouletteDelay();
         const data = await api('/api/roulette', { method: 'POST', body: JSON.stringify({ user_id: getUserId(), bet, color }) });
+        selectWinningRouletteSegment(data.winning_number, data.result);
+        
+        await new Promise(resolve => setTimeout(resolve, 3600));
         const names = { red: '🔴 Красное', black: '⚫ Чёрное', green: '🟢 Зелёное' };
-        const resultEl = document.getElementById('roulette-result');
-        if (resultEl) resultEl.textContent = `🎯 Выпало: ${names[data.result]} (${data.result})`;
+        if (resultEl) resultEl.textContent = `🎯 Выпало: ${names[data.result]} (${data.winning_number})`;
+        
         showToast(data.status === 'won' ? `🎉 Вы выиграли ${money(data.win)} XP!` : '❌ Ставка проиграла', data.status === 'won' ? 'success' : 'error');
         showResultModal(data.status === 'won' ? '🎉 Победа!' : '❌ Проигрыш', data.status === 'won' ? `+${money(data.win)} XP` : 'Ставка сгорела', data.status === 'won');
-        loadData();
+        await loadData();
+        fetchGameHistory('roulette');
     } catch (error) { showToast(`❌ ${error.message}`, 'error'); }
     finally { rouletteBusy = false; }
 }
@@ -575,53 +636,82 @@ async function spinRouletteNumbers() {
     if (rouletteBusy || selectedRouletteNumbers.length === 0) return showToast('⚠️ Выберите 1–3 числа', 'warning');
     const bet = validateBet('roulette-bet'); if (!bet) return;
     rouletteBusy = true;
-    animateRouletteVisual();
+    initRouletteTrackSegments();
+    const resultEl = document.getElementById('roulette-result');
+    if (resultEl) resultEl.textContent = '🎰 Рулетка крутится...';
+    
     try {
-        await rouletteDelay();
         const data = await api('/api/roulette_numbers', { method: 'POST', body: JSON.stringify({ user_id: getUserId(), bet, numbers: selectedRouletteNumbers }) });
-        const resultEl = document.getElementById('roulette-result');
+        const colorResult = data.winning_number === 0 ? 'green' : (data.winning_number % 2 !== 0 ? 'black' : 'red');
+        selectWinningRouletteSegment(data.winning_number, colorResult);
+        
+        await new Promise(resolve => setTimeout(resolve, 3600));
         if (resultEl) resultEl.textContent = `🎯 Выпало число: ${data.winning_number}`;
-        showToast(data.status === 'won' ? `🎉 Вы выиграли ${money(data.win)} XP (${data.multiplier}x) !` : '❌ Число не угадано', data.status === 'won' ? 'success' : 'error');
+        
+        showToast(data.status === 'won' ? `🎉 Вы выиграли ${money(data.win)} XP (${data.multiplier}x)!` : '❌ Число не угадано', data.status === 'won' ? 'success' : 'error');
         showResultModal(data.status === 'won' ? '🎉 Победа!' : '❌ Проигрыш', data.status === 'won' ? `+${money(data.win)} XP` : 'Ставка сгорела', data.status === 'won');
-        loadData();
+        await loadData();
+        fetchGameHistory('roulette');
     } catch (error) { showToast(`❌ ${error.message}`, 'error'); }
     finally { rouletteBusy = false; }
 }
 
-function animateRouletteVisual() {
-    const display = document.getElementById('roulette-display');
-    if (!display) return;
-    display.classList.remove('roulette-spin'); 
-    void display.offsetWidth; 
-    display.classList.add('roulette-spin');
+// DOUBLE SPIN & ANIMATION
+function initDoubleTrackSegments() {
+    const track = document.getElementById('double-track');
+    if (!track) return;
+    track.style.transition = 'none';
+    track.style.transform = 'translateX(0px)';
+    
+    let html = '';
+    const mults = ['2', '3', '5', '50'];
+    for (let i = 0; i < 80; i++) {
+        const val = mults[i % 4];
+        html += `<div class="double-segment x${val}">x${val}</div>`;
+    }
+    track.innerHTML = html;
 }
 
-// DOUBLE
+function selectWinningDoubleSegment(choice) {
+    const track = document.getElementById('double-track');
+    if (!track) return;
+    const targetIdx = 55;
+    const segments = track.querySelectorAll('.double-segment');
+    if (segments[targetIdx]) {
+        segments[targetIdx].className = `double-segment x${choice}`;
+        segments[targetIdx].textContent = `x${choice}`;
+    }
+    const segmentWidth = 60;
+    const containerWidth = document.querySelector('.roulette-track-container').offsetWidth;
+    const offset = -(targetIdx * segmentWidth - containerWidth / 2 + segmentWidth / 2);
+    
+    track.style.transition = 'transform 3.5s cubic-bezier(0.1, 0.8, 0.1, 1)';
+    track.style.transform = `translateX(${offset}px)`;
+}
+
 async function playDouble(choice) {
     if (doubleBusy) return;
     const bet = validateBet('double-bet'); if (!bet) return;
     doubleBusy = true;
-    animateDoubleVisual();
+    initDoubleTrackSegments();
+    const resEl = document.getElementById('double-result');
+    if (resEl) resEl.textContent = '🎲 Вращение колеса Double...';
+    
     try {
-        await new Promise(resolve => setTimeout(resolve, 1500));
         const data = await api('/api/double', { method: 'POST', body: JSON.stringify({ user_id: getUserId(), bet, choice }) });
-        const resEl = document.getElementById('double-result');
-        if (resEl) resEl.textContent = `${data.status === 'won' ? '🎉 Успех' : '😔 Мимо'}: Выпал множитель ${choice}x`;
+        
+        // Показываем анимацию на треке
+        selectWinningDoubleSegment(choice);
+        
+        await new Promise(resolve => setTimeout(resolve, 3600));
+        if (resEl) resEl.textContent = `${data.status === 'won' ? '🎉 Успех' : '😔 Мимо'}: Выбран множитель ${choice}x`;
+        
         showToast(data.status === 'won' ? `🎉 Выигрыш ${money(data.win)} XP — ${choice}x` : '❌ Проигрыш', data.status === 'won' ? 'success' : 'error');
         showResultModal(data.status === 'won' ? '🎉 Удача!' : '❌ Мимо', data.status === 'won' ? `+${money(data.win)} XP` : 'Ставка проиграла', data.status === 'won');
-        loadData();
+        await loadData();
+        fetchGameHistory('double');
     } catch (error) { showToast(`❌ ${error.message}`, 'error'); }
     finally { doubleBusy = false; }
-}
-
-function animateDoubleVisual() {
-    const el = document.getElementById('double-display');
-    if (!el) return;
-    el.classList.remove('double-spin'); 
-    void el.offsetWidth; 
-    el.classList.add('double-spin');
-    const resEl = document.getElementById('double-result');
-    if (resEl) resEl.textContent = '🎲 Вращение Double...';
 }
 
 // NINJA
@@ -658,12 +748,26 @@ async function pickNinja(index) {
         const data = await api('/api/ninja', { method: 'POST', body: JSON.stringify({ user_id: getUserId(), action: 'pick', pick: index }) });
         cell.classList.add('revealed');
         if (data.status === 'hit') { 
-            cell.classList.add('hit'); cell.textContent = '🥷'; 
+            cell.classList.add('hit'); cell.textContent = '💣'; 
+            
+            // Открываем все спрятанные бомбы ниндзя при взрыве
+            if (data.bombs) {
+                data.bombs.forEach(b => {
+                    const c = document.querySelector(`.ninja-cell[data-index="${b}"]`);
+                    if (c) { c.classList.add('revealed', 'hit'); c.textContent = '💣'; }
+                });
+            }
+            // Все свободные клетки отмечаем как безопасные (зелёные)
+            document.querySelectorAll('.ninja-cell').forEach(c => {
+                const idx = Number(c.dataset.index);
+                if (!data.bombs.includes(idx)) { c.classList.add('revealed', 'safe'); c.textContent = '💎'; }
+            });
+
             showToast('💥 Бомба ниндзя!', 'error'); 
             showResultModal('💥 Взрыв!', 'Вы попали на ниндзя', false);
             endGameUI('ninja'); 
         } else { 
-            cell.classList.add('safe'); cell.textContent = '✅'; 
+            cell.classList.add('safe'); cell.textContent = '💎'; 
             ninjaState.multiplier = data.multiplier; 
             ninjaState.rounds = data.rounds; 
             updateNinjaInfo(); 
@@ -720,6 +824,27 @@ async function pickTower(row, col) {
         const cell = document.querySelector(`.tower-cell[data-row="${row}"][data-col="${col}"]`);
         if (data.status === 'lost') { 
             if (cell) { cell.classList.add('fail'); cell.textContent = '💣'; }
+            
+            // При проигрыше показываем все бомбы и все правильные ячейки на всей башне!
+            if (data.bombs) {
+                for (let r = 0; r < 5; r++) {
+                    const rowBombs = data.bombs[r];
+                    for (let c = 0; c < 5; c++) {
+                        const targetCell = document.querySelector(`.tower-cell[data-row="${r}"][data-col="${c}"]`);
+                        if (targetCell) {
+                            targetCell.classList.add('revealed');
+                            if (rowBombs.includes(c)) {
+                                targetCell.classList.add('fail');
+                                targetCell.textContent = '💣';
+                            } else {
+                                targetCell.classList.add('safe');
+                                targetCell.textContent = '💎';
+                            }
+                        }
+                    }
+                }
+            }
+            
             showToast('💥 Башня взорвалась!', 'error'); 
             showResultModal('💥 Обвал!', 'Вы проиграли ставку', false);
             endGameUI('tower'); 
@@ -782,11 +907,30 @@ async function popBubble(index) {
         bubble.classList.add('popped'); 
         if (data.status === 'bomb') { 
             bubble.classList.add('bomb'); bubble.textContent = '💣'; 
+            
+            // При проиграше показываем все бомбы и безопасные пузыри на поле!
+            if (data.bombs) {
+                for (let i = 0; i < 16; i++) {
+                    const targetBubble = document.querySelector(`.bubble[data-index="${i}"]`);
+                    if (targetBubble) {
+                        targetBubble.classList.add('popped');
+                        if (data.bombs.includes(i)) {
+                            targetBubble.classList.add('bomb');
+                            targetBubble.textContent = '💣';
+                        } else {
+                            targetBubble.classList.add('popped');
+                            targetBubble.style.backgroundColor = '#2ed573';
+                            targetBubble.textContent = '💎';
+                        }
+                    }
+                }
+            }
+
             showToast('💥 Бомба в пузыре!', 'error'); 
             showResultModal('💥 Взрыв!', 'Попались на бомбу', false);
             endGameUI('bubbles'); 
         } else { 
-            bubble.textContent = '✨'; 
+            bubble.textContent = '💎'; 
             bubblesState.score = data.score; 
             bubblesState.multiplier = data.multiplier; 
             updateBubblesInfo(); 
@@ -851,7 +995,8 @@ function showResultModal(title, text, success) {
     }
     modal.querySelector('.result-title').textContent = title;
     modal.querySelector('.result-text').textContent = text;
-    modal.querySelector('.result-box').classList.toggle('success', success);
+    modal.querySelector('.result-box').className = 'result-box'; // reset classes
+    modal.querySelector('.result-box').classList.add(success ? 'success' : 'error');
     modal.classList.add('visible');
 }
 
