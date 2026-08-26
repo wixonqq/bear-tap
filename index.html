@@ -136,7 +136,7 @@
                     <div class="game-card" onclick="openGame('roulette')">
                         <div class="game-icon">🎰</div>
                         <div class="game-name">Рулетка</div>
-                        <div class="game-desc">Красное или чёрное?</div>
+                        <div class="game-desc">Цвет или точные числа</div>
                     </div>
                     <div class="game-card" onclick="openGame('double')">
                         <div class="game-icon">🎲</div>
@@ -151,12 +151,12 @@
                     <div class="game-card" onclick="openGame('tower')">
                         <div class="game-icon">🗼</div>
                         <div class="game-name">Башня</div>
-                        <div class="game-desc">Поднимайся выше!</div>
+                        <div class="game-desc">5 ячеек, 2 мины!</div>
                     </div>
                     <div class="game-card" onclick="openGame('bubbles')">
                         <div class="game-icon">🫧</div>
                         <div class="game-name">Пузыри</div>
-                        <div class="game-desc">Лопай пузыри!</div>
+                        <div class="game-desc">Лопай шарики без бомб</div>
                     </div>
                     <div class="game-card" onclick="openGame('coins')">
                         <div class="game-icon">🪙</div>
@@ -325,13 +325,22 @@
                     <input type="number" id="roulette-bet" placeholder="💰 Ставка XP" min="100">
                 </div>
                 <div class="roulette-display" id="roulette-display">
-                    <div class="roulette-result" id="roulette-result">🎯 Выберите цвет</div>
+                    <div class="roulette-result" id="roulette-result">🎯 Выберите цвет или числа</div>
                 </div>
+                
+                <h3 class="admin-title">🎨 Ставка по цветам</h3>
                 <div class="roulette-buttons">
                     <button class="roulette-btn red" onclick="spinRoulette('red')">🔴 Красное (x2)</button>
                     <button class="roulette-btn black" onclick="spinRoulette('black')">⚫️ Чёрное (x2)</button>
                     <button class="roulette-btn green" onclick="spinRoulette('green')">🟢 Зелёное (x14)</button>
                 </div>
+
+                <h3 class="admin-title" style="margin-top: 15px;">🔢 Выбор точных чисел (макс. 3)</h3>
+                <div class="roulette-numbers-grid" id="roulette-numbers-grid">
+                    <!-- Заполняется динамически 0-14 -->
+                </div>
+                <button class="number-bet-btn" onclick="spinRouletteNumbers()">🎯 Поставить на выбранные числа</button>
+
                 <button class="back-btn" onclick="switchScreen('games')">🔙 Назад к играм</button>
             </div>
         </div>
@@ -380,7 +389,7 @@
         <!-- Экран игры Башня -->
         <div class="screen" id="screen-game-tower">
             <div class="glass-card">
-                <h2 class="section-title">🗼 Башня</h2>
+                <h2 class="section-title">🗼 Башня (5 ячеек, 2 мины)</h2>
                 <div class="game-input">
                     <input type="number" id="tower-bet" placeholder="💰 Ставка XP" min="100">
                 </div>
@@ -446,6 +455,6 @@
         </nav>
 
     </div>
-    <script src="script.js?v=100"></script>
+    <script src="script.js?v=101"></script>
 </body>
 </html>
