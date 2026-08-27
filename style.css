@@ -1,4 +1,5 @@
-body { margin: 0; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; background-color: #1a1a2e; color: #fff; overflow: hidden; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; background-color: #1a1a2e; color: #fff; overflow-x: hidden; }
 .cosmos { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -1; }
 .stars, .stars2, .stars3 { position: absolute; top: 0; left: 0; width: 100%; height: 100%; animation: animateStars linear infinite; }
 .stars { background-image: radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)), radial-gradient(2px 2px at 15px 15px, #eee, rgba(0,0,0,0)); background-size: 500px 500px; animation-duration: 50s; }
@@ -243,3 +244,70 @@ body { margin: 0; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing:
 .toast.warning { background: linear-gradient(45deg, #f39c12, #e67e22); }
 .toast.error { background: linear-gradient(45deg, #e74c3c, #c0392b); }
 .empty-state { text-align: center; padding: 20px; color: #b0b0b0; }
+@media (max-width: 380px) {
+.balance-value { font-size: 36px; }
+.bear { width: 180px; height: 180px; }
+.bear .head { width: 100px; height: 80px; top: 25px; left: 35px; }
+.bear .ear { width: 40px; height: 40px; }
+.bear .left-ear { left: 25px; }
+.bear .right-ear { right: 25px; }
+.bear .eye { width: 12px; height: 12px; top: 25px; }
+.bear .left-eye { left: 25px; }
+.bear .right-eye { right: 60px; }
+.bear .nose { width: 25px; height: 18px; top: 45px; left: 40px; }
+.bear .mouth { width: 30px; top: 60px; left: 35px; }
+.bear .body { width: 130px; height: 100px; top: 70px; left: 25px; }
+.bear .paw { width: 45px; height: 45px; bottom: -5px; }
+.bear .left-paw { left: 5px; }
+.bear .right-paw { right: 5px; }
+.tap-hint { font-size: 16px; }
+.energy-label { font-size: 16px; }
+.shop-item-name { font-size: 16px; }
+.shop-buy-btn { padding: 8px 15px; font-size: 14px; }
+.wheel-container { width: 250px; height: 250px; }
+.wheel-center { width: 60px; height: 60px; font-size: 24px; }
+.wheel-label { font-size: 12px; padding-top: 8px; }
+.wheel-btn { padding: 10px 20px; font-size: 16px; }
+.game-card { padding: 10px; }
+.game-icon { font-size: 30px; }
+.game-name { font-size: 16px; }
+.game-desc { font-size: 12px; }
+.profile-name { font-size: 20px; }
+.profile-level { font-size: 14px; }
+.profile-avatar { width: 60px; height: 60px; font-size: 30px; }
+.stats-grid { grid-template-columns: 1fr; }
+.stat-emoji { font-size: 24px; }
+.stat-num { font-size: 18px; }
+.top-list { padding: 5px; }
+.top-rank { font-size: 16px; }
+.top-name { font-size: 14px; }
+.top-value { font-size: 14px; }
+.copy-button { padding: 10px 20px; font-size: 14px; }
+.crash-multiplier { font-size: 40px; min-height: 50px; }
+.mine-cell { font-size: 20px; }
+.game-info { font-size: 18px; }
+.roulette-segment, .double-segment { min-width: 50px; font-size: 14px; }
+.roulette-btn, .double-btn { padding: 10px 5px; font-size: 13px; }
+.roulette-numbers-grid { grid-template-columns: repeat(auto-fit, minmax(35px, 1fr)); }
+.number-chip { padding: 6px 3px; font-size: 13px; }
+.number-bet-btn { padding: 10px 15px; font-size: 14px; }
+.ninja-bomb-option { padding: 8px 12px; font-size: 14px; }
+.ninja-multiplier { font-size: 30px; }
+.ninja-rounds, .ninja-win { font-size: 14px; }
+.ninja-cell { padding: 15px; font-size: 24px; }
+.tower-level, .tower-multiplier { font-size: 20px; }
+.tower-cell { font-size: 20px; }
+.bubbles-score, .bubbles-multiplier { font-size: 20px; }
+.bubble { font-size: 24px; }
+.coin { width: 80px; height: 80px; font-size: 50px; }
+.coins-btn { padding: 10px 15px; font-size: 14px; }
+.admin-title { font-size: 18px; }
+.admin-buttons { grid-template-columns: 1fr; }
+.admin-action-btn { padding: 10px 15px; font-size: 14px; }
+.admin-stats { grid-template-columns: 1fr; }
+.nav-btn { font-size: 10px; padding: 3px 0; }
+.nav-btn .nav-emoji { font-size: 20px; }
+.result-title { font-size: 24px; }
+.result-text { font-size: 16px; }
+.result-close { padding: 10px 20px; font-size: 14px; }
+}
