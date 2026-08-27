@@ -233,7 +233,7 @@ async function loadData() {
     } catch (error) {
         console.error(error);
         loadLocalData();
-        showToast(`❌ Ошибка загрузки: ${error.message}`, 'error');
+        showToast(` Ошибка загрузки: ${error.message}`, 'error');
     }
 }
 
@@ -314,12 +314,12 @@ function renderShop() {
     if (balance) balance.textContent = money(playerData.xp);
     const items = currentShopCategory === 'upgrades' ? [
         ['click_power_2', '⚡ Сила клика +2', 250000, 'Увеличивает награду за тап'],
-        ['click_power_5', '⚡⚡ Сила клика +5', 1000000, 'Ещё больше XP за тап'],
-        ['click_power_10', '⚡⚡ Сила клика +10', 5000000, 'Максимальная сила клика'],
-        ['max_energy_2000', ' Энергия +2000', 500000, 'Увеличивает запас энергии'],
+        ['click_power_5', '⚡ Сила клика +5', 1000000, 'Ещё больше XP за тап'],
+        ['click_power_10', '⚡⚡⚡ Сила клика +10', 5000000, 'Максимальная сила клика'],
+        ['max_energy_2000', '🔋 Энергия +2000', 500000, 'Увеличивает запас энергии'],
         ['max_energy_5000', '🔋🔋 Энергия +5000', 2000000, 'Огромный запас энергии'],
         ['energy_regen_2', '⚡ Регенерация +2', 750000, 'Энергия восстанавливается быстрее'],
-        ['energy_regen_5', '⚡⚡ Регенерация +5', 3000000, 'Очень быстрая регенерация']
+        ['energy_regen_5', '⚡ Регенерация +5', 3000000, 'Очень быстрая регенерация']
     ] : [
         ['skin_gold', '🌟 Золотой мишка', 1000000, 'Золотой внешний вид'],
         ['skin_diamond', '💎 Алмазный мишка', 5000000, 'Алмазный внешний вид'],
@@ -329,7 +329,7 @@ function renderShop() {
         const purchased = purchasedItems.includes(id);
         const skin = id.startsWith('skin_');
         const equipped = skin && playerData.skin === id.replace('skin_', '');
-        let text = purchased ? (equipped ? '✅ Надето' : skin ? '👕 Надеть' : '✅ Куплено') : playerData.xp >= price ? '🛒 Купить' : '🔒 Мало XP';
+        let text = purchased ? (equipped ? '✅ Надето' : skin ? '👕 Надеть' : '✅ Куплено') : playerData.xp >= price ? ' Купить' : '🔒 Мало XP';
         return `<div class="shop-item"><div class="shop-item-info"><div class="shop-item-name">${name}</div><div class="shop-item-desc">${desc}</div><div class="shop-item-price">💰 ${money(price)} XP</div></div><button class="shop-buy-btn ${equipped ? 'equipped' : purchased ? 'purchased' : playerData.xp < price ? 'disabled' : ''}" data-item="${id}" ${(!purchased && playerData.xp < price) || equipped ? 'disabled' : ''}>${text}</button></div>`;
     }).join('');
     list.querySelectorAll('[data-item]').forEach(btn => btn.onclick = () => {
@@ -366,7 +366,7 @@ function checkWheelTimer() {
     el.style.display = 'block';
     const minutes = Math.floor(remaining / 60);
     const seconds = Math.floor(remaining % 60);
-    el.textContent = ` Следующее вращение через: ${minutes}м ${seconds}с`;
+    el.textContent = `⏳ Следующее вращение через: ${minutes}м ${seconds}с`;
 }
 
 async function spinWheel() {
@@ -384,7 +384,7 @@ async function spinWheel() {
         playerData.xp = Number(data.xp);
         playerData.lastSpin = Number(data.last_spin);
         updateUI(); updateProfile();
-        showToast(data.prize > 0 ? `🎉 Вы выиграли ${money(data.prize)} XP!` : '😔 Выпал нулевой приз', data.prize > 0 ? 'success' : 'info');
+        showToast(data.prize > 0 ? ` Вы выиграли ${money(data.prize)} XP!` : '😔 Выпал нулевой приз', data.prize > 0 ? 'success' : 'info');
         checkWheelTimer();
     } catch (error) { showToast(`❌ ${error.message}`, 'error'); }
     finally { wheelSpinning = false; button.disabled = false; }
@@ -404,7 +404,7 @@ function validateBet(id) {
     if (!valInput) return null;
     const value = Number(valInput.value);
     if (!Number.isInteger(value) || value < MIN_BET || value > playerData.xp) {
-        showToast(`❌ Ставка от ${MIN_BET} XP и не выше баланса`, 'error');
+        showToast(` Ставка от ${MIN_BET} XP и не выше баланса`, 'error');
         return null;
     }
     return value;
@@ -478,7 +478,7 @@ async function revealMine(index) {
             if (data.mines) {
                 data.mines.forEach(m => {
                     const c = document.querySelector(`.mine-cell[data-index="${m}"]`);
-                    if (c) { c.classList.add('revealed', 'mine'); c.textContent = '💣'; }
+                    if (c) { c.classList.add('revealed', 'mine'); c.textContent = ''; }
                 });
             }
             showToast('💥 Вы подорвались!', 'error');
@@ -538,7 +538,7 @@ function rouletteDelay() {
         if (display) display.textContent = `⏳ Вращение через ${seconds} сек.`;
         rouletteTimer = setInterval(() => {
             seconds--;
-            if (display) display.textContent = seconds > 0 ? ` Вращение через ${seconds} сек.` : '🎰 Рулетка крутится...';
+            if (display) display.textContent = seconds > 0 ? `⏳ Вращение через ${seconds} сек.` : '🎰 Рулетка крутится...';
             if (seconds <= 0) { clearInterval(rouletteTimer); resolve(); }
         }, 1000);
     });
@@ -562,7 +562,7 @@ async function spinRoulette(color) {
 }
 
 async function spinRouletteNumbers() {
-    if (rouletteBusy || selectedRouletteNumbers.length === 0) return showToast('⚠️ Выберите 1–3 числа', 'warning');
+    if (rouletteBusy || selectedRouletteNumbers.length === 0) return showToast('️ Выберите 1–3 числа', 'warning');
     const bet = validateBet('roulette-bet'); if (!bet) return;
     rouletteBusy = true;
     try {
@@ -645,15 +645,15 @@ function updateNinjaInfo() {
     const roundsEl = document.getElementById('ninja-rounds');
     const winEl = document.getElementById('ninja-win');
     if (multEl) multEl.textContent = `${ninjaState.multiplier.toFixed(2)}x`;
-    if (roundsEl) roundsEl.textContent = ` Раунд: ${ninjaState.rounds}`;
-    if (winEl) winEl.textContent = `💰 Выигрыш: ${money(ninjaState.bet * ninjaState.multiplier)} XP`;
+    if (roundsEl) roundsEl.textContent = `🎯 Раунд: ${ninjaState.rounds}`;
+    if (winEl) winEl.textContent = ` Выигрыш: ${money(ninjaState.bet * ninjaState.multiplier)} XP`;
 }
 
 async function cashoutNinja() {
     if (currentGame !== 'ninja') return;
     try {
         const data = await api('/api/ninja', { method: 'POST', body: JSON.stringify({ user_id: getUserId(), action: 'cashout' }) });
-        showToast(` Вы забрали ${money(data.win)} XP!`, 'success');
+        showToast(`🎉 Вы забрали ${money(data.win)} XP!`, 'success');
         showResultModal('🎉 Победа!', `+${money(data.win)} XP`, true);
         endGameUI('ninja');
         await loadData();
@@ -680,7 +680,7 @@ async function startTower() {
         document.getElementById('tower-start').disabled = true;
         document.getElementById('tower-cashout').disabled = false;
         updateTowerInfo();
-        showToast('🗼 Башня начата!', 'info');
+        showToast(' Башня начата!', 'info');
     } catch (error) { showToast(`❌ ${error.message}`, 'error'); }
 }
 
@@ -708,7 +708,7 @@ function updateTowerInfo() {
     if (!towerState) return;
     const lvlEl = document.getElementById('tower-level');
     const multEl = document.getElementById('tower-multiplier');
-    if (lvlEl) lvlEl.textContent = `📊 Этаж: ${towerState.row}`;
+    if (lvlEl) lvlEl.textContent = ` Этаж: ${towerState.row}`;
     if (multEl) multEl.textContent = `x${towerState.multiplier.toFixed(2)}`;
 }
 
@@ -717,10 +717,10 @@ async function cashoutTower() {
     try {
         const data = await api('/api/tower', { method: 'POST', body: JSON.stringify({ user_id: getUserId(), action: 'cashout' }) });
         showToast(`🎉 Вы забрали ${money(data.win)} XP!`, 'success');
-        showResultModal(' Победа на башне!', `+${money(data.win)} XP`, true);
+        showResultModal('🎉 Победа на башне!', `+${money(data.win)} XP`, true);
         endGameUI('tower');
         await loadData();
-    } catch (error) { showToast(`❌ ${error.message}`, 'error'); }
+    } catch (error) { showToast(` ${error.message}`, 'error'); }
 }
 
 function initBubblesGrid() {
@@ -751,7 +751,7 @@ async function popBubble(index) {
         const data = await api('/api/bubbles', { method: 'POST', body: JSON.stringify({ user_id: getUserId(), action: 'pop', index }) });
         bubble.classList.add('popped');
         if (data.status === 'bomb') {
-            bubble.classList.add('bomb'); bubble.textContent = '💣';
+            bubble.classList.add('bomb'); bubble.textContent = '';
             showToast('💥 Бомба в пузыре!', 'error');
             showResultModal('💥 Взрыв!', 'Попались на бомбу', false);
             endGameUI('bubbles');
@@ -776,8 +776,8 @@ async function cashoutBubbles() {
     if (currentGame !== 'bubbles') return;
     try {
         const data = await api('/api/bubbles', { method: 'POST', body: JSON.stringify({ user_id: getUserId(), action: 'cashout' }) });
-        showToast(` Вы забрали ${money(data.win)} XP!`, 'success');
-        showResultModal('🎉 Победа!', `+${money(data.win)} XP`, true);
+        showToast(`🎉 Вы забрали ${money(data.win)} XP!`, 'success');
+        showResultModal(' Победа!', `+${money(data.win)} XP`, true);
         endGameUI('bubbles');
         await loadData();
     } catch (error) { showToast(`❌ ${error.message}`, 'error'); }
@@ -801,7 +801,7 @@ async function flipCoin(choice) {
                 coin.textContent = data.result === 'heads' ? '🦅' : '🪙';
             }
             const resEl = document.getElementById('coins-result');
-            if (resEl) resEl.textContent = `🎯 Выпало: ${data.result === 'heads' ? '🦅 Орёл' : '🪙 Решка'}`;
+            if (resEl) resEl.textContent = ` Выпало: ${data.result === 'heads' ? '🦅 Орёл' : ' Решка'}`;
             showToast(data.status === 'won' ? `🎉 Выигрыш ${money(data.win)} XP` : '❌ Проигрыш', data.status === 'won' ? 'success' : 'error');
             showResultModal(data.status === 'won' ? '🎉 Победа!' : '❌ Проигрыш', data.status === 'won' ? `+${money(data.win)} XP` : 'Монетка упала не так', data.status === 'won');
             loadData();
